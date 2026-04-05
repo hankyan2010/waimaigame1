@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Admin API for waimai quiz game - questions CRUD + analytics tracking"""
+"""Admin API for waimai quiz game - questions CRUD + analytics tracking + leaderboard"""
 import json, hashlib, time, os, sys, re
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -10,6 +10,7 @@ ADMIN_PASSWORD = 'HankyAdmin2024'
 DATA_DIR = '/opt/waimai-data'
 QUESTIONS_FILE = os.path.join(DATA_DIR, 'questions.json')
 STATS_FILE = os.path.join(DATA_DIR, 'stats.json')
+LEADERBOARD_FILE = os.path.join(DATA_DIR, 'leaderboard.json')
 TOKEN_SECRET = 'waimai-quiz-token-2024'
 
 # Ensure data dir exists
@@ -54,6 +55,16 @@ def save_stats(stats):
     with open(STATS_FILE, 'w', encoding='utf-8') as f:
         json.dump(stats, f, ensure_ascii=False)
 
+def load_leaderboard():
+    if os.path.exists(LEADERBOARD_FILE):
+        with open(LEADERBOARD_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+def save_leaderboard(entries):
+    with open(LEADERBOARD_FILE, 'w', encoding='utf-8') as f:
+        json.dump(entries, f, ensure_ascii=False, indent=2)
+
 # --- HTTP Handler ---
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -79,6 +90,9 @@ class Handler(BaseHTTPRequestHandler):
             days = int(query.get('days', ['30'])[0])
             result = self.aggregate_stats(stats, days)
             return self.respond(200, result)
+
+        elif path == '/api/leaderboard':
+            return self.handle_get_leaderboard(query)
 
         self.respond(404, {'error': 'not found'})
 
@@ -122,6 +136,9 @@ class Handler(BaseHTTPRequestHandler):
             save_stats(stats)
             return self.respond(200, {'ok': True})
 
+        elif path == '/api/leaderboard':
+            return self.handle_post_leaderboard(body)
+
         self.respond(404, {'error': 'not found'})
 
     def do_PUT(self):
@@ -156,6 +173,85 @@ class Handler(BaseHTTPRequestHandler):
             save_questions(questions)
             return self.respond(200, {'ok': True, 'total': len(questions)})
         self.respond(404, {'error': 'not found'})
+
+    # --- Leaderboard handlers ---
+
+    def handle_get_leaderboard(self, query):
+        """GET /api/leaderboard?userId=xxx - 返回前100名 + 当前用户排名"""
+        entries = load_leaderboard()
+        user_id = query.get('userId', [''])[0]
+
+        # 排序：分数降序，同分按 updatedAt 升序（更早达成排前面）
+        entries.sort(key=lambda e: (-e.get('bestScore', 0), e.get('updatedAt', 0)))
+
+        top100 = entries[:100]
+
+        my_rank = None
+        my_entry = None
+        for i, e in enumerate(entries):
+            if e.get('userId') == user_id:
+                my_rank = i + 1
+                my_entry = e
+                break
+
+        return self.respond(200, {
+            'entries': top100,
+            'myRank': my_rank,
+            'myEntry': my_entry,
+            'total': len(entries),
+        })
+
+    def handle_post_leaderboard(self, body):
+        """POST /api/leaderboard - 提交/更新排行榜成绩"""
+        user_id = body.get('userId', '')
+        display_name = body.get('displayName', '').strip()[:20]
+        best_score = body.get('bestScore', 0)
+        best_correct = body.get('bestCorrectCount', 0)
+        highest_tier = body.get('highestTier', 'bronze3')
+
+        if not user_id or len(display_name) < 2:
+            return self.respond(400, {'error': 'userId and displayName (2-20 chars) required'})
+
+        entries = load_leaderboard()
+        now = int(time.time() * 1000)
+
+        # 查找已有记录
+        found = False
+        for e in entries:
+            if e.get('userId') == user_id:
+                # 更新：只在分数更高时更新分数/时间
+                e['displayName'] = display_name
+                e['highestTier'] = highest_tier
+                if best_score > e.get('bestScore', 0):
+                    e['bestScore'] = best_score
+                    e['bestCorrectCount'] = best_correct
+                    e['updatedAt'] = now
+                found = True
+                break
+
+        if not found:
+            entries.append({
+                'id': 'lb_{}'.format(hashlib.md5(user_id.encode()).hexdigest()[:12]),
+                'userId': user_id,
+                'displayName': display_name,
+                'bestScore': best_score,
+                'bestCorrectCount': best_correct,
+                'highestTier': highest_tier,
+                'createdAt': now,
+                'updatedAt': now,
+            })
+
+        save_leaderboard(entries)
+
+        # 计算当前排名
+        entries.sort(key=lambda e: (-e.get('bestScore', 0), e.get('updatedAt', 0)))
+        rank = None
+        for i, e in enumerate(entries):
+            if e.get('userId') == user_id:
+                rank = i + 1
+                break
+
+        return self.respond(200, {'ok': True, 'rank': rank})
 
     # --- Helpers ---
     def get_token(self):

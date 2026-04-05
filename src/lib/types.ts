@@ -64,3 +64,39 @@ export interface AnswerRecord {
   isCorrect: boolean;
   earnedScore: number;
 }
+
+// === 等级系统 ===
+
+export type RankTier =
+  | "bronze3"
+  | "bronze2"
+  | "bronze1"
+  | "silver3"
+  | "silver2"
+  | "silver1"
+  | "gold3"
+  | "gold2"
+  | "gold1"
+  | "king3"
+  | "king2"
+  | "king1";
+
+export interface TierInfo {
+  id: RankTier;
+  label: string;
+  group: "bronze" | "silver" | "gold" | "king";
+  emoji: string;
+  index: number; // 0-11, 用于排序和进度计算
+}
+
+// === 排行榜 ===
+
+export interface LeaderboardEntry {
+  id: string;
+  displayName: string;
+  bestScore: number;
+  bestCorrectCount: number;
+  highestTier: RankTier;
+  createdAt: number;
+  updatedAt: number;
+}

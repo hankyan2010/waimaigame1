@@ -1,10 +1,91 @@
-import { ResultLevel, UpgradeOption } from "./types";
+import { ResultLevel, UpgradeOption, RankTier, TierInfo } from "./types";
 
 export const GAME_CONFIG = {
   questionCount: 10,
   scorePerQuestion: 10,
   totalScore: 100,
+  passScore: 60, // 晋级分数线
 };
+
+// === 12 级等级体系 ===
+
+export const TIER_LIST: TierInfo[] = [
+  { id: "bronze3", label: "青铜3", group: "bronze", emoji: "🥉", index: 0 },
+  { id: "bronze2", label: "青铜2", group: "bronze", emoji: "🥉", index: 1 },
+  { id: "bronze1", label: "青铜1", group: "bronze", emoji: "🥉", index: 2 },
+  { id: "silver3", label: "白银3", group: "silver", emoji: "🥈", index: 3 },
+  { id: "silver2", label: "白银2", group: "silver", emoji: "🥈", index: 4 },
+  { id: "silver1", label: "白银1", group: "silver", emoji: "🥈", index: 5 },
+  { id: "gold3",   label: "黄金3", group: "gold",   emoji: "🥇", index: 6 },
+  { id: "gold2",   label: "黄金2", group: "gold",   emoji: "🥇", index: 7 },
+  { id: "gold1",   label: "黄金1", group: "gold",   emoji: "🥇", index: 8 },
+  { id: "king3",   label: "王者3", group: "king",   emoji: "👑", index: 9 },
+  { id: "king2",   label: "王者2", group: "king",   emoji: "👑", index: 10 },
+  { id: "king1",   label: "王者1", group: "king",   emoji: "👑", index: 11 },
+];
+
+export const TIER_MAP: Record<RankTier, TierInfo> = Object.fromEntries(
+  TIER_LIST.map((t) => [t.id, t])
+) as Record<RankTier, TierInfo>;
+
+export const INITIAL_TIER: RankTier = "bronze3";
+export const MAX_TIER: RankTier = "king1";
+
+/** 根据分数判断是否晋级，返回新等级信息 */
+export function processRoundResult(
+  currentTier: RankTier,
+  score: number
+): {
+  passed: boolean;
+  newTier: RankTier;
+  promoted: boolean;
+  nextRoundUnlocked: boolean;
+} {
+  const passed = score >= GAME_CONFIG.passScore;
+
+  if (!passed) {
+    return {
+      passed: false,
+      newTier: currentTier,
+      promoted: false,
+      nextRoundUnlocked: false, // 需要分享才能解锁
+    };
+  }
+
+  const currentInfo = TIER_MAP[currentTier];
+  const isMax = currentTier === MAX_TIER;
+
+  if (isMax) {
+    return {
+      passed: true,
+      newTier: currentTier,
+      promoted: false,
+      nextRoundUnlocked: true,
+    };
+  }
+
+  const nextTier = TIER_LIST[currentInfo.index + 1];
+  return {
+    passed: true,
+    newTier: nextTier.id,
+    promoted: true,
+    nextRoundUnlocked: true,
+  };
+}
+
+/** 获取等级信息 */
+export function getTierInfo(tier: RankTier): TierInfo {
+  return TIER_MAP[tier];
+}
+
+/** 获取下一等级信息，已满级返回 null */
+export function getNextTier(tier: RankTier): TierInfo | null {
+  const info = TIER_MAP[tier];
+  if (info.index >= TIER_LIST.length - 1) return null;
+  return TIER_LIST[info.index + 1];
+}
+
+// === 老的段位结果（保留兼容，用于结果文案） ===
 
 export const RESULT_LEVELS: ResultLevel[] = [
   {
@@ -42,42 +123,12 @@ export const RESULT_LEVELS: ResultLevel[] = [
 ];
 
 export const UPGRADE_POOL: UpgradeOption[] = [
-  {
-    category: "storefront",
-    title: "升级门头",
-    description: "让顾客一眼看到你",
-    feedbackText: "门头吸引力 +1",
-  },
-  {
-    category: "menu",
-    title: "升级菜单",
-    description: "让进店顾客更想下单",
-    feedbackText: "菜单转化力 +1",
-  },
-  {
-    category: "kitchen",
-    title: "升级后厨",
-    description: "让高峰期也能稳稳出餐",
-    feedbackText: "后厨效率 +1",
-  },
-  {
-    category: "traffic",
-    title: "升级流量",
-    description: "让更多顾客和骑手出现",
-    feedbackText: "流量热度 +1",
-  },
-  {
-    category: "reputation",
-    title: "升级口碑",
-    description: "让评分和信任感一起上涨",
-    feedbackText: "口碑信任 +1",
-  },
-  {
-    category: "member",
-    title: "升级会员",
-    description: "让老客更愿意反复下单",
-    feedbackText: "老客复购 +1",
-  },
+  { category: "storefront", title: "升级门头", description: "让顾客一眼看到你", feedbackText: "门头吸引力 +1" },
+  { category: "menu", title: "升级菜单", description: "让进店顾客更想下单", feedbackText: "菜单转化力 +1" },
+  { category: "kitchen", title: "升级后厨", description: "让高峰期也能稳稳出餐", feedbackText: "后厨效率 +1" },
+  { category: "traffic", title: "升级流量", description: "让更多顾客和骑手出现", feedbackText: "流量热度 +1" },
+  { category: "reputation", title: "升级口碑", description: "让评分和信任感一起上涨", feedbackText: "口碑信任 +1" },
+  { category: "member", title: "升级会员", description: "让老客更愿意反复下单", feedbackText: "老客复购 +1" },
 ];
 
 export const UPGRADE_TIPS: Record<string, string[]> = {
