@@ -35,14 +35,18 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
-      {/* Top section */}
-      <div className="bg-brand pt-12 pb-16 px-6 rounded-b-[2rem] relative overflow-hidden">
+      {/* Yellow top section */}
+      <div className="bg-brand pt-8 pb-14 px-6 rounded-b-[2rem] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full" />
+          <div className="absolute top-20 -left-10 w-24 h-24 bg-white rounded-full" />
         </div>
 
         <div className="relative z-10 text-center">
-          <p className="text-sm font-medium text-title/70 mb-2">挑战完成</p>
+          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-3">
+            <span className="text-xs font-medium text-title">挑战完成</span>
+          </div>
+
           <div className="text-[56px] font-black text-title leading-none mb-1">
             {score}
           </div>
@@ -51,7 +55,7 @@ export default function ResultPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-5 -mt-8 space-y-4">
+      <div className="flex-1 px-4 -mt-6 space-y-3 relative z-10">
         {/* Rank card */}
         <div className="bg-card rounded-2xl p-5 shadow-sm text-center">
           <div
@@ -89,8 +93,11 @@ export default function ResultPage() {
         <StoreView storeState={storeState} />
 
         {/* Commentary */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm">
-          <p className="text-sm font-bold text-title mb-2">经营建议</p>
+        <div className="bg-card rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-base">💡</span>
+            <p className="text-sm font-bold text-title">经营建议</p>
+          </div>
           <p className="text-sm text-secondary leading-relaxed">
             分数只是结果，真正值钱的是你看懂了哪些经营问题。无论段位高低，持续学习才是最好的经营策略。
           </p>
@@ -98,7 +105,7 @@ export default function ResultPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
+      <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         <button
           onClick={() => router.push("/reward")}
           className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"

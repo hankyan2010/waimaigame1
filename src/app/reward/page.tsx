@@ -10,7 +10,7 @@ const BASE = "/waimai-game";
 export default function RewardPage() {
   const router = useRouter();
   const store = useGameStore();
-  const { answers, resultLevel, totalScore, correctCount, reset, storeState, bestScore, bestRank } = store;
+  const { answers, resultLevel, reset, storeState, bestScore, bestRank } = store;
   const level = resultLevel();
 
   const [showPoster, setShowPoster] = useState(false);
@@ -37,17 +37,32 @@ export default function RewardPage() {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
-      {/* Compact top bar */}
-      <div className="bg-brand pt-10 pb-4 px-6 text-center">
-        <h1 className="text-lg font-black text-title">
-          🎁 经营福利已解锁 · {level.title}
-        </h1>
+      {/* Yellow top section */}
+      <div className="bg-brand pt-6 pb-10 px-6 rounded-b-[2rem] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full" />
+          <div className="absolute top-20 -left-10 w-24 h-24 bg-white rounded-full" />
+        </div>
+
+        <div className="relative z-10 text-center">
+          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-2">
+            <span className="text-xs font-medium text-title">
+              经营福利已解锁
+            </span>
+          </div>
+          <h1 className="text-2xl font-black text-title leading-tight">
+            🎁 恭喜 · {level.title}
+          </h1>
+          <p className="text-sm text-title/70 mt-1">
+            你的专属经营福利已备好
+          </p>
+        </div>
       </div>
 
-      {/* Content - tight spacing */}
-      <div className="flex-1 px-4 pt-3 space-y-3">
+      {/* Content */}
+      <div className="flex-1 px-4 -mt-5 space-y-3 relative z-10">
 
-        {/* Row 1: QR code + reward list side by side */}
+        {/* QR code + reward list side by side */}
         <div className="flex gap-3">
           {/* QR code */}
           <div className="bg-card rounded-2xl p-3 shadow-sm text-center shrink-0">
@@ -92,7 +107,10 @@ export default function RewardPage() {
 
         {/* Share poster section */}
         <div className="bg-card rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-sm font-bold text-title mb-1">邀请好友来挑战</p>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className="text-base">📣</span>
+            <p className="text-sm font-bold text-title">邀请好友来挑战</p>
+          </div>
           <p className="text-xs text-secondary mb-3">
             生成海报发朋友圈，看看谁的经营水平更高
           </p>
@@ -106,16 +124,16 @@ export default function RewardPage() {
       </div>
 
       {/* Bottom */}
-      <div className="px-4 pb-5 pt-2">
+      <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         <button
           onClick={handleReplay}
-          className="w-full py-3 bg-card border border-border text-body text-sm font-bold rounded-xl active:scale-[0.98] transition-transform"
+          className="w-full py-4 bg-card border border-border text-body text-base font-bold rounded-2xl active:scale-[0.98] transition-transform"
         >
           再来一次挑战
         </button>
       </div>
 
-      {/* Share poster modal - same as home page */}
+      {/* Share poster modal */}
       {showPoster && (
         <SharePoster
           score={bestScore}
