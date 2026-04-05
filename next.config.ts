@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: "/waimai-game",
+  basePath: "/game",
   trailingSlash: true,
 };
 

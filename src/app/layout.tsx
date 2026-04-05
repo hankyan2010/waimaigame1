@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const SITE_URL = "http://121.36.105.43:18899/waimai-game";
+const SITE_URL = "http://waimaiketang.com/game";
 
 export const metadata: Metadata = {
   title: "外卖老板段位测试，90%的人拿不到黄金",

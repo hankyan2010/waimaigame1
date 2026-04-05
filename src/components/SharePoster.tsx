@@ -165,7 +165,7 @@ export function SharePoster({ score, rank, storeLevel, storeState, onClose, onCo
 
     // QR code
     try {
-      const quizUrl = "http://121.36.105.43:18899/waimai-game/";
+      const quizUrl = "http://waimaiketang.com/game/";
       const qrDataUrl = await QRCode.toDataURL(quizUrl, { width: 160, margin: 1 });
       const qrImg = new Image();
       await new Promise<void>((resolve) => {
@@ -178,7 +178,7 @@ export function SharePoster({ score, rank, storeLevel, storeState, onClose, onCo
       // QR generation failed, show URL text
       ctx.fillStyle = "#666666";
       ctx.font = "14px sans-serif";
-      ctx.fillText("121.36.105.43:18899/waimai-game", w / 2, 1050);
+      ctx.fillText("waimaiketang.com/game", w / 2, 1050);
     }
 
     ctx.fillStyle = "#999999";

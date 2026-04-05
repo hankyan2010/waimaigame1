@@ -6,7 +6,7 @@ import { useGameStore } from "@/lib/store";
 import { SharePoster } from "@/components/SharePoster";
 import { ShareGuide } from "@/components/ShareGuide";
 
-const BASE = "/waimai-game";
+const BASE = "/game";
 
 export default function RewardPage() {
   const router = useRouter();
