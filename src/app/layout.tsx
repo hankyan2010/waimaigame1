@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { WxShareInit } from "@/components/WxShareInit";
 
 const SITE_URL = "http://waimaiketang.com/game";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="zh-CN" className="h-full">
       <body className="min-h-full flex flex-col">
         <main className="flex-1 mx-auto w-full max-w-[430px] relative">
+          <WxShareInit />
           {children}
         </main>
       </body>
