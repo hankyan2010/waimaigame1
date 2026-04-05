@@ -28,7 +28,7 @@
 
 ## 服务器部署目录
 
-游戏静态文件部署在：`/var/www/html/waimai-game/`
+游戏静态文件部署在：`/usr/share/nginx/html/waimai-game/`（nginx alias 配置）
 
 ## 部署步骤
 
@@ -38,9 +38,10 @@ cd /Users/yanhan/.openclaw/workspace/projects/waimai-quiz-game
 npm run build
 ```
 
-2. 上传到服务器：
+2. 清空旧文件并上传：
 ```bash
-sshpass -p 'HankyHh441402@@' scp -r -o StrictHostKeyChecking=no out/* root@121.36.105.43:/var/www/html/waimai-game/
+sshpass -p 'HankyHh441402@@' ssh -o StrictHostKeyChecking=no root@121.36.105.43 "rm -rf /usr/share/nginx/html/waimai-game/*"
+sshpass -p 'HankyHh441402@@' scp -r -o StrictHostKeyChecking=no out/* root@121.36.105.43:/usr/share/nginx/html/waimai-game/
 ```
 
 3. 验证：浏览器访问 http://121.36.105.43:18899/waimai-game/

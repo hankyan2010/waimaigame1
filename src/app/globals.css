@@ -164,3 +164,96 @@ html, body {
 .animate-steam-2 {
   animation: steam-2 2s ease-out infinite 0.5s;
 }
+
+/* Shake animation for wrong answers */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(2px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-out;
+}
+
+/* Confetti celebration effect */
+@keyframes confetti-burst {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+      calc(-50% + cos(var(--angle)) * var(--distance)),
+      calc(-50% + sin(var(--angle)) * var(--distance))
+    ) rotate(720deg) scale(1);
+    opacity: 0;
+  }
+}
+
+.confetti-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.confetti-dot {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 50%;
+  animation: confetti-burst 0.9s ease-out var(--delay) forwards;
+}
+
+.confetti-star {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: confetti-burst 0.9s ease-out var(--delay) forwards;
+}
+
+/* Wrong answer cross */
+@keyframes cross-pop {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-45deg); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes cross-fade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.wrong-cross-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 50;
+  pointer-events: none;
+  animation: cross-fade 1s ease-out forwards;
+}
+
+.wrong-cross {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 900;
+  color: #EF4444;
+  text-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  animation: cross-pop 0.5s ease-out forwards;
+}

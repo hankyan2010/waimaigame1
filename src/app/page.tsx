@@ -8,26 +8,26 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       {/* Top decoration */}
-      <div className="bg-brand pt-12 pb-20 px-6 rounded-b-[2rem] relative overflow-hidden">
+      <div className="bg-brand pt-8 pb-14 px-6 rounded-b-[2rem] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full" />
           <div className="absolute top-20 -left-10 w-24 h-24 bg-white rounded-full" />
         </div>
 
         <div className="relative z-10 text-center">
-          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-3">
             <span className="text-xs font-medium text-title">
               外卖经营知识挑战
             </span>
           </div>
 
-          <h1 className="text-[28px] font-black text-title leading-tight mb-3">
+          <h1 className="text-2xl font-black text-title leading-tight mb-2">
             10题测出你的
             <br />
-            <span className="text-[32px]">经营真本事</span>
+            <span className="text-[28px]">经营真本事</span>
           </h1>
 
-          <p className="text-sm text-title/70 leading-relaxed max-w-[280px] mx-auto">
+          <p className="text-sm text-title/70 leading-snug max-w-[280px] mx-auto">
             别再靠感觉做外卖了
             <br />
             答完 10 题，看看你到底懂多少
@@ -36,9 +36,9 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-6 -mt-10">
+      <div className="flex-1 px-6 -mt-12">
         {/* Reward hook card */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm mb-4">
+        <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-xl">
               🎁
@@ -69,7 +69,7 @@ export default function HomePage() {
         </div>
 
         {/* How it works */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm mb-6">
+        <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
           <p className="text-sm font-bold text-title mb-3">挑战流程</p>
           <div className="flex items-center justify-between">
             {[
@@ -94,7 +94,7 @@ export default function HomePage() {
         </div>
 
         {/* Rank preview */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm mb-6">
+        <div className="bg-card rounded-2xl p-4 shadow-sm mb-4">
           <p className="text-sm font-bold text-title mb-3">段位等你挑战</p>
           <div className="grid grid-cols-2 gap-2">
             {[
