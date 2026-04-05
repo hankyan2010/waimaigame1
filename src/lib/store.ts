@@ -37,6 +37,8 @@ interface GameStore {
   lastPlayDate: string;
   hasSharedToday: boolean;
   totalPlays: number;
+  bestScore: number;
+  bestRank: string;
 
   // Computed
   totalScore: () => number;
@@ -100,6 +102,8 @@ export const useGameStore = create<GameStore>()(
       lastPlayDate: "",
       hasSharedToday: false,
       totalPlays: 0,
+      bestScore: 0,
+      bestRank: "",
 
       totalScore: () => get().answers.reduce((sum, a) => sum + a.earnedScore, 0),
       correctCount: () => get().answers.filter((a) => a.isCorrect).length,
@@ -216,7 +220,14 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         const nextIdx = state.currentIndex + 1;
         if (nextIdx >= state.questions.length) {
-          set({ phase: "result" });
+          // Update best score before transitioning to result
+          const finalScore = state.totalScore();
+          const updates: Partial<GameStore> = { phase: "result" as const };
+          if (finalScore > state.bestScore) {
+            updates.bestScore = finalScore;
+            updates.bestRank = getResultLevel(finalScore).title;
+          }
+          set(updates);
         } else {
           set({
             currentIndex: nextIdx,
@@ -227,7 +238,16 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      goToResult: () => set({ phase: "result" }),
+      goToResult: () => {
+        const state = get();
+        const finalScore = state.totalScore();
+        const updates: Partial<GameStore> = { phase: "result" as const };
+        if (finalScore > state.bestScore) {
+          updates.bestScore = finalScore;
+          updates.bestRank = getResultLevel(finalScore).title;
+        }
+        set(updates);
+      },
       goToReward: () => set({ phase: "reward" }),
 
       markShared: () => {
@@ -254,6 +274,8 @@ export const useGameStore = create<GameStore>()(
         lastPlayDate: state.lastPlayDate,
         hasSharedToday: state.hasSharedToday,
         totalPlays: state.totalPlays,
+        bestScore: state.bestScore,
+        bestRank: state.bestRank,
       }),
     }
   )

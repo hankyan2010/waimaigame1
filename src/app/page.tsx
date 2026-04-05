@@ -64,7 +64,7 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-6 -mt-8">
+      <div className="flex-1 px-6 -mt-5">
         {/* Reward hook card */}
         <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
           <div className="flex items-center gap-3 mb-3">
@@ -214,8 +214,8 @@ export default function HomePage() {
       {/* Share poster modal */}
       {showPoster && (
         <SharePoster
-          score={store.totalScore()}
-          rank={store.resultLevel().title}
+          score={store.bestScore}
+          rank={store.bestRank || "青铜掌柜"}
           storeLevel={storeLevel}
           onClose={() => setShowPoster(false)}
           onConfirmShared={handleShareConfirm}
