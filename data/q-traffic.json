@@ -1,0 +1,702 @@
+[
+  {
+    "id": 201,
+    "title": "美团外卖商家后台中，\"曝光量\"指的是什么？",
+    "options": [
+      {"label": "A", "text": "顾客点击店铺的次数", "isCorrect": false},
+      {"label": "B", "text": "店铺出现在用户列表页面的次数", "isCorrect": true},
+      {"label": "C", "text": "顾客下单的次数", "isCorrect": false},
+      {"label": "D", "text": "顾客收藏店铺的次数", "isCorrect": false}
+    ],
+    "explanation": "曝光量是指店铺在用户浏览的列表页（如首页推荐、搜索结果页等）中被展示的次数，是流量漏斗的第一层。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 202,
+    "title": "外卖平台的\"入店率\"是如何计算的？",
+    "options": [
+      {"label": "A", "text": "下单人数 / 曝光人数", "isCorrect": false},
+      {"label": "B", "text": "进店人数 / 下单人数", "isCorrect": false},
+      {"label": "C", "text": "进店人数 / 曝光人数", "isCorrect": true},
+      {"label": "D", "text": "曝光人数 / 进店人数", "isCorrect": false}
+    ],
+    "explanation": "入店率 = 进店人数 / 曝光人数，反映的是用户看到店铺后愿意点进来的比例，是转化漏斗的第二层。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 203,
+    "title": "以下哪项最直接影响店铺在美团外卖的自然搜索排名？",
+    "options": [
+      {"label": "A", "text": "店铺装修风格", "isCorrect": false},
+      {"label": "B", "text": "近期销量和评分", "isCorrect": true},
+      {"label": "C", "text": "老板的注册时长", "isCorrect": false},
+      {"label": "D", "text": "店铺名称的长度", "isCorrect": false}
+    ],
+    "explanation": "平台自然排名的核心权重因素包括近期销量、店铺评分、转化率等经营数据，而非注册时间或名称长度。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 204,
+    "title": "美团点金推广的计费方式是什么？",
+    "options": [
+      {"label": "A", "text": "按曝光次数收费（CPM）", "isCorrect": false},
+      {"label": "B", "text": "按点击次数收费（CPC）", "isCorrect": true},
+      {"label": "C", "text": "按成交订单收费（CPS）", "isCorrect": false},
+      {"label": "D", "text": "按月固定收费", "isCorrect": false}
+    ],
+    "explanation": "美团点金推广采用CPC（按点击付费）模式，用户点击进入店铺才产生扣费，单纯的曝光展示不收费。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 205,
+    "title": "\"下单转化率\"的计算公式是？",
+    "options": [
+      {"label": "A", "text": "下单人数 / 曝光人数", "isCorrect": false},
+      {"label": "B", "text": "下单人数 / 进店人数", "isCorrect": true},
+      {"label": "C", "text": "进店人数 / 曝光人数", "isCorrect": false},
+      {"label": "D", "text": "复购人数 / 下单人数", "isCorrect": false}
+    ],
+    "explanation": "下单转化率 = 下单人数 / 进店人数，反映用户进入店铺后最终完成下单的比率。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 206,
+    "title": "饿了么竞价推广中，出价越高，排名一定越靠前吗？",
+    "options": [
+      {"label": "A", "text": "是的，出价是唯一因素", "isCorrect": false},
+      {"label": "B", "text": "不一定，还受店铺质量分影响", "isCorrect": true},
+      {"label": "C", "text": "不一定，只取决于销量", "isCorrect": false},
+      {"label": "D", "text": "是的，出价直接决定排名", "isCorrect": false}
+    ],
+    "explanation": "竞价推广的实际排名由\"出价 x 质量分\"综合决定，质量分包含转化率、评分等指标，并非单纯看出价高低。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 207,
+    "title": "以下哪个属于外卖平台的\"自然流量\"来源？",
+    "options": [
+      {"label": "A", "text": "点金推广带来的流量", "isCorrect": false},
+      {"label": "B", "text": "铂金展位带来的流量", "isCorrect": false},
+      {"label": "C", "text": "用户搜索品类后展示的排名流量", "isCorrect": true},
+      {"label": "D", "text": "全站推广带来的流量", "isCorrect": false}
+    ],
+    "explanation": "自然流量是指不需要付费推广、通过平台算法自然分配到的流量，如搜索排名、附近推荐等。点金、铂金、全站推广均为付费流量。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 208,
+    "title": "店铺的\"双转化率\"指的是哪两个指标？",
+    "options": [
+      {"label": "A", "text": "入店率和下单转化率", "isCorrect": true},
+      {"label": "B", "text": "曝光率和入店率", "isCorrect": false},
+      {"label": "C", "text": "下单率和复购率", "isCorrect": false},
+      {"label": "D", "text": "好评率和回复率", "isCorrect": false}
+    ],
+    "explanation": "双转化率指的是入店率（曝光到进店的转化）和下单转化率（进店到下单的转化），是外卖经营的核心指标。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 209,
+    "title": "美团外卖的\"铂金展位\"主要展示在哪个位置？",
+    "options": [
+      {"label": "A", "text": "搜索结果页面", "isCorrect": false},
+      {"label": "B", "text": "首页推荐列表的固定广告位", "isCorrect": true},
+      {"label": "C", "text": "店铺详情页", "isCorrect": false},
+      {"label": "D", "text": "订单完成页", "isCorrect": false}
+    ],
+    "explanation": "铂金展位是美团外卖首页推荐信息流中的固定广告位，按CPM（千次曝光）计费，适合品牌曝光。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 210,
+    "title": "新店上线初期，平台通常会给予什么流量支持？",
+    "options": [
+      {"label": "A", "text": "永久免费推广", "isCorrect": false},
+      {"label": "B", "text": "没有任何额外支持", "isCorrect": false},
+      {"label": "C", "text": "新店流量扶持期，给予额外曝光", "isCorrect": true},
+      {"label": "D", "text": "直接排名第一", "isCorrect": false}
+    ],
+    "explanation": "美团和饿了么都有新店流量扶持机制，新店上线后一段时间内会获得额外曝光，帮助商家冷启动。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 211,
+    "title": "影响外卖店铺入店率最关键的因素是？",
+    "options": [
+      {"label": "A", "text": "菜品数量", "isCorrect": false},
+      {"label": "B", "text": "店铺头图、评分、满减活动等列表页展示信息", "isCorrect": true},
+      {"label": "C", "text": "店铺的营业年限", "isCorrect": false},
+      {"label": "D", "text": "骑手的配送速度", "isCorrect": false}
+    ],
+    "explanation": "入店率主要取决于用户在列表页看到的信息，包括店铺头图、评分、起送价、满减力度、预计配送时间等。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 212,
+    "title": "外卖平台用户最常使用的找店方式是什么？",
+    "options": [
+      {"label": "A", "text": "通过分享链接", "isCorrect": false},
+      {"label": "B", "text": "首页推荐和搜索", "isCorrect": true},
+      {"label": "C", "text": "收藏夹", "isCorrect": false},
+      {"label": "D", "text": "短信通知", "isCorrect": false}
+    ],
+    "explanation": "外卖用户最主要的找店方式是浏览首页推荐流和搜索关键词，这两个入口贡献了绝大部分流量。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 213,
+    "title": "美团外卖中，以下哪个时段通常竞价推广的点击成本最高？",
+    "options": [
+      {"label": "A", "text": "上午10:00-10:30", "isCorrect": false},
+      {"label": "B", "text": "下午14:00-15:00", "isCorrect": false},
+      {"label": "C", "text": "午餐高峰11:00-13:00", "isCorrect": true},
+      {"label": "D", "text": "晚上21:00以后", "isCorrect": false}
+    ],
+    "explanation": "午餐高峰期是外卖订单最集中的时段，商家竞争激烈，竞价推广的点击成本通常最高。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 214,
+    "title": "以下关于点金推广\"智能出价\"的说法正确的是？",
+    "options": [
+      {"label": "A", "text": "智能出价会固定一个价格不变", "isCorrect": false},
+      {"label": "B", "text": "系统根据实时竞争环境自动调整出价以获取最优流量", "isCorrect": true},
+      {"label": "C", "text": "智能出价意味着不花钱", "isCorrect": false},
+      {"label": "D", "text": "智能出价只在夜间生效", "isCorrect": false}
+    ],
+    "explanation": "智能出价是系统根据实时竞争情况、转化概率等因素自动调整出价，帮助商家在预算内获取更好的推广效果。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 215,
+    "title": "外卖店铺权重中，\"出餐速度\"属于哪类影响因素？",
+    "options": [
+      {"label": "A", "text": "与权重无关", "isCorrect": false},
+      {"label": "B", "text": "属于服务质量类因素，影响平台权重", "isCorrect": true},
+      {"label": "C", "text": "只影响骑手评分", "isCorrect": false},
+      {"label": "D", "text": "只影响顾客评价", "isCorrect": false}
+    ],
+    "explanation": "出餐速度是平台考核的服务质量指标之一，直接影响配送时长和用户体验，进而影响店铺权重和排名。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 216,
+    "title": "美团点金推广中，设置\"分时折扣\"的作用是什么？",
+    "options": [
+      {"label": "A", "text": "让顾客在不同时段享受不同菜品折扣", "isCorrect": false},
+      {"label": "B", "text": "在不同时段按比例调整出价，优化推广预算分配", "isCorrect": true},
+      {"label": "C", "text": "自动关闭非营业时段的店铺", "isCorrect": false},
+      {"label": "D", "text": "设定不同时段的配送费", "isCorrect": false}
+    ],
+    "explanation": "分时折扣允许商家在不同时段设置出价系数（如高峰期提高出价、低峰期降低出价），合理分配推广预算。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 217,
+    "title": "一家店铺曝光量很高但入店率很低，最应该优化什么？",
+    "options": [
+      {"label": "A", "text": "增加推广预算", "isCorrect": false},
+      {"label": "B", "text": "店铺头图、满减文案、评分等列表页展示信息", "isCorrect": true},
+      {"label": "C", "text": "增加菜品种类", "isCorrect": false},
+      {"label": "D", "text": "缩短营业时间", "isCorrect": false}
+    ],
+    "explanation": "曝光高但入店率低，说明用户看到了店铺但不愿点进来，问题出在列表页展示信息上，需优化头图、满减力度、评分展示等。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 218,
+    "title": "饿了么的\"超级流量卡\"（推广通）主要作用是什么？",
+    "options": [
+      {"label": "A", "text": "给骑手加速配送", "isCorrect": false},
+      {"label": "B", "text": "提升店铺在搜索和推荐位的排名", "isCorrect": true},
+      {"label": "C", "text": "自动回复顾客消息", "isCorrect": false},
+      {"label": "D", "text": "免除平台佣金", "isCorrect": false}
+    ],
+    "explanation": "饿了么推广通（超级流量卡）是付费推广工具，通过竞价方式提升店铺在搜索结果和推荐列表中的排名位置。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 219,
+    "title": "点金推广中的\"关键词推广\"，以下操作策略最合理的是？",
+    "options": [
+      {"label": "A", "text": "只投放品牌词，不投品类词", "isCorrect": false},
+      {"label": "B", "text": "只投放竞品词", "isCorrect": false},
+      {"label": "C", "text": "根据店铺品类，投放品类词+场景词+品牌词组合", "isCorrect": true},
+      {"label": "D", "text": "投放所有不相关的热门词", "isCorrect": false}
+    ],
+    "explanation": "关键词推广应围绕店铺定位组合投放，品类词获取精准流量，场景词覆盖用户需求，品牌词防守自身品牌，形成完整的关键词矩阵。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 220,
+    "title": "外卖平台的\"千次曝光成本\"（CPM）指的是什么？",
+    "options": [
+      {"label": "A", "text": "每次点击的费用", "isCorrect": false},
+      {"label": "B", "text": "每1000次展示所需的费用", "isCorrect": true},
+      {"label": "C", "text": "每笔订单的推广费用", "isCorrect": false},
+      {"label": "D", "text": "每月的固定推广费用", "isCorrect": false}
+    ],
+    "explanation": "CPM是Cost Per Mille的缩写，即每千次曝光成本，铂金展位等展示类广告通常采用CPM计费模式。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 221,
+    "title": "店铺入店率较高但下单转化率低，最可能的原因是？",
+    "options": [
+      {"label": "A", "text": "店铺头图不吸引人", "isCorrect": false},
+      {"label": "B", "text": "曝光量不够", "isCorrect": false},
+      {"label": "C", "text": "菜品结构、价格或店内活动不够有吸引力", "isCorrect": true},
+      {"label": "D", "text": "店铺名称不好", "isCorrect": false}
+    ],
+    "explanation": "入店率高说明列表页信息有吸引力，但进店后不下单说明店内菜品、价格、活动等不够打动顾客，需优化菜单和营销。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 222,
+    "title": "美团全站推广的计费方式是什么？",
+    "options": [
+      {"label": "A", "text": "按点击收费", "isCorrect": false},
+      {"label": "B", "text": "按曝光收费", "isCorrect": false},
+      {"label": "C", "text": "按成交订单金额的比例收费（CPS）", "isCorrect": true},
+      {"label": "D", "text": "按月固定费用", "isCorrect": false}
+    ],
+    "explanation": "美团全站推广采用CPS模式（按成交付费），只有产生实际订单才收取推广费，费率由商家设定。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 223,
+    "title": "以下哪种做法对提升店铺自然排名权重帮助最大？",
+    "options": [
+      {"label": "A", "text": "频繁修改店铺名称", "isCorrect": false},
+      {"label": "B", "text": "持续提升销量、评分和转化率", "isCorrect": true},
+      {"label": "C", "text": "每天关店再开店", "isCorrect": false},
+      {"label": "D", "text": "把所有菜品降价到1元", "isCorrect": false}
+    ],
+    "explanation": "自然排名权重的核心因素是近期销量、评分和双转化率，持续优化这些经营指标是提升排名的根本方法。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 224,
+    "title": "美团点金推广中，\"质量分\"主要由哪些因素决定？",
+    "options": [
+      {"label": "A", "text": "仅由出价决定", "isCorrect": false},
+      {"label": "B", "text": "店铺评分、转化率、点击率等综合经营指标", "isCorrect": true},
+      {"label": "C", "text": "仅由店铺注册时间决定", "isCorrect": false},
+      {"label": "D", "text": "仅由菜品数量决定", "isCorrect": false}
+    ],
+    "explanation": "质量分由店铺的历史转化率、点击率、评分、经营数据等综合决定，质量分越高，相同出价能获得更好的排名。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 225,
+    "title": "以下关于外卖平台\"搜索流量\"和\"推荐流量\"的说法，正确的是？",
+    "options": [
+      {"label": "A", "text": "搜索流量是用户主动搜索产生的，推荐流量是平台算法推送的", "isCorrect": true},
+      {"label": "B", "text": "两者完全相同，没有区别", "isCorrect": false},
+      {"label": "C", "text": "推荐流量都是付费的", "isCorrect": false},
+      {"label": "D", "text": "搜索流量比推荐流量少得多，可以忽略", "isCorrect": false}
+    ],
+    "explanation": "搜索流量来自用户主动搜索关键词，意向明确；推荐流量是平台根据算法在首页信息流中推送的，两者都是重要的流量来源。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 226,
+    "title": "美团\"新客立减\"活动对店铺流量的作用是？",
+    "options": [
+      {"label": "A", "text": "只降低成本，不影响流量", "isCorrect": false},
+      {"label": "B", "text": "平台会给参加新客立减的店铺额外曝光和标签展示", "isCorrect": true},
+      {"label": "C", "text": "会减少店铺曝光", "isCorrect": false},
+      {"label": "D", "text": "只对老客有效", "isCorrect": false}
+    ],
+    "explanation": "参加新客立减等平台活动，店铺会获得活动标签和额外曝光，提升在新用户面前的展示概率，是获取新客流量的有效方式。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 227,
+    "title": "点金推广的\"ROI\"指的是什么？",
+    "options": [
+      {"label": "A", "text": "投资回报率，即推广带来的收入与推广花费的比值", "isCorrect": true},
+      {"label": "B", "text": "推广曝光的总次数", "isCorrect": false},
+      {"label": "C", "text": "推广期间的总订单量", "isCorrect": false},
+      {"label": "D", "text": "推广点击的单价", "isCorrect": false}
+    ],
+    "explanation": "ROI = 推广带来的收入 / 推广花费，是衡量推广效果的核心指标，ROI越高说明推广效率越好。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 228,
+    "title": "饿了么商家后台中，哪个板块可以查看店铺的流量数据？",
+    "options": [
+      {"label": "A", "text": "财务管理", "isCorrect": false},
+      {"label": "B", "text": "经营分析/数据中心", "isCorrect": true},
+      {"label": "C", "text": "菜品管理", "isCorrect": false},
+      {"label": "D", "text": "骑手管理", "isCorrect": false}
+    ],
+    "explanation": "饿了么商家后台的\"经营分析\"或\"数据中心\"板块提供曝光量、入店率、下单转化率等完整的流量数据。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 229,
+    "title": "以下哪种情况下，建议商家使用全站推广而非点金推广？",
+    "options": [
+      {"label": "A", "text": "推广预算充足，想精准控制每次点击的成本", "isCorrect": false},
+      {"label": "B", "text": "希望只为实际成交付费，降低推广风险", "isCorrect": true},
+      {"label": "C", "text": "只想获取搜索流量", "isCorrect": false},
+      {"label": "D", "text": "不想获得任何曝光", "isCorrect": false}
+    ],
+    "explanation": "全站推广按成交付费（CPS），适合预算有限或希望降低推广风险的商家；点金推广按点击付费（CPC），适合有经验的商家精细化运营。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 230,
+    "title": "店铺\"复购率\"高对流量有什么间接影响？",
+    "options": [
+      {"label": "A", "text": "完全没有影响", "isCorrect": false},
+      {"label": "B", "text": "提升店铺权重，增加自然曝光", "isCorrect": true},
+      {"label": "C", "text": "会降低曝光量", "isCorrect": false},
+      {"label": "D", "text": "只影响骑手分配", "isCorrect": false}
+    ],
+    "explanation": "高复购率说明用户满意度高，平台会将其作为优质商家的信号之一，提升店铺权重和自然曝光排名。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 231,
+    "title": "美团外卖\"超级会员\"标签的店铺，在流量上有什么优势？",
+    "options": [
+      {"label": "A", "text": "没有任何流量优势", "isCorrect": false},
+      {"label": "B", "text": "不在平台上展示", "isCorrect": false},
+      {"label": "C", "text": "会在会员用户的推荐列表中优先展示", "isCorrect": true},
+      {"label": "D", "text": "只能被非会员用户看到", "isCorrect": false}
+    ],
+    "explanation": "加入超级会员体系的店铺会在会员专属入口和筛选条件中优先展示，获得会员用户的定向流量。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 232,
+    "title": "推广中\"曝光点击率\"（CTR）的计算公式是？",
+    "options": [
+      {"label": "A", "text": "曝光量 / 点击量", "isCorrect": false},
+      {"label": "B", "text": "点击量 / 曝光量", "isCorrect": true},
+      {"label": "C", "text": "订单量 / 点击量", "isCorrect": false},
+      {"label": "D", "text": "点击量 / 订单量", "isCorrect": false}
+    ],
+    "explanation": "CTR（Click Through Rate）= 点击量 / 曝光量，反映广告被看到后被点击的比例。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 233,
+    "title": "点金推广设置\"每日预算\"的主要目的是？",
+    "options": [
+      {"label": "A", "text": "限制每天的最大消耗金额，控制成本", "isCorrect": true},
+      {"label": "B", "text": "设定每天的最低消费门槛", "isCorrect": false},
+      {"label": "C", "text": "决定推广的质量分", "isCorrect": false},
+      {"label": "D", "text": "设定每笔订单的最高利润", "isCorrect": false}
+    ],
+    "explanation": "每日预算是商家设定的当日推广最大花费上限，预算用完后推广自动暂停，帮助商家控制推广成本。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 234,
+    "title": "以下哪个因素不会直接影响店铺在美团外卖的搜索排名？",
+    "options": [
+      {"label": "A", "text": "近期订单量", "isCorrect": false},
+      {"label": "B", "text": "顾客评分", "isCorrect": false},
+      {"label": "C", "text": "老板的个人征信", "isCorrect": true},
+      {"label": "D", "text": "配送时长", "isCorrect": false}
+    ],
+    "explanation": "搜索排名受订单量、评分、转化率、配送时长等经营指标影响，与老板个人征信无直接关系。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 235,
+    "title": "\"付费流量\"和\"自然流量\"应该如何配合使用？",
+    "options": [
+      {"label": "A", "text": "只用付费流量，不需要关注自然流量", "isCorrect": false},
+      {"label": "B", "text": "只做自然流量，付费推广没有用", "isCorrect": false},
+      {"label": "C", "text": "用付费流量撬动销量和权重，逐步提升自然流量占比", "isCorrect": true},
+      {"label": "D", "text": "两者互相矛盾，不能同时使用", "isCorrect": false}
+    ],
+    "explanation": "合理的策略是通过付费推广获取初始流量和销量，积累权重后自然流量会随之提升，最终实现付费和自然流量的良性循环。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 236,
+    "title": "点金推广中，\"宽匹配\"和\"精确匹配\"的区别是什么？",
+    "options": [
+      {"label": "A", "text": "没有区别", "isCorrect": false},
+      {"label": "B", "text": "宽匹配覆盖相关扩展词，精确匹配只匹配设定关键词", "isCorrect": true},
+      {"label": "C", "text": "宽匹配更贵，精确匹配更便宜", "isCorrect": false},
+      {"label": "D", "text": "精确匹配覆盖更多词", "isCorrect": false}
+    ],
+    "explanation": "宽匹配会将关键词扩展到相关词和近义词，获取更多流量；精确匹配只匹配用户搜索的精确关键词，流量更精准但量更小。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 237,
+    "title": "一家店铺点金推广的点击量很高，但ROI很低，最可能的原因是？",
+    "options": [
+      {"label": "A", "text": "推广预算设置太低", "isCorrect": false},
+      {"label": "B", "text": "点击进店后的下单转化率低，需优化菜品和活动", "isCorrect": true},
+      {"label": "C", "text": "关键词选择太精准", "isCorrect": false},
+      {"label": "D", "text": "推广时间太短", "isCorrect": false}
+    ],
+    "explanation": "点击量高但ROI低，说明花了推广费引来了用户但不下单，根本原因是店内转化率低，需要优化菜品结构、定价和促销活动。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 238,
+    "title": "美团外卖平台的排名算法会参考\"时间衰减\"因素，这意味着什么？",
+    "options": [
+      {"label": "A", "text": "越老的店铺排名越靠前", "isCorrect": false},
+      {"label": "B", "text": "营业时间越长排名越高", "isCorrect": false},
+      {"label": "C", "text": "近期数据权重高于历史数据，需持续保持良好经营", "isCorrect": true},
+      {"label": "D", "text": "每天固定时间更新排名", "isCorrect": false}
+    ],
+    "explanation": "时间衰减意味着近期的销量、评分等数据对排名的影响更大，过去的数据权重逐渐降低，因此商家需要持续经营好每一天。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  },
+  {
+    "id": 239,
+    "title": "饿了么\"定向推广\"中的\"新客定向\"功能适合什么场景？",
+    "options": [
+      {"label": "A", "text": "只想维护老客户", "isCorrect": false},
+      {"label": "B", "text": "希望吸引从未在本店消费过的新用户", "isCorrect": true},
+      {"label": "C", "text": "只想减少推广费用", "isCorrect": false},
+      {"label": "D", "text": "希望提高配送速度", "isCorrect": false}
+    ],
+    "explanation": "新客定向功能可以将推广重点投放给未在本店消费过的用户，适合新店拉新或需要扩大客群的商家。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 240,
+    "title": "以下关于\"老客定向\"推广的说法，错误的是？",
+    "options": [
+      {"label": "A", "text": "可以对曾经下单的老顾客定向投放推广", "isCorrect": false},
+      {"label": "B", "text": "老客定向有助于提高复购率", "isCorrect": false},
+      {"label": "C", "text": "老客定向的转化率通常高于新客定向", "isCorrect": false},
+      {"label": "D", "text": "老客定向只能在夜宵时段使用", "isCorrect": true}
+    ],
+    "explanation": "老客定向可以在全时段使用，并非仅限夜宵。其优势在于对已有认知的老顾客投放，转化率通常更高。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 241,
+    "title": "外卖平台\"权重\"的本质含义是什么？",
+    "options": [
+      {"label": "A", "text": "店铺的注册资本", "isCorrect": false},
+      {"label": "B", "text": "平台算法对店铺综合表现的评估分值，影响流量分配", "isCorrect": true},
+      {"label": "C", "text": "店铺货架上的商品重量", "isCorrect": false},
+      {"label": "D", "text": "商家缴纳的保证金金额", "isCorrect": false}
+    ],
+    "explanation": "权重是平台根据商家的销量、评分、转化率、服务质量等多维度数据计算出的综合评估分值，决定了自然流量的分配。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 242,
+    "title": "以下哪种行为会导致外卖平台降权处罚？",
+    "options": [
+      {"label": "A", "text": "提升菜品口味", "isCorrect": false},
+      {"label": "B", "text": "正常回复顾客评价", "isCorrect": false},
+      {"label": "C", "text": "刷单、虚假交易", "isCorrect": true},
+      {"label": "D", "text": "参加平台营销活动", "isCorrect": false}
+    ],
+    "explanation": "刷单和虚假交易是严重违规行为，一旦被平台检测到将面临降权、限流、罚款甚至关店处罚。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 243,
+    "title": "美团全站推广中，商家设定的\"推广费率\"是什么意思？",
+    "options": [
+      {"label": "A", "text": "每次点击的费用", "isCorrect": false},
+      {"label": "B", "text": "每成交一笔订单，按订单金额的一定比例支付推广费", "isCorrect": true},
+      {"label": "C", "text": "每天固定支付的费用", "isCorrect": false},
+      {"label": "D", "text": "一次性注册费", "isCorrect": false}
+    ],
+    "explanation": "全站推广的推广费率是商家设定的成交扣点比例，例如设定5%，则每笔推广订单按订单金额的5%收取推广费。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 244,
+    "title": "当一个品类竞争激烈（如奶茶），以下哪种推广策略最有效？",
+    "options": [
+      {"label": "A", "text": "盲目提高出价，不管ROI", "isCorrect": false},
+      {"label": "B", "text": "完全放弃推广", "isCorrect": false},
+      {"label": "C", "text": "先优化店铺转化率，再配合精准投放提高质量分", "isCorrect": true},
+      {"label": "D", "text": "把所有菜品都改名为热门关键词", "isCorrect": false}
+    ],
+    "explanation": "在竞争激烈的品类中，先提升店铺转化率（优化菜品、评分、活动），提高质量分后再配合推广，才能以合理成本获取流量。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  },
+  {
+    "id": 245,
+    "title": "外卖平台的\"流量漏斗\"从上到下的正确顺序是？",
+    "options": [
+      {"label": "A", "text": "下单 → 进店 → 曝光 → 复购", "isCorrect": false},
+      {"label": "B", "text": "曝光 → 进店 → 下单 → 复购", "isCorrect": true},
+      {"label": "C", "text": "进店 → 曝光 → 复购 → 下单", "isCorrect": false},
+      {"label": "D", "text": "复购 → 下单 → 进店 → 曝光", "isCorrect": false}
+    ],
+    "explanation": "流量漏斗的标准路径是：曝光（被用户看到）→ 进店（用户点击进入）→ 下单（完成购买）→ 复购（再次消费），每一层都有转化流失。",
+    "category": "traffic",
+    "difficulty": "easy",
+    "score": 10
+  },
+  {
+    "id": 246,
+    "title": "以下关于铂金展位和点金推广的对比，正确的是？",
+    "options": [
+      {"label": "A", "text": "铂金按CPM计费偏品牌曝光，点金按CPC计费偏效果转化", "isCorrect": true},
+      {"label": "B", "text": "两者计费方式完全一样", "isCorrect": false},
+      {"label": "C", "text": "铂金展位按成交付费", "isCorrect": false},
+      {"label": "D", "text": "点金推广只能在首页投放", "isCorrect": false}
+    ],
+    "explanation": "铂金展位按千次曝光收费（CPM），在首页固定位置展示，适合品牌曝光；点金按点击收费（CPC），在搜索和推荐位展示，更注重效果转化。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  },
+  {
+    "id": 247,
+    "title": "商家在美团外卖做推广时，\"推广ROAS\"达到多少通常被认为是可以盈利的？",
+    "options": [
+      {"label": "A", "text": "ROAS低于1就能盈利", "isCorrect": false},
+      {"label": "B", "text": "ROAS需要根据毛利率判断，通常需大于毛利率的倒数", "isCorrect": true},
+      {"label": "C", "text": "ROAS固定必须大于10", "isCorrect": false},
+      {"label": "D", "text": "ROAS不影响盈利", "isCorrect": false}
+    ],
+    "explanation": "ROAS（广告支出回报率）是否盈利取决于毛利率。例如毛利率50%，则ROAS需大于2（1/50%）才能覆盖推广成本。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  },
+  {
+    "id": 248,
+    "title": "以下哪种操作可以提升店铺在\"附近推荐\"中的排名？",
+    "options": [
+      {"label": "A", "text": "把店铺地址改到偏远地区", "isCorrect": false},
+      {"label": "B", "text": "缩短配送范围", "isCorrect": false},
+      {"label": "C", "text": "提高单量、好评率和准时配送率", "isCorrect": true},
+      {"label": "D", "text": "关闭所有优惠活动", "isCorrect": false}
+    ],
+    "explanation": "附近推荐的排名受距离、销量、评分、准时率等综合因素影响，提升经营指标是提高排名的核心手段。",
+    "category": "traffic",
+    "difficulty": "medium",
+    "score": 10
+  },
+  {
+    "id": 249,
+    "title": "全站推广相比点金推广，最大的优势是什么？",
+    "options": [
+      {"label": "A", "text": "流量覆盖更全面，覆盖搜索+推荐+多场景", "isCorrect": true},
+      {"label": "B", "text": "完全免费", "isCorrect": false},
+      {"label": "C", "text": "只投放到搜索结果", "isCorrect": false},
+      {"label": "D", "text": "不需要设置任何参数", "isCorrect": false}
+    ],
+    "explanation": "全站推广可以覆盖搜索、推荐、频道等多个场景的流量位置，实现全场景投放，且按成交付费风险更低。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  },
+  {
+    "id": 250,
+    "title": "以下关于外卖平台\"竞价排名\"机制的描述，最准确的是？",
+    "options": [
+      {"label": "A", "text": "出价最高的永远排第一", "isCorrect": false},
+      {"label": "B", "text": "排名 = 出价 x 质量分，综合得分越高排名越靠前", "isCorrect": true},
+      {"label": "C", "text": "按商家注册顺序排列", "isCorrect": false},
+      {"label": "D", "text": "完全随机排列", "isCorrect": false}
+    ],
+    "explanation": "竞价排名采用\"出价 x 质量分\"的机制，质量分高的商家即使出价略低也能获得好位置，鼓励商家提升经营质量。",
+    "category": "traffic",
+    "difficulty": "hard",
+    "score": 10
+  }
+]
