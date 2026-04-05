@@ -31,7 +31,7 @@ export default function RewardPage() {
   };
 
   const handleShareConfirm = () => {
-    store.markShared();
+    store.markSharedForNextRound();
     setShowPoster(false);
   };
 

@@ -4,19 +4,27 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { SharePoster } from "@/components/SharePoster";
+import { ShareGuide } from "@/components/ShareGuide";
+import { LevelProgress } from "@/components/LevelProgress";
+import { track } from "@/lib/track";
+import { getTierInfo, INITIAL_TIER } from "@/lib/config";
 
 export default function HomePage() {
   const router = useRouter();
   const store = useGameStore();
   const [showPoster, setShowPoster] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
+    track("page_view");
   }, []);
 
   const canPlay = hydrated ? store.canPlay() : true;
-  const remaining = hydrated ? store.remainingPlays() : 1;
+  const currentTier = hydrated ? store.currentTier : INITIAL_TIER;
+  const tierInfo = getTierInfo(currentTier);
+  const totalRounds = hydrated ? store.totalRoundsPlayed : 0;
   const storeLevel = hydrated
     ? Object.values(store.storeState).reduce((a, b) => a + b, 0)
     : 0;
@@ -28,8 +36,10 @@ export default function HomePage() {
   };
 
   const handleShareConfirm = () => {
-    store.markShared();
+    store.markSharedForNextRound();
     setShowPoster(false);
+    setShowGuide(true);
+    track("share_confirm");
   };
 
   return (
@@ -63,9 +73,31 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-6 -mt-5">
+      <div className="flex-1 px-4 -mt-5 space-y-3 relative z-10">
+        {/* Current tier card - show after first play */}
+        {hydrated && totalRounds > 0 && (
+          <div className="bg-card rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-xl">
+                {tierInfo.emoji}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-title">我的段位 · {tierInfo.label}</p>
+                <p className="text-xs text-secondary">已挑战 {totalRounds} 轮</p>
+              </div>
+              <button
+                onClick={() => router.push("/leaderboard")}
+                className="text-xs text-brand-dark font-bold px-3 py-1.5 bg-brand/10 rounded-full"
+              >
+                🏆 排行榜
+              </button>
+            </div>
+            <LevelProgress currentTier={currentTier} compact />
+          </div>
+        )}
+
         {/* Reward hook card */}
-        <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
+        <div className="bg-card rounded-2xl p-4 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-xl">
               🎁
@@ -96,13 +128,13 @@ export default function HomePage() {
         </div>
 
         {/* How it works */}
-        <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
+        <div className="bg-card rounded-2xl p-4 shadow-sm">
           <p className="text-sm font-bold text-title mb-3">挑战流程</p>
           <div className="flex items-center justify-between">
             {[
               { step: "1", label: "随机10题" },
               { step: "2", label: "答题升级" },
-              { step: "3", label: "段位评定" },
+              { step: "3", label: "段位晋级" },
               { step: "4", label: "领取福利" },
             ].map((item, idx) => (
               <div key={item.step} className="flex items-center">
@@ -120,15 +152,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Rank preview */}
-        <div className="bg-card rounded-2xl p-4 shadow-sm mb-4">
-          <p className="text-sm font-bold text-title mb-3">段位等你挑战</p>
+        {/* 12-tier rank preview */}
+        <div className="bg-card rounded-2xl p-4 shadow-sm">
+          <p className="text-sm font-bold text-title mb-3">12 级段位等你挑战</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { title: "青铜掌柜", range: "0-39分", color: "#CD7F32" },
-              { title: "白银店长", range: "40-59分", color: "#C0C0C0" },
-              { title: "黄金操盘手", range: "60-79分", color: "#FFD700" },
-              { title: "王者掌门", range: "80-100分", color: "#FF4500" },
+              { title: "青铜掌柜", range: "3级", color: "#CD7F32", tiers: "青铜3→2→1" },
+              { title: "白银店长", range: "3级", color: "#C0C0C0", tiers: "白银3→2→1" },
+              { title: "黄金操盘手", range: "3级", color: "#FFD700", tiers: "黄金3→2→1" },
+              { title: "王者掌门", range: "3级", color: "#FF4500", tiers: "王者3→2→1" },
             ].map((rank) => (
               <div
                 key={rank.title}
@@ -140,7 +172,7 @@ export default function HomePage() {
                 />
                 <div>
                   <p className="text-xs font-bold text-title">{rank.title}</p>
-                  <p className="text-[10px] text-secondary">{rank.range}</p>
+                  <p className="text-[10px] text-secondary">{rank.tiers}</p>
                 </div>
               </div>
             ))}
@@ -149,7 +181,7 @@ export default function HomePage() {
 
         {/* Store progress hint */}
         {hydrated && storeLevel > 0 && (
-          <div className="bg-card rounded-2xl p-4 shadow-sm mb-4">
+          <div className="bg-card rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-xl">
                 🏪
@@ -170,35 +202,22 @@ export default function HomePage() {
       {/* Fixed bottom CTA */}
       <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         {canPlay ? (
-          <>
-            <button
-              onClick={handleStart}
-              className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
-            >
-              立即开答
-            </button>
-            <p className="text-center text-xs text-secondary mt-2">
-              {hydrated && remaining === 1
-                ? "今日剩余 1 次机会"
-                : "满分100分，你能拿几分？"}
-            </p>
-          </>
+          <button
+            onClick={handleStart}
+            className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
+          >
+            {hydrated && totalRounds === 0 ? "开始首轮挑战" : "继续挑战下一轮"}
+          </button>
         ) : (
-          <>
-            <button
-              onClick={() => setShowPoster(true)}
-              className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
-            >
-              分享海报，再答一次
-            </button>
-            <p className="text-center text-xs text-secondary mt-2">
-              分享到朋友圈可获得额外1次答题机会
-            </p>
-          </>
+          <button
+            onClick={() => setShowPoster(true)}
+            className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
+          >
+            分享解锁下一轮
+          </button>
         )}
       </div>
 
-      {/* Share poster modal */}
       {showPoster && (
         <SharePoster
           score={store.bestScore}
@@ -209,6 +228,8 @@ export default function HomePage() {
           onConfirmShared={handleShareConfirm}
         />
       )}
+
+      {showGuide && <ShareGuide onClose={() => setShowGuide(false)} />}
     </div>
   );
 }
