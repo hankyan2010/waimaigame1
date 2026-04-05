@@ -86,20 +86,20 @@ export function QuestionCard({ question, onSubmit }: QuestionCardProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5 relative">
-      <div className="bg-card rounded-2xl p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-title leading-7">
+    <div className="flex flex-col gap-3 relative">
+      <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <h2 className="text-base font-semibold text-title leading-6">
           {question.title}
         </h2>
       </div>
 
-      <div className="flex flex-col gap-3 relative">
+      <div className="flex flex-col gap-2 relative">
         {showCorrectEffect && <CarnivalEffect />}
         {showWrongEffect && <WrongEffect />}
 
         {question.options.map((opt) => {
           let borderClass = "border-border";
-          let bgClass = "bg-card";
+          let bgClass = "bg-white";
           let textClass = "text-body";
           let extraClass = "";
 

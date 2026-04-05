@@ -40,45 +40,24 @@ export default function PlayPage() {
   const currentScore = store.answers.reduce((s, a) => s + a.earnedScore, 0);
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col">
-      {/* Yellow header area */}
-      <div className="bg-brand pt-5 pb-6 px-5 rounded-b-[2rem] relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full" />
-          <div className="absolute top-16 -left-8 w-20 h-20 bg-white rounded-full" />
-        </div>
-
-        <div className="relative z-10">
-          {/* Progress */}
-          <ProgressBar current={store.currentIndex} total={store.questions.length} />
-
-          {/* Score summary */}
-          <div className="flex items-center justify-center gap-4 mt-3 text-sm text-title/70">
-            <span>
-              答对{" "}
-              <span className="font-bold text-title">
-                {correctCount}
-              </span>{" "}
-              题
-            </span>
-            <span className="w-px h-3 bg-title/20" />
-            <span>
-              得分{" "}
-              <span className="font-bold text-title">
-                {currentScore}
-              </span>
-            </span>
-          </div>
+    <div className="min-h-screen bg-brand flex flex-col px-4 pt-3 pb-3">
+      {/* Progress + score */}
+      <div className="mb-2">
+        <ProgressBar current={store.currentIndex} total={store.questions.length} />
+        <div className="flex items-center justify-center gap-4 mt-1.5 text-xs text-title/70">
+          <span>答对 <span className="font-bold text-title">{correctCount}</span> 题</span>
+          <span className="w-px h-2.5 bg-title/20" />
+          <span>得分 <span className="font-bold text-title">{currentScore}</span></span>
         </div>
       </div>
 
-      {/* Store view */}
-      <div className="px-4 -mt-4 relative z-10">
+      {/* Store view - compact */}
+      <div className="mb-2">
         <StoreView storeState={store.storeState} compact />
       </div>
 
       {/* Question */}
-      <div className="flex-1 px-4 py-3">
+      <div className="flex-1 min-h-0">
         <QuestionCard
           key={question.id}
           question={question}
@@ -86,7 +65,7 @@ export default function PlayPage() {
         />
       </div>
 
-      {/* Upgrade modal (correct answer) */}
+      {/* Modals */}
       {(store.phase === "upgrade" || store.phase === "upgrade-feedback") && (
         <UpgradeModal
           choices={store.upgradeChoices}
@@ -100,7 +79,6 @@ export default function PlayPage() {
         />
       )}
 
-      {/* Wrong answer modal */}
       {store.phase === "answered-wrong" && store.lastAnsweredQuestion && (
         <WrongAnswer
           question={store.lastAnsweredQuestion}
