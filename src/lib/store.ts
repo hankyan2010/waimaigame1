@@ -35,7 +35,7 @@ interface GameStore {
   // Persistence fields
   dailyPlays: number;
   lastPlayDate: string;
-  hasSharedToday: boolean;
+  todayShareCount: number;
   totalPlays: number;
   bestScore: number;
   bestRank: string;
@@ -100,7 +100,7 @@ export const useGameStore = create<GameStore>()(
       // Persistence fields
       dailyPlays: 0,
       lastPlayDate: "",
-      hasSharedToday: false,
+      todayShareCount: 0,
       totalPlays: 0,
       bestScore: 0,
       bestRank: "",
@@ -114,7 +114,8 @@ export const useGameStore = create<GameStore>()(
         return total === 0 ? 0 : ((get().currentIndex) / total) * 100;
       },
 
-      maxDailyPlays: () => get().hasSharedToday ? 2 : 1,
+      // 1 free play + 1 per share, no cap
+      maxDailyPlays: () => 1 + get().todayShareCount,
       canPlay: () => {
         const state = get();
         const today = getToday();
@@ -124,8 +125,9 @@ export const useGameStore = create<GameStore>()(
       remainingPlays: () => {
         const state = get();
         const today = getToday();
-        if (state.lastPlayDate !== today) return state.hasSharedToday ? 2 : 1;
-        return Math.max(0, state.maxDailyPlays() - state.dailyPlays);
+        const shares = state.lastPlayDate !== today ? 0 : state.todayShareCount;
+        const plays = state.lastPlayDate !== today ? 0 : state.dailyPlays;
+        return Math.max(0, 1 + shares - plays);
       },
 
       startGame: (allQuestions) => {
@@ -135,8 +137,8 @@ export const useGameStore = create<GameStore>()(
         // Reset daily counters if new day
         const isNewDay = state.lastPlayDate !== today;
         const currentDailyPlays = isNewDay ? 0 : state.dailyPlays;
-        const currentShared = isNewDay ? false : state.hasSharedToday;
-        const maxPlays = currentShared ? 2 : 1;
+        const currentShareCount = isNewDay ? 0 : state.todayShareCount;
+        const maxPlays = 1 + currentShareCount;
 
         if (currentDailyPlays >= maxPlays) return;
 
@@ -156,7 +158,7 @@ export const useGameStore = create<GameStore>()(
           lastFeedbackText: "",
           dailyPlays: currentDailyPlays + 1,
           lastPlayDate: today,
-          hasSharedToday: currentShared,
+          todayShareCount: currentShareCount,
           totalPlays: state.totalPlays + 1,
         });
       },
@@ -220,7 +222,6 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         const nextIdx = state.currentIndex + 1;
         if (nextIdx >= state.questions.length) {
-          // Update best score before transitioning to result
           const finalScore = state.totalScore();
           const updates: Partial<GameStore> = { phase: "result" as const };
           if (finalScore > state.bestScore) {
@@ -251,7 +252,13 @@ export const useGameStore = create<GameStore>()(
       goToReward: () => set({ phase: "reward" }),
 
       markShared: () => {
-        set({ hasSharedToday: true });
+        const state = get();
+        const today = getToday();
+        const isNewDay = state.lastPlayDate !== today;
+        set({
+          todayShareCount: (isNewDay ? 0 : state.todayShareCount) + 1,
+          lastPlayDate: today,
+        });
       },
 
       reset: () =>
@@ -263,7 +270,6 @@ export const useGameStore = create<GameStore>()(
           upgradeChoices: [],
           lastAnswerCorrect: null,
           lastFeedbackText: "",
-          // Note: storeState, dailyPlays, lastPlayDate, hasSharedToday, totalPlays are NOT reset
         }),
     }),
     {
@@ -272,7 +278,7 @@ export const useGameStore = create<GameStore>()(
         storeState: state.storeState,
         dailyPlays: state.dailyPlays,
         lastPlayDate: state.lastPlayDate,
-        hasSharedToday: state.hasSharedToday,
+        todayShareCount: state.todayShareCount,
         totalPlays: state.totalPlays,
         bestScore: state.bestScore,
         bestRank: state.bestRank,

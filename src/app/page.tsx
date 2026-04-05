@@ -17,7 +17,6 @@ export default function HomePage() {
 
   const canPlay = hydrated ? store.canPlay() : true;
   const remaining = hydrated ? store.remainingPlays() : 1;
-  const hasShared = hydrated ? store.hasSharedToday : false;
   const storeLevel = hydrated
     ? Object.values(store.storeState).reduce((a, b) => a + b, 0)
     : 0;
@@ -179,12 +178,12 @@ export default function HomePage() {
               立即开答
             </button>
             <p className="text-center text-xs text-secondary mt-2">
-              {hydrated && remaining < 2
-                ? `今日剩余 ${remaining} 次机会`
+              {hydrated && remaining === 1
+                ? "今日剩余 1 次机会"
                 : "满分100分，你能拿几分？"}
             </p>
           </>
-        ) : !hasShared ? (
+        ) : (
           <>
             <button
               onClick={() => setShowPoster(true)}
@@ -193,19 +192,7 @@ export default function HomePage() {
               分享海报，再答一次
             </button>
             <p className="text-center text-xs text-secondary mt-2">
-              分享到朋友圈可获得额外1次机会
-            </p>
-          </>
-        ) : (
-          <>
-            <button
-              disabled
-              className="w-full py-4 bg-border text-secondary text-base font-bold rounded-2xl cursor-not-allowed"
-            >
-              明天再来挑战
-            </button>
-            <p className="text-center text-xs text-secondary mt-2">
-              今日答题次数已用完，明天再来
+              分享到朋友圈可获得额外1次答题机会
             </p>
           </>
         )}
@@ -217,6 +204,7 @@ export default function HomePage() {
           score={store.bestScore}
           rank={store.bestRank || "青铜掌柜"}
           storeLevel={storeLevel}
+          storeState={store.storeState}
           onClose={() => setShowPoster(false)}
           onConfirmShared={handleShareConfirm}
         />
