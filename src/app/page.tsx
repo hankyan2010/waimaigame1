@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { SharePoster } from "@/components/SharePoster";
+import { ShareGuide } from "@/components/ShareGuide";
 
 export default function HomePage() {
   const router = useRouter();
   const store = useGameStore();
   const [showPoster, setShowPoster] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export default function HomePage() {
   const handleShareConfirm = () => {
     store.markShared();
     setShowPoster(false);
+    setShowGuide(true);
   };
 
   return (
@@ -162,6 +165,8 @@ export default function HomePage() {
           onConfirmShared={handleShareConfirm}
         />
       )}
+
+      {showGuide && <ShareGuide onClose={() => setShowGuide(false)} />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { SharePoster } from "@/components/SharePoster";
+import { ShareGuide } from "@/components/ShareGuide";
 
 const BASE = "/waimai-game";
 
@@ -14,6 +15,7 @@ export default function RewardPage() {
   const level = resultLevel();
 
   const [showPoster, setShowPoster] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const storeLevel = Object.values(storeState).reduce((a, b) => a + b, 0);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export default function RewardPage() {
   const handleShareConfirm = () => {
     store.markShared();
     setShowPoster(false);
+    setShowGuide(true);
   };
 
   return (
@@ -115,6 +118,8 @@ export default function RewardPage() {
           onConfirmShared={handleShareConfirm}
         />
       )}
+
+      {showGuide && <ShareGuide onClose={() => setShowGuide(false)} />}
     </div>
   );
 }
