@@ -1,0 +1,66 @@
+export interface QuestionOption {
+  label: string;
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface Question {
+  id: number;
+  title: string;
+  options: QuestionOption[];
+  explanation: string;
+  category: QuestionCategory;
+  difficulty: "easy" | "medium" | "hard";
+  score: number;
+}
+
+export type QuestionCategory =
+  | "traffic"
+  | "conversion"
+  | "ticket"
+  | "retention"
+  | "campaign"
+  | "menu"
+  | "reputation"
+  | "kitchen"
+  | "location"
+  | "strategy";
+
+export interface ResultLevel {
+  title: string;
+  minScore: number;
+  maxScore: number;
+  description: string;
+  emoji: string;
+}
+
+export type UpgradeCategory =
+  | "storefront"
+  | "menu"
+  | "kitchen"
+  | "traffic"
+  | "reputation"
+  | "member";
+
+export interface UpgradeOption {
+  category: UpgradeCategory;
+  title: string;
+  description: string;
+  feedbackText: string;
+}
+
+export interface StoreState {
+  storefront: number;
+  menu: number;
+  kitchen: number;
+  traffic: number;
+  reputation: number;
+  member: number;
+}
+
+export interface AnswerRecord {
+  questionId: number;
+  selectedLabel: string;
+  isCorrect: boolean;
+  earnedScore: number;
+}

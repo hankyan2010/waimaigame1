@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+:root {
+  --color-brand: #FFD100;
+  --color-brand-dark: #E6BC00;
+  --color-title: #111111;
+  --color-body: #333333;
+  --color-secondary: #666666;
+  --color-border: #EAEAEA;
+  --color-bg: #F7F7F7;
+  --color-card: #FFFFFF;
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+}
+
+@theme inline {
+  --color-brand: var(--color-brand);
+  --color-brand-dark: var(--color-brand-dark);
+  --color-title: var(--color-title);
+  --color-body: var(--color-body);
+  --color-secondary: var(--color-secondary);
+  --color-border: var(--color-border);
+  --color-bg: var(--color-bg);
+  --color-card: var(--color-card);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-body);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent overscroll bounce on mobile */
+html, body {
+  overscroll-behavior: none;
+}
+
+/* Custom scrollbar - minimal */
+::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+/* Animations */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.35s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s ease-out;
+}
+
+/* Store animation keyframes */
+@keyframes fade-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fade-in-delay {
+  0% { opacity: 0; transform: translateY(5px); }
+  50% { opacity: 0; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ride-in {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ride-in-delay {
+  0% { opacity: 0; transform: translateX(40px); }
+  40% { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes float-delay {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes steam-1 {
+  0% { opacity: 0.6; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-8px) scale(1.5); }
+}
+
+@keyframes steam-2 {
+  0% { opacity: 0.4; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-10px) scale(1.8); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+.animate-fade-in-delay {
+  animation: fade-in-delay 0.8s ease-out both;
+}
+
+.animate-ride-in {
+  animation: ride-in 0.7s ease-out both;
+}
+
+.animate-ride-in-delay {
+  animation: ride-in-delay 1s ease-out both;
+}
+
+.animate-float {
+  animation: float 2.5s ease-in-out infinite;
+}
+
+.animate-float-delay {
+  animation: float-delay 3s ease-in-out infinite;
+}
+
+.animate-steam-1 {
+  animation: steam-1 1.5s ease-out infinite;
+}
+
+.animate-steam-2 {
+  animation: steam-2 2s ease-out infinite 0.5s;
+}
