@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { SharePoster } from "@/components/SharePoster";
 import { ShareGuide } from "@/components/ShareGuide";
+import { track } from "@/lib/track";
 
 export default function HomePage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function HomePage() {
 
   useEffect(() => {
     setHydrated(true);
+    track("page_view");
   }, []);
 
   const canPlay = hydrated ? store.canPlay() : true;
@@ -33,6 +35,7 @@ export default function HomePage() {
     store.markShared();
     setShowPoster(false);
     setShowGuide(true);
+    track("share_confirm");
   };
 
   return (

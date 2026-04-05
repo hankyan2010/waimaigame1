@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { StoreView } from "@/components/upgrade/StoreView";
+import { track } from "@/lib/track";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function ResultPage() {
   useEffect(() => {
     if (phase === "home" && answers.length === 0) {
       router.push("/");
+    } else if (answers.length > 0) {
+      track("complete_game", { score, correct, rank: level.title });
     }
   }, [phase, answers, router]);
 

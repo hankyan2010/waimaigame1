@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { StoreState } from "@/lib/types";
 import { StoreView } from "@/components/upgrade/StoreView";
 import QRCode from "qrcode";
+import { track } from "@/lib/track";
 
 interface SharePosterProps {
   score: number;
@@ -29,6 +30,7 @@ export function SharePoster({ score, rank, storeLevel, storeState, onClose, onCo
   const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
+    track("share_poster");
     // Wait a frame for SVG to render
     const timer = setTimeout(() => renderPoster(), 100);
     return () => clearTimeout(timer);

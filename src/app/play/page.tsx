@@ -9,6 +9,7 @@ import { QuestionCard } from "@/components/quiz/QuestionCard";
 import { WrongAnswer } from "@/components/quiz/WrongAnswer";
 import { UpgradeModal } from "@/components/upgrade/UpgradeModal";
 import { StoreView } from "@/components/upgrade/StoreView";
+import { track } from "@/lib/track";
 
 export default function PlayPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function PlayPage() {
     if (store.phase === "home" || store.questions.length === 0) {
       store.startGame(questions);
     }
+    track("start_game");
   }, []);
 
   useEffect(() => {
