@@ -8,47 +8,60 @@ interface QuestionCardProps {
   onSubmit: (label: string) => void;
 }
 
-function ConfettiEffect() {
-  const particles = Array.from({ length: 24 }, (_, i) => {
-    const angle = (i / 24) * 360;
-    const distance = 60 + Math.random() * 40;
-    const size = 4 + Math.random() * 6;
-    const colors = ["#FFD100", "#FF9500", "#FFB800", "#16A34A", "#FF6B6B", "#A855F7"];
+function CarnivalEffect() {
+  const colors = ["#FFD100", "#FF9500", "#FFB800", "#16A34A", "#FF6B6B", "#A855F7", "#3B82F6", "#F59E0B"];
+  const particles = Array.from({ length: 44 }, (_, i) => {
+    const angle = (i / 44) * 360 + Math.random() * 8;
+    const distance = 50 + Math.random() * 60;
+    const size = 4 + Math.random() * 8;
     const color = colors[i % colors.length];
-    const shape = i % 3 === 0 ? "star" : "circle";
-    const delay = Math.random() * 0.2;
+    const delay = Math.random() * 0.25;
+    const spin = 360 + Math.random() * 720;
+    const shapeRoll = i % 5;
+    const shape = shapeRoll < 2 ? "star" : shapeRoll < 4 ? "dot" : "ribbon";
 
     return (
       <span
         key={i}
-        className={shape === "star" ? "confetti-star" : "confetti-dot"}
+        className={`confetti-${shape === "star" ? "star" : shape === "dot" ? "dot" : "ribbon"}`}
         style={{
           "--angle": `${angle}deg`,
           "--distance": `${distance}px`,
           "--size": `${size}px`,
           "--color": color,
           "--delay": `${delay}s`,
+          "--spin": `${spin}deg`,
         } as React.CSSProperties}
       />
     );
   });
 
-  return <div className="confetti-container">{particles}</div>;
+  return (
+    <div className="confetti-container">
+      {particles}
+      <span className="confetti-ring" />
+      <span className="confetti-ring-2" />
+      <span className="confetti-emoji">🎉</span>
+    </div>
+  );
 }
 
-function WrongCross() {
+function WrongEffect() {
   return (
-    <div className="wrong-cross-container">
-      <span className="wrong-cross">✕</span>
-    </div>
+    <>
+      <div className="wrong-cross-container">
+        <span className="wrong-cross">✕</span>
+      </div>
+      <div className="wrong-vignette" />
+    </>
   );
 }
 
 export function QuestionCard({ question, onSubmit }: QuestionCardProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [locked, setLocked] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [showCross, setShowCross] = useState(false);
+  const [showCorrectEffect, setShowCorrectEffect] = useState(false);
+  const [showWrongEffect, setShowWrongEffect] = useState(false);
 
   const handleSelect = (label: string) => {
     if (locked) return;
@@ -58,18 +71,18 @@ export function QuestionCard({ question, onSubmit }: QuestionCardProps) {
     const isCorrect = question.options.find((o) => o.label === label)?.isCorrect;
 
     if (isCorrect) {
-      setShowConfetti(true);
+      setShowCorrectEffect(true);
     } else {
-      setShowCross(true);
+      setShowWrongEffect(true);
     }
 
     setTimeout(() => {
       onSubmit(label);
       setSelected(null);
       setLocked(false);
-      setShowConfetti(false);
-      setShowCross(false);
-    }, 1000);
+      setShowCorrectEffect(false);
+      setShowWrongEffect(false);
+    }, 1200);
   };
 
   return (
@@ -81,8 +94,8 @@ export function QuestionCard({ question, onSubmit }: QuestionCardProps) {
       </div>
 
       <div className="flex flex-col gap-3 relative">
-        {showConfetti && <ConfettiEffect />}
-        {showCross && <WrongCross />}
+        {showCorrectEffect && <CarnivalEffect />}
+        {showWrongEffect && <WrongEffect />}
 
         {question.options.map((opt) => {
           let borderClass = "border-border";
@@ -95,11 +108,12 @@ export function QuestionCard({ question, onSubmit }: QuestionCardProps) {
               borderClass = "border-success";
               bgClass = "bg-success/5";
               textClass = "text-success";
+              extraClass = "animate-glow-pulse";
             } else {
               borderClass = "border-error";
               bgClass = "bg-error/5";
               textClass = "text-error";
-              extraClass = "animate-shake";
+              extraClass = "animate-shake animate-red-flash";
             }
           } else if (locked && opt.isCorrect) {
             borderClass = "border-success";

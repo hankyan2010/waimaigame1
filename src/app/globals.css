@@ -165,37 +165,83 @@ html, body {
   animation: steam-2 2s ease-out infinite 0.5s;
 }
 
-/* Shake animation for wrong answers */
+/* Shake animation for wrong answers - stronger */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-6px); }
-  30% { transform: translateX(6px); }
-  45% { transform: translateX(-5px); }
-  60% { transform: translateX(5px); }
-  75% { transform: translateX(-2px); }
-  90% { transform: translateX(2px); }
+  10% { transform: translateX(-8px); }
+  20% { transform: translateX(8px); }
+  30% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  50% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  70% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  90% { transform: translateX(-2px); }
 }
 
 .animate-shake {
-  animation: shake 0.5s ease-out;
+  animation: shake 0.6s ease-out;
 }
 
-/* Confetti celebration effect */
+/* === CORRECT ANSWER: Carnival Celebration === */
+
+/* Layer 1: Confetti burst - particles fly outward */
 @keyframes confetti-burst {
   0% {
     transform: translate(-50%, -50%) rotate(0deg) scale(0);
     opacity: 1;
   }
-  50% {
+  40% {
     opacity: 1;
   }
   100% {
     transform: translate(
       calc(-50% + cos(var(--angle)) * var(--distance)),
       calc(-50% + sin(var(--angle)) * var(--distance))
-    ) rotate(720deg) scale(1);
+    ) rotate(var(--spin)) scale(1);
     opacity: 0;
   }
+}
+
+/* Layer 2: Golden ring pulse */
+@keyframes ring-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.8;
+    border-width: 4px;
+  }
+  60% {
+    opacity: 0.4;
+    border-width: 2px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+/* Layer 3: Center emoji bounce */
+@keyframes emoji-celebrate {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-30deg); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1.4) rotate(10deg); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(0.9) rotate(-5deg); }
+  70% { transform: translate(-50%, -50%) scale(1.15) rotate(3deg); }
+  85% { transform: translate(-50%, -50%) scale(0.95) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes emoji-fadeout {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* Correct option golden glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 209, 0, 0); }
+  25% { box-shadow: 0 0 16px 4px rgba(255, 209, 0, 0.5); }
+  50% { box-shadow: 0 0 8px 2px rgba(255, 209, 0, 0.3); }
+  75% { box-shadow: 0 0 20px 6px rgba(255, 209, 0, 0.4); }
 }
 
 .confetti-container {
@@ -214,7 +260,7 @@ html, body {
   height: var(--size);
   background: var(--color);
   border-radius: 50%;
-  animation: confetti-burst 0.9s ease-out var(--delay) forwards;
+  animation: confetti-burst 1.1s ease-out var(--delay) forwards;
 }
 
 .confetti-star {
@@ -223,19 +269,84 @@ html, body {
   height: var(--size);
   background: var(--color);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  animation: confetti-burst 0.9s ease-out var(--delay) forwards;
+  animation: confetti-burst 1.1s ease-out var(--delay) forwards;
 }
 
-/* Wrong answer cross */
+.confetti-ribbon {
+  position: absolute;
+  width: calc(var(--size) * 0.4);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 2px;
+  animation: confetti-burst 1.1s ease-out var(--delay) forwards;
+}
+
+.confetti-ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 3px solid #FFD100;
+  border-radius: 50%;
+  animation: ring-pulse 0.8s ease-out forwards;
+}
+
+.confetti-ring-2 {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #FF9500;
+  border-radius: 50%;
+  animation: ring-pulse 0.8s ease-out 0.15s forwards;
+}
+
+.confetti-emoji {
+  position: absolute;
+  font-size: 40px;
+  z-index: 51;
+  animation: emoji-celebrate 0.6s ease-out forwards, emoji-fadeout 1.2s ease-out forwards;
+  filter: drop-shadow(0 0 12px rgba(255, 209, 0, 0.6));
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 1s ease-in-out;
+}
+
+/* === WRONG ANSWER: Error Effects === */
+
+/* Cross with pulse */
 @keyframes cross-pop {
   0% { transform: translate(-50%, -50%) scale(0) rotate(-45deg); opacity: 0; }
-  50% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; }
-  70% { transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
+  30% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); opacity: 1; }
+  45% { transform: translate(-50%, -50%) scale(0.85) rotate(-3deg); }
+  60% { transform: translate(-50%, -50%) scale(1.15) rotate(2deg); }
+  75% { transform: translate(-50%, -50%) scale(0.95) rotate(0deg); }
   100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes cross-pulse-glow {
+  0%, 100% { text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+  50% { text-shadow: 0 0 24px rgba(239, 68, 68, 0.8), 0 0 48px rgba(239, 68, 68, 0.3); }
 }
 
 @keyframes cross-fade {
   0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Red flash on wrong option */
+@keyframes red-flash {
+  0% { background-color: transparent; }
+  15% { background-color: rgba(239, 68, 68, 0.15); }
+  30% { background-color: transparent; }
+  45% { background-color: rgba(239, 68, 68, 0.1); }
+  60% { background-color: transparent; }
+}
+
+/* Red vignette overlay */
+@keyframes vignette-flash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  50% { opacity: 0.6; }
   100% { opacity: 0; }
 }
 
@@ -245,15 +356,27 @@ html, body {
   left: 50%;
   z-index: 50;
   pointer-events: none;
-  animation: cross-fade 1s ease-out forwards;
+  animation: cross-fade 1.2s ease-out forwards;
 }
 
 .wrong-cross {
   position: absolute;
   transform: translate(-50%, -50%);
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 900;
   color: #EF4444;
-  text-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
-  animation: cross-pop 0.5s ease-out forwards;
+  animation: cross-pop 0.6s ease-out forwards, cross-pulse-glow 0.4s ease-in-out 0.6s 2;
+}
+
+.wrong-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px 20px rgba(239, 68, 68, 0.3);
+  animation: vignette-flash 0.8s ease-out forwards;
+}
+
+.animate-red-flash {
+  animation: red-flash 0.6s ease-out;
 }

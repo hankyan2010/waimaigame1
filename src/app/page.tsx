@@ -1,27 +1,55 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useGameStore } from "@/lib/store";
+import { SharePoster } from "@/components/SharePoster";
 
 export default function HomePage() {
   const router = useRouter();
+  const store = useGameStore();
+  const [showPoster, setShowPoster] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const canPlay = hydrated ? store.canPlay() : true;
+  const remaining = hydrated ? store.remainingPlays() : 1;
+  const hasShared = hydrated ? store.hasSharedToday : false;
+  const storeLevel = hydrated
+    ? Object.values(store.storeState).reduce((a, b) => a + b, 0)
+    : 0;
+
+  const handleStart = () => {
+    if (canPlay) {
+      router.push("/play");
+    }
+  };
+
+  const handleShareConfirm = () => {
+    store.markShared();
+    setShowPoster(false);
+  };
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       {/* Top decoration */}
-      <div className="bg-brand pt-8 pb-14 px-6 rounded-b-[2rem] relative overflow-hidden">
+      <div className="bg-brand pt-5 pb-8 px-6 rounded-b-[2rem] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full" />
           <div className="absolute top-20 -left-10 w-24 h-24 bg-white rounded-full" />
         </div>
 
         <div className="relative z-10 text-center">
-          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-3">
+          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1 rounded-full mb-2">
             <span className="text-xs font-medium text-title">
               外卖经营知识挑战
             </span>
           </div>
 
-          <h1 className="text-2xl font-black text-title leading-tight mb-2">
+          <h1 className="text-2xl font-black text-title leading-tight mb-1">
             10题测出你的
             <br />
             <span className="text-[28px]">经营真本事</span>
@@ -36,7 +64,7 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-6 -mt-12">
+      <div className="flex-1 px-6 -mt-8">
         {/* Reward hook card */}
         <div className="bg-card rounded-2xl p-4 shadow-sm mb-3">
           <div className="flex items-center gap-3 mb-3">
@@ -119,20 +147,80 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
+        {/* Store progress hint */}
+        {hydrated && storeLevel > 0 && (
+          <div className="bg-card rounded-2xl p-4 shadow-sm mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-xl">
+                🏪
+              </div>
+              <div>
+                <p className="text-sm font-bold text-title">
+                  我的店铺 Lv.{storeLevel}
+                </p>
+                <p className="text-xs text-secondary">
+                  继续答题升级你的店铺
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Fixed bottom CTA */}
       <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
-        <button
-          onClick={() => router.push("/play")}
-          className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
-        >
-          立即开答
-        </button>
-        <p className="text-center text-xs text-secondary mt-2">
-          满分100分，你能拿几分？
-        </p>
+        {canPlay ? (
+          <>
+            <button
+              onClick={handleStart}
+              className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
+            >
+              立即开答
+            </button>
+            <p className="text-center text-xs text-secondary mt-2">
+              {hydrated && remaining < 2
+                ? `今日剩余 ${remaining} 次机会`
+                : "满分100分，你能拿几分？"}
+            </p>
+          </>
+        ) : !hasShared ? (
+          <>
+            <button
+              onClick={() => setShowPoster(true)}
+              className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
+            >
+              分享海报，再答一次
+            </button>
+            <p className="text-center text-xs text-secondary mt-2">
+              分享到朋友圈可获得额外1次机会
+            </p>
+          </>
+        ) : (
+          <>
+            <button
+              disabled
+              className="w-full py-4 bg-border text-secondary text-base font-bold rounded-2xl cursor-not-allowed"
+            >
+              明天再来挑战
+            </button>
+            <p className="text-center text-xs text-secondary mt-2">
+              今日答题次数已用完，明天再来
+            </p>
+          </>
+        )}
       </div>
+
+      {/* Share poster modal */}
+      {showPoster && (
+        <SharePoster
+          score={store.totalScore()}
+          rank={store.resultLevel().title}
+          storeLevel={storeLevel}
+          onClose={() => setShowPoster(false)}
+          onConfirmShared={handleShareConfirm}
+        />
+      )}
     </div>
   );
 }
