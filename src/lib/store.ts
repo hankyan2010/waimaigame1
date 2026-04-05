@@ -39,6 +39,7 @@ interface GameStore {
   totalPlays: number;
   bestScore: number;
   bestRank: string;
+  answeredQuestionIds: number[];
 
   // Computed
   totalScore: () => number;
@@ -72,9 +73,16 @@ const initialStoreState: StoreState = {
 
 function pickRandomQuestions(
   all: Question[],
-  count: number
+  count: number,
+  excludeIds: number[]
 ): Question[] {
-  const shuffled = [...all].sort(() => Math.random() - 0.5);
+  const excludeSet = new Set(excludeIds);
+  let pool = all.filter((q) => !excludeSet.has(q.id));
+  // If not enough unanswered questions, reset and use all
+  if (pool.length < count) {
+    pool = [...all];
+  }
+  const shuffled = pool.sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
 
@@ -104,6 +112,7 @@ export const useGameStore = create<GameStore>()(
       totalPlays: 0,
       bestScore: 0,
       bestRank: "",
+      answeredQuestionIds: [],
 
       totalScore: () => get().answers.reduce((sum, a) => sum + a.earnedScore, 0),
       correctCount: () => get().answers.filter((a) => a.isCorrect).length,
@@ -144,7 +153,8 @@ export const useGameStore = create<GameStore>()(
 
         const selected = pickRandomQuestions(
           allQuestions,
-          GAME_CONFIG.questionCount
+          GAME_CONFIG.questionCount,
+          isNewDay ? [] : state.answeredQuestionIds
         );
 
         // Keep storeState across games (persistent progression)
@@ -223,7 +233,11 @@ export const useGameStore = create<GameStore>()(
         const nextIdx = state.currentIndex + 1;
         if (nextIdx >= state.questions.length) {
           const finalScore = state.totalScore();
-          const updates: Partial<GameStore> = { phase: "result" as const };
+          const newAnsweredIds = [...state.answeredQuestionIds, ...state.questions.map((q) => q.id)];
+          const updates: Partial<GameStore> = {
+            phase: "result" as const,
+            answeredQuestionIds: newAnsweredIds,
+          };
           if (finalScore > state.bestScore) {
             updates.bestScore = finalScore;
             updates.bestRank = getResultLevel(finalScore).title;
@@ -242,7 +256,11 @@ export const useGameStore = create<GameStore>()(
       goToResult: () => {
         const state = get();
         const finalScore = state.totalScore();
-        const updates: Partial<GameStore> = { phase: "result" as const };
+        const newAnsweredIds = [...state.answeredQuestionIds, ...state.questions.map((q) => q.id)];
+        const updates: Partial<GameStore> = {
+          phase: "result" as const,
+          answeredQuestionIds: newAnsweredIds,
+        };
         if (finalScore > state.bestScore) {
           updates.bestScore = finalScore;
           updates.bestRank = getResultLevel(finalScore).title;
@@ -282,6 +300,7 @@ export const useGameStore = create<GameStore>()(
         totalPlays: state.totalPlays,
         bestScore: state.bestScore,
         bestRank: state.bestRank,
+        answeredQuestionIds: state.answeredQuestionIds,
       }),
     }
   )

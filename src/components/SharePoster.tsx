@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { StoreState } from "@/lib/types";
 import { StoreView } from "@/components/upgrade/StoreView";
+import QRCode from "qrcode";
 
 interface SharePosterProps {
   score: number;
@@ -41,7 +42,7 @@ export function SharePoster({ score, rank, storeLevel, storeState, onClose, onCo
     if (!ctx) return;
 
     const w = 640;
-    const h = 1100;
+    const h = 1200;
     canvas.width = w;
     canvas.height = h;
 
@@ -151,23 +152,38 @@ export function SharePoster({ score, rank, storeLevel, storeState, onClose, onCo
     // Ability bars below store view
     drawAbilityBars(ctx, w, 730, storeState);
 
-    // Bottom area
-    ctx.fillStyle = "rgba(0,0,0,0.12)";
-    roundRect(ctx, 40, 920, w - 80, 150, 24);
+    // Bottom area with QR code
+    ctx.fillStyle = "#FFFFFF";
+    roundRect(ctx, 40, 910, w - 80, 260, 24);
     ctx.fill();
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 18px sans-serif";
+    // Challenge text
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 20px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("长按保存图片，分享到朋友圈", w / 2, 970);
+    ctx.fillText("你能超过我吗？扫码来挑战！", w / 2, 950);
 
-    ctx.font = "14px sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.fillText("分享后可获得额外一次答题机会", w / 2, 1000);
+    // QR code
+    try {
+      const quizUrl = "http://121.36.105.43:18899/waimai-game/";
+      const qrDataUrl = await QRCode.toDataURL(quizUrl, { width: 160, margin: 1 });
+      const qrImg = new Image();
+      await new Promise<void>((resolve) => {
+        qrImg.onload = () => resolve();
+        qrImg.onerror = () => resolve();
+        qrImg.src = qrDataUrl;
+      });
+      ctx.drawImage(qrImg, (w - 140) / 2, 970, 140, 140);
+    } catch {
+      // QR generation failed, show URL text
+      ctx.fillStyle = "#666666";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("121.36.105.43:18899/waimai-game", w / 2, 1050);
+    }
 
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "12px sans-serif";
-    ctx.fillText("你能超过我吗？来试试！", w / 2, 1040);
+    ctx.fillStyle = "#999999";
+    ctx.font = "13px sans-serif";
+    ctx.fillText("长按识别二维码开始挑战", w / 2, 1140);
 
     setImageUrl(canvas.toDataURL("image/png"));
   }
