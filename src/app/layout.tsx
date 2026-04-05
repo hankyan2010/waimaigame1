@@ -1,9 +1,34 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+const SITE_URL = "http://121.36.105.43:18899/waimai-game";
+
 export const metadata: Metadata = {
-  title: "外卖经营知识答题挑战",
-  description: "随机10题，测测你是青铜掌柜还是外卖王者",
+  title: "外卖老板段位测试，90%的人拿不到黄金",
+  description: "随机10题，测测你到底是青铜掌柜还是王者掌门",
+  openGraph: {
+    title: "外卖老板段位测试，90%的人拿不到黄金",
+    description: "随机10题，测测你到底是青铜掌柜还是王者掌门。完成挑战免费领经营诊断+实战攻略+专属方案！",
+    url: `${SITE_URL}/`,
+    siteName: "外卖经营知识挑战",
+    images: [
+      {
+        url: `${SITE_URL}/share-cover.png`,
+        width: 600,
+        height: 600,
+        alt: "答题领经营大礼包",
+      },
+    ],
+    type: "website",
+    locale: "zh_CN",
+  },
+  other: {
+    // WeChat specific meta tags
+    "twitter:card": "summary",
+    "twitter:title": "外卖老板段位测试，90%的人拿不到黄金",
+    "twitter:description": "随机10题，测测你到底是青铜掌柜还是王者掌门",
+    "twitter:image": `${SITE_URL}/share-cover.png`,
+  },
 };
 
 export const viewport: Viewport = {

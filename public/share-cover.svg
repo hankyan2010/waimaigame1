@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#FFD100"/>
+  <rect x="40" y="40" width="520" height="520" rx="32" fill="white"/>
+  <text x="300" y="115" text-anchor="middle" font-size="36" font-weight="bold" fill="#111111" font-family="sans-serif">答题领经营大礼包</text>
+  <line x1="80" y1="145" x2="520" y2="145" stroke="#EAEAEA" stroke-width="2"/>
+
+  <circle cx="130" cy="210" r="28" fill="#FFF8E1"/>
+  <text x="130" y="220" text-anchor="middle" font-size="26">📊</text>
+  <text x="180" y="220" font-size="26" font-weight="bold" fill="#333333" font-family="sans-serif">经营诊断报告</text>
+
+  <circle cx="130" cy="295" r="28" fill="#FFF8E1"/>
+  <text x="130" y="305" text-anchor="middle" font-size="26">📖</text>
+  <text x="180" y="305" font-size="26" font-weight="bold" fill="#333333" font-family="sans-serif">实战攻略手册</text>
+
+  <circle cx="130" cy="380" r="28" fill="#FFF8E1"/>
+  <text x="130" y="390" text-anchor="middle" font-size="26">🎯</text>
+  <text x="180" y="390" font-size="26" font-weight="bold" fill="#333333" font-family="sans-serif">专属运营方案</text>
+
+  <rect x="100" y="450" width="400" height="60" rx="30" fill="#FFD100"/>
+  <text x="300" y="488" text-anchor="middle" font-size="26" font-weight="bold" fill="#111111" font-family="sans-serif">限时免费领取 →</text>
+</svg>
