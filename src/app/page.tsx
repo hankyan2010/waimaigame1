@@ -232,7 +232,7 @@ export default function HomePage() {
       {showGuide && <ShareGuide onClose={() => setShowGuide(false)} />}
 
       {/* Version */}
-      <p className="text-center text-[10px] text-secondary/40 pb-1">v2.0.0-level</p>
+      <p className="text-center text-[10px] text-secondary/40 pb-1">v2.0.1</p>
     </div>
   );
 }
