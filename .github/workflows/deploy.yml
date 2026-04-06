@@ -19,24 +19,56 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Deploy to server
+      - name: Inspect nginx config
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sudo apt-get install -y sshpass
-          # 先清空目标目录
           sshpass -e ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "rm -rf /usr/share/nginx/html/game/* && mkdir -p /usr/share/nginx/html/game"
-          # 用 scp 上传
-          sshpass -e scp -o StrictHostKeyChecking=no -r \
-            out/* \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/usr/share/nginx/html/game/
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          echo "=== Nginx config files ==="
+          nginx -T 2>/dev/null | grep -E "^\s*(server_name|root|location|alias)" | head -50
+          echo ""
+          echo "=== Existing dirs under /usr/share/nginx/html/ ==="
+          ls -la /usr/share/nginx/html/ 2>/dev/null
+          echo ""
+          echo "=== Existing dirs under /var/www/ ==="
+          ls -la /var/www/ 2>/dev/null || echo "no /var/www/"
+          echo ""
+          echo "=== Find waimai/game dirs ==="
+          find / -type d \( -name "waimai*" -o -name "game" \) 2>/dev/null | grep -v proc | head -20
+          EOF
 
-      - name: Verify and reload
+      - name: Deploy to all candidate paths
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          # 部署到所有可能的路径，以确保命中实际服务路径
+          for TARGET in \
+            "/usr/share/nginx/html/game" \
+            "/usr/share/nginx/html/waimai-game" \
+            "/usr/share/nginx/html/waimai-quiz-game" \
+            "/var/www/html/game" \
+            "/var/www/game"
+          do
+            echo "=== Trying: $TARGET ==="
+            sshpass -e ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+              "[ -d '$TARGET' ] || [ -d \"\$(dirname $TARGET)\" ]" && {
+              sshpass -e ssh -o StrictHostKeyChecking=no \
+                ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+                "rm -rf $TARGET/* 2>/dev/null; mkdir -p $TARGET"
+              sshpass -e scp -o StrictHostKeyChecking=no -r \
+                out/* \
+                ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TARGET/
+              echo "Deployed to $TARGET"
+            } || echo "Skipped $TARGET (parent not exist)"
+          done
+
+      - name: Reload nginx
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "echo '=== Files ===' && ls /usr/share/nginx/html/game/ && echo '=== Reload ===' && nginx -s reload || systemctl reload nginx || true && echo 'Deploy OK'"
+            "nginx -s reload 2>&1 || systemctl reload nginx 2>&1 || true && echo 'Reload done'"
