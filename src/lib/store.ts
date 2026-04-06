@@ -3,382 +3,398 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
-  Question,
-  AnswerRecord,
-  StoreState,
-  UpgradeCategory,
-  RankTier,
+  GameState,
+  SimQuestion,
+  ChoiceRecord,
+  DaySummary,
+  EndingType,
+  PlayerTag,
+  RandomEvent,
+  OptionEffect,
 } from "./types";
 import {
   GAME_CONFIG,
-  getResultLevel,
-  getRandomUpgradeChoices,
-  getRandomTip,
-  processRoundResult,
-  INITIAL_TIER,
+  INITIAL_STATE,
+  DAILY_COST,
+  applyEffect,
+  calcDailyRevenue,
+  QUESTION_BANK,
+  RANDOM_EVENTS,
+  determineEnding,
+  determinePlayerTag,
+  generateDailyComment,
 } from "./config";
 
 export type GamePhase =
   | "home"
-  | "playing"
-  | "upgrade"
-  | "upgrade-feedback"
-  | "answered-wrong"
-  | "result"
-  | "reward";
+  | "day-intro"     // 每日背景展示
+  | "playing"       // 答题中
+  | "day-settle"    // 每日结算
+  | "result"        // 最终结局
+  | "reward";       // 引流页
 
 interface GameStore {
   phase: GamePhase;
-  questions: Question[];
-  currentIndex: number;
-  answers: AnswerRecord[];
-  storeState: StoreState;
-  upgradeChoices: ReturnType<typeof getRandomUpgradeChoices>;
-  lastAnswerCorrect: boolean | null;
-  lastFeedbackText: string;
-  lastUpgradeTip: string;
-  lastAnsweredQuestion: Question | null;
-  lastSelectedLabel: string;
 
-  // === 等级系统 ===
-  currentTier: RankTier;
-  highestTier: RankTier;
-  lastRoundPassed: boolean;
-  lastRoundPromoted: boolean;
-  lastRoundPreviousTier: RankTier;
-  nextRoundUnlocked: boolean;
-  totalRoundsPlayed: number;
-  totalPassRounds: number;
+  // 当前局状态
+  state: GameState;
+  dayQuestions: SimQuestion[];    // 本日要答的题
+  dayQuestionIndex: number;       // 本日答到第几题
+  dayEvent: RandomEvent | null;   // 本日触发的事件
+  choices: ChoiceRecord[];        // 所有选择记录
 
-  // === 排行榜 ===
+  // 本日累计
+  dayCashBefore: number;          // 本日开始时的现金
+  dayChoiceImpact: number;        // 本日题目带来的现金变化累计
+  dayExposureStart: number;
+
+  // 每日历史
+  dailySummaries: DaySummary[];
+
+  // 结局
+  endingType: EndingType | null;
+  playerTag: PlayerTag | null;
+
+  // 持久化字段
+  totalPlays: number;
+  bestFinalCash: number;
+  bestDaysSurvived: number;
+
+  // 裂变：每日次数+分享解锁
+  freePlaysPerDay: number;
+  playsToday: number;
+  lastPlayDate: string;
+  sharedPlaysToday: number;
+  maxSharedPlays: number;
+
+  // 展示名（排行榜兼容）
   displayName: string;
   hasSubmittedDisplayName: boolean;
-  displayNameEditCount: number;
-
-  // === 持久化 ===
-  totalPlays: number;
-  bestScore: number;
-  bestCorrectCount: number;
-  bestRank: string;
-  answeredQuestionIds: number[];
 
   // Computed
-  totalScore: () => number;
-  correctCount: () => number;
-  currentQuestion: () => Question | null;
-  resultLevel: () => ReturnType<typeof getResultLevel>;
-  progress: () => number;
+  currentQuestion: () => SimQuestion | null;
   canPlay: () => boolean;
+  remainingFreePlays: () => number;
+  todaysRevenue: () => number;
+  dayProgress: () => number;
 
   // Actions
-  startGame: (allQuestions: Question[]) => void;
-  submitAnswer: (label: string) => void;
-  selectUpgrade: (category: UpgradeCategory) => void;
+  startNewGame: () => void;
+  startDay: () => void;
+  submitChoice: (optionIndex: number) => void;
   nextQuestion: () => void;
-  goToResult: () => void;
-  goToReward: () => void;
-  markSharedForNextRound: () => void;
+  applyDailySettlement: () => void;
+  nextDay: () => void;
+  markSharedForExtraPlay: () => void;
   setDisplayName: (name: string) => void;
+  goToReward: () => void;
   reset: () => void;
 }
 
-const initialStoreState: StoreState = {
-  storefront: 0,
-  menu: 0,
-  kitchen: 0,
-  traffic: 0,
-  reputation: 0,
-  member: 0,
-};
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
 
-function pickRandomQuestions(
-  all: Question[],
-  count: number,
-  excludeIds: number[]
-): Question[] {
-  const excludeSet = new Set(excludeIds);
-  let pool = all.filter((q) => !excludeSet.has(q.id));
-  if (pool.length < count) {
-    pool = [...all];
-  }
-  const shuffled = pool.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+function pickQuestions(count: number, excludeIds: string[]): SimQuestion[] {
+  const available = QUESTION_BANK.filter((q) => !excludeIds.includes(q.id));
+  const pool = available.length >= count ? available : QUESTION_BANK;
+  return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+function pickRandomEvent(day: number): RandomEvent | null {
+  // 第1天不触发事件，让玩家先适应
+  if (day === 1) return null;
+  // 70% 概率触发
+  if (Math.random() > 0.7) return null;
+  return RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
 }
 
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       phase: "home",
-      questions: [],
-      currentIndex: 0,
-      answers: [],
-      storeState: { ...initialStoreState },
-      upgradeChoices: [],
-      lastAnswerCorrect: null,
-      lastFeedbackText: "",
-      lastUpgradeTip: "",
-      lastAnsweredQuestion: null,
-      lastSelectedLabel: "",
+      state: { ...INITIAL_STATE },
+      dayQuestions: [],
+      dayQuestionIndex: 0,
+      dayEvent: null,
+      choices: [],
+      dayCashBefore: INITIAL_STATE.cash,
+      dayChoiceImpact: 0,
+      dayExposureStart: INITIAL_STATE.exposure,
+      dailySummaries: [],
+      endingType: null,
+      playerTag: null,
 
-      // 等级系统
-      currentTier: INITIAL_TIER,
-      highestTier: INITIAL_TIER,
-      lastRoundPassed: false,
-      lastRoundPromoted: false,
-      lastRoundPreviousTier: INITIAL_TIER,
-      nextRoundUnlocked: true, // 初始可以免费玩第一轮
-      totalRoundsPlayed: 0,
-      totalPassRounds: 0,
+      totalPlays: 0,
+      bestFinalCash: 0,
+      bestDaysSurvived: 0,
 
-      // 排行榜
+      freePlaysPerDay: 3,
+      playsToday: 0,
+      lastPlayDate: "",
+      sharedPlaysToday: 0,
+      maxSharedPlays: 2,
+
       displayName: "",
       hasSubmittedDisplayName: false,
-      displayNameEditCount: 0,
 
-      // 持久化
-      totalPlays: 0,
-      bestScore: 0,
-      bestCorrectCount: 0,
-      bestRank: "",
-      answeredQuestionIds: [],
-
-      totalScore: () => get().answers.reduce((sum, a) => sum + a.earnedScore, 0),
-      correctCount: () => get().answers.filter((a) => a.isCorrect).length,
-      currentQuestion: () => get().questions[get().currentIndex] ?? null,
-      resultLevel: () => getResultLevel(get().totalScore()),
-      progress: () => {
-        const total = get().questions.length;
-        return total === 0 ? 0 : (get().currentIndex / total) * 100;
+      currentQuestion: () => {
+        const s = get();
+        return s.dayQuestions[s.dayQuestionIndex] ?? null;
       },
 
-      // 能否开始新一轮：必须 nextRoundUnlocked
-      canPlay: () => get().nextRoundUnlocked,
+      canPlay: () => {
+        const s = get();
+        const today = todayStr();
+        if (s.lastPlayDate !== today) return true;
+        return s.playsToday < s.freePlaysPerDay + s.sharedPlaysToday;
+      },
 
-      startGame: (allQuestions) => {
-        const state = get();
+      remainingFreePlays: () => {
+        const s = get();
+        const today = todayStr();
+        if (s.lastPlayDate !== today) return s.freePlaysPerDay;
+        return Math.max(0, s.freePlaysPerDay + s.sharedPlaysToday - s.playsToday);
+      },
 
-        if (!state.nextRoundUnlocked) return;
+      todaysRevenue: () => {
+        const s = get();
+        return calcDailyRevenue(s.state);
+      },
 
-        const selected = pickRandomQuestions(
-          allQuestions,
-          GAME_CONFIG.questionCount,
-          state.answeredQuestionIds
-        );
+      dayProgress: () => {
+        const s = get();
+        return s.dayQuestions.length === 0
+          ? 0
+          : (s.dayQuestionIndex / s.dayQuestions.length) * 100;
+      },
+
+      startNewGame: () => {
+        const s = get();
+        const today = todayStr();
+        const playsToday = s.lastPlayDate === today ? s.playsToday + 1 : 1;
+        const sharedPlaysToday = s.lastPlayDate === today ? s.sharedPlaysToday : 0;
 
         set({
-          phase: "playing",
-          questions: selected,
-          currentIndex: 0,
-          answers: [],
-          upgradeChoices: [],
-          lastAnswerCorrect: null,
-          lastFeedbackText: "",
-          lastRoundPassed: false,
-          lastRoundPromoted: false,
-          lastRoundPreviousTier: state.currentTier,
-          nextRoundUnlocked: false, // 新一轮开始后，下一轮资格重置
-          totalPlays: state.totalPlays + 1,
+          phase: "day-intro",
+          state: { ...INITIAL_STATE },
+          dayQuestions: [],
+          dayQuestionIndex: 0,
+          dayEvent: null,
+          choices: [],
+          dayCashBefore: INITIAL_STATE.cash,
+          dayChoiceImpact: 0,
+          dayExposureStart: INITIAL_STATE.exposure,
+          dailySummaries: [],
+          endingType: null,
+          playerTag: null,
+          totalPlays: s.totalPlays + 1,
+          lastPlayDate: today,
+          playsToday,
+          sharedPlaysToday,
+        });
+
+        // 直接进入第一天
+        get().startDay();
+      },
+
+      startDay: () => {
+        const s = get();
+        const excludeIds = s.choices.map((c) => c.questionId);
+        const qs = pickQuestions(GAME_CONFIG.questionsPerDay, excludeIds);
+        const event = pickRandomEvent(s.state.day);
+
+        let newState = s.state;
+        if (event) {
+          newState = applyEffect(newState, event.effect);
+        }
+
+        set({
+          phase: "day-intro",
+          state: newState,
+          dayQuestions: qs,
+          dayQuestionIndex: 0,
+          dayEvent: event,
+          dayCashBefore: newState.cash,
+          dayChoiceImpact: 0,
+          dayExposureStart: newState.exposure,
         });
       },
 
-      submitAnswer: (label) => {
-        const state = get();
-        const question = state.currentQuestion();
-        if (!question) return;
+      submitChoice: (optionIndex: number) => {
+        const s = get();
+        const q = s.currentQuestion();
+        if (!q) return;
 
-        const selectedOption = question.options.find((o) => o.label === label);
-        const isCorrect = selectedOption?.isCorrect ?? false;
-        const earnedScore = isCorrect ? question.score : 0;
+        const option = q.options[optionIndex];
+        if (!option) return;
 
-        const record: AnswerRecord = {
-          questionId: question.id,
-          selectedLabel: label,
-          isCorrect,
-          earnedScore,
+        const newState = applyEffect(s.state, option.effect);
+        const record: ChoiceRecord = {
+          questionId: q.id,
+          optionIndex,
+          day: s.state.day,
+          effect: option.effect,
         };
 
-        const newAnswers = [...state.answers, record];
-
-        if (isCorrect) {
-          const choices = getRandomUpgradeChoices(3);
-          set({
-            answers: newAnswers,
-            lastAnswerCorrect: true,
-            upgradeChoices: choices,
-            lastAnsweredQuestion: question,
-            lastSelectedLabel: label,
-            phase: "upgrade",
-          });
-        } else {
-          set({
-            answers: newAnswers,
-            lastAnswerCorrect: false,
-            lastAnsweredQuestion: question,
-            lastSelectedLabel: label,
-            phase: "answered-wrong",
-          });
-        }
-      },
-
-      selectUpgrade: (category) => {
-        const state = get();
-        const choice = state.upgradeChoices.find((c) => c.category === category);
-        if (!choice) return;
-
-        const newStore = { ...state.storeState };
-        newStore[category] = Math.min(newStore[category] + 1, 10);
-
         set({
-          storeState: newStore,
-          lastFeedbackText: choice.feedbackText,
-          lastUpgradeTip: getRandomTip(category),
-          phase: "upgrade-feedback",
+          state: newState,
+          choices: [...s.choices, record],
+          dayChoiceImpact: s.dayChoiceImpact + (option.effect.cash ?? 0),
         });
       },
 
       nextQuestion: () => {
-        const state = get();
-        const nextIdx = state.currentIndex + 1;
-
-        if (nextIdx >= state.questions.length) {
-          // 本轮结束 - 处理等级晋级
-          const finalScore = state.totalScore();
-          const finalCorrect = state.correctCount();
-          const newAnsweredIds = [
-            ...state.answeredQuestionIds,
-            ...state.questions.map((q) => q.id),
-          ];
-
-          const result = processRoundResult(state.currentTier, finalScore);
-
-          const updates: Partial<GameStore> = {
-            phase: "result" as const,
-            answeredQuestionIds: newAnsweredIds,
-            currentTier: result.newTier,
-            lastRoundPassed: result.passed,
-            lastRoundPromoted: result.promoted,
-            nextRoundUnlocked: result.nextRoundUnlocked,
-            totalRoundsPlayed: state.totalRoundsPlayed + 1,
-            totalPassRounds: result.passed
-              ? state.totalPassRounds + 1
-              : state.totalPassRounds,
-          };
-
-          // 更新最高等级
-          if (result.promoted) {
-            updates.highestTier = result.newTier;
-          }
-
-          // 更新最佳分数
-          if (finalScore > state.bestScore) {
-            updates.bestScore = finalScore;
-            updates.bestCorrectCount = finalCorrect;
-            updates.bestRank = getResultLevel(finalScore).title;
-          }
-
-          set(updates);
+        const s = get();
+        const nextIdx = s.dayQuestionIndex + 1;
+        if (nextIdx >= s.dayQuestions.length) {
+          get().applyDailySettlement();
         } else {
-          set({
-            currentIndex: nextIdx,
-            phase: "playing",
-            lastAnswerCorrect: null,
-            lastFeedbackText: "",
-          });
+          set({ dayQuestionIndex: nextIdx, phase: "playing" });
         }
       },
 
-      goToResult: () => {
-        const state = get();
-        const finalScore = state.totalScore();
-        const finalCorrect = state.correctCount();
-        const newAnsweredIds = [
-          ...state.answeredQuestionIds,
-          ...state.questions.map((q) => q.id),
-        ];
+      applyDailySettlement: () => {
+        const s = get();
+        const revenue = calcDailyRevenue(s.state);
+        const fixedCost = DAILY_COST;
+        const profit = revenue - fixedCost + s.dayChoiceImpact;
+        const cashAfter = s.state.cash + revenue - fixedCost;
 
-        const result = processRoundResult(state.currentTier, finalScore);
+        const newState: GameState = { ...s.state, cash: cashAfter };
 
-        const updates: Partial<GameStore> = {
-          phase: "result" as const,
-          answeredQuestionIds: newAnsweredIds,
-          currentTier: result.newTier,
-          lastRoundPassed: result.passed,
-          lastRoundPromoted: result.promoted,
-          nextRoundUnlocked: result.nextRoundUnlocked,
-          totalRoundsPlayed: state.totalRoundsPlayed + 1,
-          totalPassRounds: result.passed
-            ? state.totalPassRounds + 1
-            : state.totalPassRounds,
+        const avgPriceDelta = newState.avgPrice - INITIAL_STATE.avgPrice;
+        const comment = generateDailyComment({
+          profit,
+          revenue,
+          exposure: newState.exposure,
+          badReviewRate: newState.badReviewRate,
+          avgPriceDelta,
+        });
+
+        const summary: DaySummary = {
+          day: s.state.day,
+          incomeRevenue: revenue,
+          fixedCost,
+          choiceImpact: s.dayChoiceImpact,
+          profit,
+          cashAfter,
+          exposureEnd: newState.exposure,
+          conversionEnd: newState.conversion,
+          badReviewEnd: newState.badReviewRate,
+          comment,
+          eventTitle: s.dayEvent?.title,
         };
 
-        if (result.promoted) {
-          updates.highestTier = result.newTier;
+        set({
+          state: newState,
+          dailySummaries: [...s.dailySummaries, summary],
+          phase: "day-settle",
+        });
+
+        // 判定倒闭
+        if (cashAfter <= 0) {
+          setTimeout(() => get().nextDay(), 0);
+        }
+      },
+
+      nextDay: () => {
+        const s = get();
+        const cashAfter = s.state.cash;
+
+        // 倒闭
+        if (cashAfter <= 0) {
+          const totalAdSpend = s.choices
+            .filter((c) => (c.effect.exposure ?? 0) >= 30)
+            .reduce((sum, c) => sum + Math.abs(c.effect.cash ?? 0), 0);
+          const avgPriceChange = s.state.avgPrice - INITIAL_STATE.avgPrice;
+          const ending: EndingType = "bankrupt";
+          const tag = determinePlayerTag(ending, s.state, avgPriceChange, totalAdSpend);
+          const bestCash = Math.max(s.bestFinalCash, s.state.cash);
+          const bestDays = Math.max(s.bestDaysSurvived, s.state.day);
+          set({
+            phase: "result",
+            endingType: ending,
+            playerTag: tag,
+            bestFinalCash: bestCash,
+            bestDaysSurvived: bestDays,
+          });
+          return;
         }
 
-        if (finalScore > state.bestScore) {
-          updates.bestScore = finalScore;
-          updates.bestCorrectCount = finalCorrect;
-          updates.bestRank = getResultLevel(finalScore).title;
+        // 通关
+        if (s.state.day >= GAME_CONFIG.maxDay) {
+          const totalAdSpend = s.choices
+            .filter((c) => (c.effect.exposure ?? 0) >= 30)
+            .reduce((sum, c) => sum + Math.abs(c.effect.cash ?? 0), 0);
+          const avgPriceChange = s.state.avgPrice - INITIAL_STATE.avgPrice;
+          const ending = determineEnding(
+            s.state.cash,
+            GAME_CONFIG.initialCash,
+            s.state.day
+          );
+          const tag = determinePlayerTag(ending, s.state, avgPriceChange, totalAdSpend);
+          const bestCash = Math.max(s.bestFinalCash, s.state.cash);
+          const bestDays = Math.max(s.bestDaysSurvived, s.state.day);
+          set({
+            phase: "result",
+            endingType: ending,
+            playerTag: tag,
+            bestFinalCash: bestCash,
+            bestDaysSurvived: bestDays,
+          });
+          return;
         }
 
-        set(updates);
+        // 进入下一天
+        set({
+          state: { ...s.state, day: s.state.day + 1 },
+        });
+        get().startDay();
+      },
+
+      markSharedForExtraPlay: () => {
+        const s = get();
+        if (s.sharedPlaysToday >= s.maxSharedPlays) return;
+        set({ sharedPlaysToday: s.sharedPlaysToday + 1 });
+      },
+
+      setDisplayName: (name: string) => {
+        const trimmed = name.trim().slice(0, 20);
+        if (trimmed.length < 2) return;
+        set({ displayName: trimmed, hasSubmittedDisplayName: true });
       },
 
       goToReward: () => set({ phase: "reward" }),
 
-      /** 分享解锁下一轮（仅本轮未达标时使用） */
-      markSharedForNextRound: () => {
-        set({ nextRoundUnlocked: true });
-      },
-
-      /** 设置排行榜展示名称 */
-      setDisplayName: (name: string) => {
-        const state = get();
-        const trimmed = name.trim().slice(0, 20);
-        if (trimmed.length < 2) return;
-
-        const updates: Partial<GameStore> = {
-          displayName: trimmed,
-        };
-
-        if (!state.hasSubmittedDisplayName) {
-          updates.hasSubmittedDisplayName = true;
-          updates.displayNameEditCount = 0;
-        } else {
-          updates.displayNameEditCount = state.displayNameEditCount + 1;
-        }
-
-        set(updates);
-      },
-
       reset: () =>
         set({
           phase: "home",
-          questions: [],
-          currentIndex: 0,
-          answers: [],
-          upgradeChoices: [],
-          lastAnswerCorrect: null,
-          lastFeedbackText: "",
+          state: { ...INITIAL_STATE },
+          dayQuestions: [],
+          dayQuestionIndex: 0,
+          dayEvent: null,
+          choices: [],
+          dayCashBefore: INITIAL_STATE.cash,
+          dayChoiceImpact: 0,
+          dayExposureStart: INITIAL_STATE.exposure,
+          dailySummaries: [],
+          endingType: null,
+          playerTag: null,
         }),
     }),
     {
-      name: "waimai-quiz-progress",
+      name: "waimai-sim-progress",
       partialize: (state) => ({
-        storeState: state.storeState,
-        currentTier: state.currentTier,
-        highestTier: state.highestTier,
-        nextRoundUnlocked: state.nextRoundUnlocked,
-        totalRoundsPlayed: state.totalRoundsPlayed,
-        totalPassRounds: state.totalPassRounds,
+        totalPlays: state.totalPlays,
+        bestFinalCash: state.bestFinalCash,
+        bestDaysSurvived: state.bestDaysSurvived,
+        playsToday: state.playsToday,
+        lastPlayDate: state.lastPlayDate,
+        sharedPlaysToday: state.sharedPlaysToday,
         displayName: state.displayName,
         hasSubmittedDisplayName: state.hasSubmittedDisplayName,
-        displayNameEditCount: state.displayNameEditCount,
-        totalPlays: state.totalPlays,
-        bestScore: state.bestScore,
-        bestCorrectCount: state.bestCorrectCount,
-        bestRank: state.bestRank,
-        answeredQuestionIds: state.answeredQuestionIds,
       }),
     }
   )

@@ -1,30 +1,103 @@
-export interface QuestionOption {
-  label: string;
+// === 外卖老板生存模拟器 v2.0 类型定义 ===
+
+/** 核心经营指标 */
+export interface GameState {
+  cash: number;          // 现金
+  day: number;           // 当前天数（1-7）
+  exposure: number;      // 曝光量
+  conversion: number;    // 转化率 (0-1)
+  avgPrice: number;      // 客单价
+  badReviewRate: number; // 差评率 (0-1)
+}
+
+/** 选项效果：对各项指标的增减 */
+export interface OptionEffect {
+  cash?: number;
+  exposure?: number;
+  conversion?: number;
+  avgPrice?: number;
+  badReviewRate?: number;
+}
+
+/** 题目选项 */
+export interface SimOption {
   text: string;
-  isCorrect: boolean;
+  effect: OptionEffect;
+  hint?: string; // 选后的小提示
 }
 
-export interface Question {
-  id: number;
+/** 模拟题目 */
+export interface SimQuestion {
+  id: string;
+  title: string;       // 标题，如"曝光下降了20%"
+  desc: string;        // 背景描述
+  options: SimOption[];
+}
+
+/** 随机事件 */
+export interface RandomEvent {
+  id: string;
   title: string;
-  options: QuestionOption[];
-  explanation: string;
-  category: QuestionCategory;
-  difficulty: "easy" | "medium" | "hard";
-  score: number;
+  desc: string;
+  effect: OptionEffect;
+  emoji: string;
 }
 
-export type QuestionCategory =
-  | "traffic"
-  | "conversion"
-  | "ticket"
-  | "retention"
-  | "campaign"
-  | "menu"
-  | "reputation"
-  | "kitchen"
-  | "location"
-  | "strategy";
+/** 玩家选择记录 */
+export interface ChoiceRecord {
+  questionId: string;
+  optionIndex: number;
+  day: number;
+  effect: OptionEffect;
+}
+
+/** 每日结算 */
+export interface DaySummary {
+  day: number;
+  incomeRevenue: number;  // 订单收入
+  fixedCost: number;      // 固定成本（租金+员工）
+  choiceImpact: number;   // 题目现金影响总和
+  profit: number;         // 净利润
+  cashAfter: number;      // 结算后现金
+  exposureEnd: number;
+  conversionEnd: number;
+  badReviewEnd: number;
+  comment: string;        // 自动点评
+  eventTitle?: string;    // 当天触发的事件
+}
+
+/** 结局类型 */
+export type EndingType =
+  | "bankrupt"    // 倒闭
+  | "survive"    // 勉强存活
+  | "thrive";    // 爆赚
+
+/** 玩家标签 */
+export type PlayerTag =
+  | "price_killer"     // 价格屠夫
+  | "traffic_gambler"  // 流量赌徒
+  | "profit_harvester" // 利润收割
+  | "reputation_guard" // 口碑守护
+  | "rookie_dead"      // 外卖小白（已倒闭）
+  | "balanced_master"; // 均衡派
+
+export interface TagInfo {
+  id: PlayerTag;
+  label: string;
+  emoji: string;
+  desc: string;
+}
+
+/** 结局信息 */
+export interface EndingInfo {
+  type: EndingType;
+  title: string;
+  emoji: string;
+  description: string;
+  color: string;
+}
+
+// === 旧的类型保留，避免破坏引用 ===
 
 export interface ResultLevel {
   title: string;
@@ -58,45 +131,12 @@ export interface StoreState {
   member: number;
 }
 
-export interface AnswerRecord {
-  questionId: number;
-  selectedLabel: string;
-  isCorrect: boolean;
-  earnedScore: number;
-}
-
-// === 等级系统 ===
-
-export type RankTier =
-  | "bronze3"
-  | "bronze2"
-  | "bronze1"
-  | "silver3"
-  | "silver2"
-  | "silver1"
-  | "gold3"
-  | "gold2"
-  | "gold1"
-  | "king3"
-  | "king2"
-  | "king1";
-
-export interface TierInfo {
-  id: RankTier;
-  label: string;
-  group: "bronze" | "silver" | "gold" | "king";
-  emoji: string;
-  index: number; // 0-11, 用于排序和进度计算
-}
-
-// === 排行榜 ===
-
 export interface LeaderboardEntry {
   id: string;
   displayName: string;
-  bestScore: number;
-  bestCorrectCount: number;
-  highestTier: RankTier;
+  bestScore: number;       // 改为：最高一次的赚钱数
+  bestCorrectCount: number; // 改为：最高一次的存活天数
+  highestTier: string;      // 改为：最高结局类型
   createdAt: number;
   updatedAt: number;
 }
