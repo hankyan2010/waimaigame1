@@ -26,6 +26,21 @@ jobs:
           username: root
           password: HankyHh441402@@
           source: "out/*"
-          target: "/usr/share/nginx/html/waimai-game/"
+          target: "/usr/share/nginx/html/game/"
           strip_components: 1
           rm: true
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 121.36.105.43
+          username: root
+          password: HankyHh441402@@
+          script: |
+            echo "=== Deployed files ==="
+            ls -la /usr/share/nginx/html/game/
+            echo "=== Nginx config check ==="
+            nginx -t
+            echo "=== Reload nginx ==="
+            nginx -s reload || systemctl reload nginx || true
+            echo "=== Done ==="
