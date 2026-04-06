@@ -26,10 +26,7 @@ export default function RewardPage() {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6">
         <p className="text-sm text-secondary mb-4">还没完成一局挑战</p>
-        <button
-          onClick={() => router.push("/")}
-          className="px-6 py-3 bg-brand text-title text-sm font-bold rounded-xl"
-        >
+        <button onClick={() => router.push("/")} className="btn-raised text-sm max-w-xs">
           回首页
         </button>
       </div>
@@ -150,10 +147,7 @@ export default function RewardPage() {
 
       {/* Bottom */}
       <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
-        <button
-          onClick={handleReplay}
-          className="w-full py-3.5 bg-card border border-border text-body text-base font-bold rounded-2xl active:scale-[0.98] transition-transform"
-        >
+        <button onClick={handleReplay} className="btn-raised-ghost text-base">
           再来一局
         </button>
       </div>

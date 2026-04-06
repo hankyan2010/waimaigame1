@@ -102,26 +102,37 @@ export default function ResultPage() {
           <p className="text-xs text-secondary">的外卖老板</p>
         </div>
 
-        {/* Daily history */}
+        {/* Daily history - 完整账本 */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
-          <p className="text-sm font-bold text-title mb-3">7天经营回顾</p>
-          <div className="space-y-2">
+          <p className="text-sm font-bold text-title mb-3">📒 7天经营账本</p>
+          <div className="space-y-3">
             {store.dailySummaries.map((d) => (
               <div
                 key={d.day}
-                className="flex items-center justify-between py-1 border-b border-border last:border-0"
+                className="border-b border-border last:border-0 pb-3 last:pb-0"
               >
-                <span className="text-xs text-secondary">Day {d.day}</span>
-                <span className="text-xs text-body flex-1 px-2 truncate">
-                  {d.comment}
-                </span>
-                <span
-                  className={`text-xs font-bold ${
-                    d.profit >= 0 ? "text-title" : "text-red-500"
-                  }`}
-                >
-                  {d.profit >= 0 ? "+" : ""}¥{d.profit}
-                </span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-black text-title">Day {d.day}</span>
+                  <span
+                    className={`text-sm font-black ${
+                      d.profit >= 0 ? "text-green-600" : "text-red-500"
+                    }`}
+                  >
+                    {d.profit >= 0 ? "+" : ""}¥{d.profit}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 text-[10px] text-secondary mb-1">
+                  <span>营业 ¥{d.incomeRevenue}</span>
+                  <span>成本 ¥{d.fixedCost}</span>
+                  <span>决策 {d.choiceImpact >= 0 ? "+" : ""}¥{d.choiceImpact}</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px] text-secondary mb-1">
+                  <span>曝光 {d.exposureEnd}</span>
+                  <span>转化 {(d.conversionEnd * 100).toFixed(1)}%</span>
+                  <span>客单 ¥{d.avgPriceEnd}</span>
+                  <span>差评 {(d.badReviewEnd * 100).toFixed(1)}%</span>
+                </div>
+                <p className="text-[11px] text-body leading-snug mt-1">💡 {d.comment}</p>
               </div>
             ))}
           </div>
@@ -131,16 +142,10 @@ export default function ResultPage() {
       {/* Bottom CTA */}
       <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         <div className="space-y-2">
-          <button
-            onClick={handleGoReward}
-            className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
-          >
+          <button onClick={handleGoReward} className="btn-raised text-base">
             {isBankrupt ? "看高手怎么做" : "领取经营福利"}
           </button>
-          <button
-            onClick={handlePlayAgain}
-            className="w-full py-3 bg-card border border-border text-body text-sm font-bold rounded-2xl active:scale-[0.98] transition-transform"
-          >
+          <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
             再来一局
           </button>
         </div>

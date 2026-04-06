@@ -7,6 +7,7 @@ import {
   SimQuestion,
   ChoiceRecord,
   DaySummary,
+  DayChoiceLogItem,
   EndingType,
   PlayerTag,
   RandomEvent,
@@ -47,6 +48,7 @@ interface GameStore {
   dayCashBefore: number;          // 本日开始时的现金
   dayChoiceImpact: number;        // 本日题目带来的现金变化累计
   dayExposureStart: number;
+  dayChoiceLog: DayChoiceLogItem[]; // 本日决策记录（用于结算回顾）
 
   // 每日历史
   dailySummaries: DaySummary[];
@@ -122,6 +124,7 @@ export const useGameStore = create<GameStore>()(
       dayCashBefore: INITIAL_STATE.cash,
       dayChoiceImpact: 0,
       dayExposureStart: INITIAL_STATE.exposure,
+      dayChoiceLog: [],
       dailySummaries: [],
       endingType: null,
       playerTag: null,
@@ -186,6 +189,7 @@ export const useGameStore = create<GameStore>()(
           dayCashBefore: INITIAL_STATE.cash,
           dayChoiceImpact: 0,
           dayExposureStart: INITIAL_STATE.exposure,
+          dayChoiceLog: [],
           dailySummaries: [],
           endingType: null,
           playerTag: null,
@@ -219,6 +223,7 @@ export const useGameStore = create<GameStore>()(
           dayCashBefore: newState.cash,
           dayChoiceImpact: 0,
           dayExposureStart: newState.exposure,
+          dayChoiceLog: [],
         });
       },
 
@@ -237,11 +242,18 @@ export const useGameStore = create<GameStore>()(
           day: s.state.day,
           effect: option.effect,
         };
+        const logItem: DayChoiceLogItem = {
+          questionTitle: q.title,
+          optionText: option.text,
+          cashDelta: option.effect.cash ?? 0,
+          effects: option.effect,
+        };
 
         set({
           state: newState,
           choices: [...s.choices, record],
           dayChoiceImpact: s.dayChoiceImpact + (option.effect.cash ?? 0),
+          dayChoiceLog: [...s.dayChoiceLog, logItem],
         });
       },
 
@@ -273,18 +285,29 @@ export const useGameStore = create<GameStore>()(
           avgPriceDelta,
         });
 
+        // 营业额公式分解
+        const effectiveConversion = s.state.conversion * (1 - s.state.badReviewRate * 0.5);
+        const estimatedOrders = Math.round(s.state.exposure * effectiveConversion);
+
         const summary: DaySummary = {
           day: s.state.day,
           incomeRevenue: revenue,
           fixedCost,
           choiceImpact: s.dayChoiceImpact,
           profit,
+          cashBefore: s.dayCashBefore,
           cashAfter,
           exposureEnd: newState.exposure,
           conversionEnd: newState.conversion,
           badReviewEnd: newState.badReviewRate,
+          avgPriceEnd: newState.avgPrice,
+          estimatedOrders,
+          effectiveConversion,
+          choiceLog: [...s.dayChoiceLog],
           comment,
           eventTitle: s.dayEvent?.title,
+          eventEmoji: s.dayEvent?.emoji,
+          eventDesc: s.dayEvent?.desc,
         };
 
         set({
@@ -379,6 +402,7 @@ export const useGameStore = create<GameStore>()(
           dayCashBefore: INITIAL_STATE.cash,
           dayChoiceImpact: 0,
           dayExposureStart: INITIAL_STATE.exposure,
+          dayChoiceLog: [],
           dailySummaries: [],
           endingType: null,
           playerTag: null,

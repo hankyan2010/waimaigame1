@@ -23,7 +23,8 @@ export interface OptionEffect {
 export interface SimOption {
   text: string;
   effect: OptionEffect;
-  hint?: string; // 选后的小提示
+  hint?: string;        // 选后的小提示
+  knowledge?: string;   // 知识点：为什么会涨/跌这些值
 }
 
 /** 模拟题目 */
@@ -51,6 +52,14 @@ export interface ChoiceRecord {
   effect: OptionEffect;
 }
 
+/** 每日决策记录（用于账本回顾） */
+export interface DayChoiceLogItem {
+  questionTitle: string;
+  optionText: string;
+  cashDelta: number;
+  effects: OptionEffect;
+}
+
 /** 每日结算 */
 export interface DaySummary {
   day: number;
@@ -58,12 +67,21 @@ export interface DaySummary {
   fixedCost: number;      // 固定成本（租金+员工）
   choiceImpact: number;   // 题目现金影响总和
   profit: number;         // 净利润
+  cashBefore: number;     // 结算前现金
   cashAfter: number;      // 结算后现金
   exposureEnd: number;
   conversionEnd: number;
   badReviewEnd: number;
+  avgPriceEnd: number;
+  // 营业额公式分解
+  estimatedOrders: number;        // = exposure × 有效转化率
+  effectiveConversion: number;    // 折算差评后的转化率
+  // 当日决策回顾
+  choiceLog: DayChoiceLogItem[];
   comment: string;        // 自动点评
   eventTitle?: string;    // 当天触发的事件
+  eventEmoji?: string;
+  eventDesc?: string;
 }
 
 /** 结局类型 */

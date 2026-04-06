@@ -133,10 +133,7 @@ export default function HomePage() {
 
       {/* Bottom CTA */}
       <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
-        <button
-          onClick={handleStart}
-          className="w-full py-4 bg-brand text-title text-base font-black rounded-2xl shadow-lg shadow-brand/30 active:scale-[0.98] transition-transform"
-        >
+        <button onClick={handleStart} className="btn-raised text-base">
           {!hydrated
             ? "开始挑战"
             : !canPlay
@@ -164,16 +161,10 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-2">
-              <button
-                onClick={handleShareToUnlock}
-                className="w-full py-3 bg-brand text-title text-sm font-black rounded-xl"
-              >
+              <button onClick={handleShareToUnlock} className="btn-raised text-sm">
                 分享朋友圈 +1 次
               </button>
-              <button
-                onClick={() => setShowShareGate(false)}
-                className="w-full py-3 bg-bg text-secondary text-sm font-bold rounded-xl"
-              >
+              <button onClick={() => setShowShareGate(false)} className="btn-raised-ghost text-sm">
                 明天再玩
               </button>
             </div>
