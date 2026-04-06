@@ -19,36 +19,32 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: List build output
+      - name: Check secrets availability
         run: |
-          echo "=== Build output ==="
-          ls -la out/
-          echo "=== Check version ==="
-          grep -o 'v[0-9]\.[0-9]\.[0-9][a-z\-]*' out/index.html || echo "no version found in html"
+          if [ -z "${{ secrets.SERVER_HOST }}" ]; then echo "::error::SERVER_HOST secret is empty!"; fi
+          if [ -z "${{ secrets.SERVER_USER }}" ]; then echo "::error::SERVER_USER secret is empty!"; fi
+          if [ -z "${{ secrets.SERVER_PASSWORD }}" ]; then echo "::error::SERVER_PASSWORD secret is empty!"; fi
+          echo "Host length: ${#HOST_VAL}"
+          echo "User length: ${#USER_VAL}"
+          echo "Pass length: ${#PASS_VAL}"
+        env:
+          HOST_VAL: ${{ secrets.SERVER_HOST }}
+          USER_VAL: ${{ secrets.SERVER_USER }}
+          PASS_VAL: ${{ secrets.SERVER_PASSWORD }}
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          source: "out/*"
-          target: "/usr/share/nginx/html/game/"
-          strip_components: 1
-          rm: true
+      - name: Deploy via rsync over sshpass
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -e rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no -p 22" \
+            out/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/usr/share/nginx/html/game/
 
       - name: Verify deployment
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            echo "=== Deployed files ==="
-            ls -la /usr/share/nginx/html/game/
-            echo "=== Check index.html ==="
-            head -5 /usr/share/nginx/html/game/index.html
-            echo "=== Nginx config ==="
-            nginx -t 2>&1
-            nginx -s reload || systemctl reload nginx || true
-            echo "=== Done ==="
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "ls -la /usr/share/nginx/html/game/ && nginx -s reload || systemctl reload nginx || true && echo 'Deploy OK'"
