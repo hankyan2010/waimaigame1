@@ -19,12 +19,19 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: List build output
+        run: |
+          echo "=== Build output ==="
+          ls -la out/
+          echo "=== Check version ==="
+          grep -o 'v[0-9]\.[0-9]\.[0-9][a-z\-]*' out/index.html || echo "no version found in html"
+
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: 121.36.105.43
-          username: root
-          password: HankyHh441402@@
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           source: "out/*"
           target: "/usr/share/nginx/html/game/"
           strip_components: 1
@@ -33,14 +40,15 @@ jobs:
       - name: Verify deployment
         uses: appleboy/ssh-action@v1
         with:
-          host: 121.36.105.43
-          username: root
-          password: HankyHh441402@@
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "=== Deployed files ==="
             ls -la /usr/share/nginx/html/game/
-            echo "=== Nginx config check ==="
-            nginx -t
-            echo "=== Reload nginx ==="
+            echo "=== Check index.html ==="
+            head -5 /usr/share/nginx/html/game/index.html
+            echo "=== Nginx config ==="
+            nginx -t 2>&1
             nginx -s reload || systemctl reload nginx || true
             echo "=== Done ==="
