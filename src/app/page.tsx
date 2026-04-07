@@ -23,7 +23,25 @@ export default function HomePage() {
     const board = getLeaderboard();
     setBoardCount(board.length);
     setTopName(board[0]?.displayName ?? null);
-    setupWxShare();
+
+    // D1 分享：老用户晒最佳战绩，新用户走悬念测试
+    // 直接从 store 读，不依赖上面的 hydrated 状态变量
+    const s = useGameStore.getState();
+    const hasRecord = s.totalPlays > 0 && s.bestFinalCash > 0;
+    if (hasRecord) {
+      const profit = s.bestFinalCash - GAME_CONFIG.initialCash;
+      const profitText =
+        profit >= 0 ? `净赚 ¥${profit.toLocaleString()}` : `亏 ¥${Math.abs(profit).toLocaleString()}`;
+      setupWxShare({
+        title: `我经营外卖7天${profitText}，你能超过我吗？`,
+        desc: `存活 ${s.bestDaysSurvived} 天 · 1万本金起步 · 100道经营决策。来一局，看看你是青铜还是王者。`,
+      });
+    } else {
+      setupWxShare({
+        title: "你是什么段位的外卖老板？10分钟见分晓",
+        desc: "1万本金 + 7天 + 100道真实经营决策，曝光、入店转化、下单转化、差评全实时变化。90% 的老板拿不到黄金。",
+      });
+    }
   }, []);
 
   const canPlay = hydrated ? store.canPlay() : true;

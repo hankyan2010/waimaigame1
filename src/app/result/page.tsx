@@ -43,10 +43,16 @@ export default function ResultPage() {
         setShowNameModal(true);
       }
 
-      // 配置微信分享
+      // 配置微信分享：D 风格成就晒值（封面静态、文案动态）
+      const profitText =
+        profitNow >= 0
+          ? `净赚 ¥${profitNow.toLocaleString()}`
+          : `亏 ¥${Math.abs(profitNow).toLocaleString()}`;
+      const endingTitle = ENDING_INFO[store.endingType].title;
+      const tagLabel = TAG_INFO[store.playerTag!].label;
       setupWxShare({
-        title: `我经营外卖7天${profitNow >= 0 ? "净赚" : "亏了"}¥${Math.abs(profitNow)}，你能超过我吗？`,
-        desc: `${ENDING_INFO[store.endingType].title} · ${TAG_INFO[store.playerTag!].label}，来挑战外卖老板生存模拟器`,
+        title: `我经营外卖7天${profitText}，段位：${endingTitle}`,
+        desc: `存活 ${days} 天 · 经营人格：${tagLabel} · 1万本金 + 100道决策。你来一局，看看能不能超过我。`,
       });
     }
   }, [hydrated]);
