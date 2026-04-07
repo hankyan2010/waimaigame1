@@ -286,8 +286,11 @@ export const useGameStore = create<GameStore>()(
         });
 
         // 营业额公式分解
-        const effectiveConversion = s.state.conversion * (1 - s.state.badReviewRate * 0.5);
-        const estimatedOrders = Math.round(s.state.exposure * effectiveConversion);
+        const effectiveOrderConv =
+          s.state.orderConversion * (1 - s.state.badReviewRate * 0.5);
+        const estimatedOrders = Math.round(
+          s.state.exposure * s.state.enterConversion * effectiveOrderConv
+        );
 
         const summary: DaySummary = {
           day: s.state.day,
@@ -298,11 +301,12 @@ export const useGameStore = create<GameStore>()(
           cashBefore: s.dayCashBefore,
           cashAfter,
           exposureEnd: newState.exposure,
-          conversionEnd: newState.conversion,
+          enterConversionEnd: newState.enterConversion,
+          orderConversionEnd: newState.orderConversion,
           badReviewEnd: newState.badReviewRate,
           avgPriceEnd: newState.avgPrice,
           estimatedOrders,
-          effectiveConversion,
+          effectiveOrderConv,
           choiceLog: [...s.dayChoiceLog],
           comment,
           eventTitle: s.dayEvent?.title,

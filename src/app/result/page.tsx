@@ -5,11 +5,21 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import { track } from "@/lib/track";
+import {
+  canEnterLeaderboard,
+  predictRank,
+  submitEntry,
+} from "@/lib/leaderboard";
+import { setupWxShare } from "@/lib/wx-share";
 
 export default function ResultPage() {
   const router = useRouter();
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [pendingRank, setPendingRank] = useState<number | null>(null);
+  const [submittedRank, setSubmittedRank] = useState<number | null>(null);
+  const [nameInput, setNameInput] = useState("");
 
   useEffect(() => {
     setHydrated(true);
@@ -25,8 +35,40 @@ export default function ResultPage() {
         finalCash: store.state.cash,
         daysSurvived: store.state.day,
       });
+
+      const profitNow = store.state.cash - GAME_CONFIG.initialCash;
+      const days = store.state.day;
+      if (canEnterLeaderboard(profitNow, days)) {
+        setPendingRank(predictRank(profitNow, days));
+        setShowNameModal(true);
+      }
+
+      // 配置微信分享
+      setupWxShare({
+        title: `我经营外卖7天${profitNow >= 0 ? "净赚" : "亏了"}¥${Math.abs(profitNow)}，你能超过我吗？`,
+        desc: `${ENDING_INFO[store.endingType].title} · ${TAG_INFO[store.playerTag!].label}，来挑战外卖老板生存模拟器`,
+      });
     }
   }, [hydrated]);
+
+  const handleSubmitName = () => {
+    const name = nameInput.trim().slice(0, 20);
+    if (name.length < 2) return;
+    if (!store.endingType || !store.playerTag) return;
+    const profitNow = store.state.cash - GAME_CONFIG.initialCash;
+    submitEntry({
+      displayName: name,
+      profit: profitNow,
+      finalCash: store.state.cash,
+      daysSurvived: store.state.day,
+      ending: store.endingType,
+      tag: store.playerTag,
+    });
+    store.setDisplayName(name);
+    setSubmittedRank(predictRank(profitNow, store.state.day));
+    setShowNameModal(false);
+    track("leaderboard_submit", { rank: pendingRank });
+  };
 
   if (!hydrated || !store.endingType || !store.playerTag) return null;
 
@@ -126,9 +168,10 @@ export default function ResultPage() {
                   <span>成本 ¥{d.fixedCost}</span>
                   <span>决策 {d.choiceImpact >= 0 ? "+" : ""}¥{d.choiceImpact}</span>
                 </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px] text-secondary mb-1">
+                <div className="grid grid-cols-5 gap-1 text-[10px] text-secondary mb-1">
                   <span>曝光 {d.exposureEnd}</span>
-                  <span>转化 {(d.conversionEnd * 100).toFixed(1)}%</span>
+                  <span>入店 {(d.enterConversionEnd * 100).toFixed(1)}%</span>
+                  <span>下单 {(d.orderConversionEnd * 100).toFixed(1)}%</span>
                   <span>客单 ¥{d.avgPriceEnd}</span>
                   <span>差评 {(d.badReviewEnd * 100).toFixed(1)}%</span>
                 </div>
@@ -142,14 +185,67 @@ export default function ResultPage() {
       {/* Bottom CTA */}
       <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         <div className="space-y-2">
+          {submittedRank !== null && (
+            <div className="text-center text-xs text-title font-bold">
+              🎉 已上榜 第 {submittedRank} 名
+            </div>
+          )}
           <button onClick={handleGoReward} className="btn-raised text-base">
             {isBankrupt ? "看高手怎么做" : "领取经营福利"}
           </button>
-          <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
-            再来一局
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => router.push("/leaderboard")}
+              className="btn-raised-ghost text-sm"
+            >
+              查看英雄榜
+            </button>
+            <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
+              再来一局
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Top 100 name capture modal */}
+      {showNameModal && pendingRank !== null && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-card rounded-2xl p-5 max-w-sm w-full animate-slide-up">
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🏆</div>
+              <h3 className="text-lg font-black text-title mb-1">
+                恭喜进入英雄榜 第 {pendingRank} 名
+              </h3>
+              <p className="text-sm text-secondary">
+                留下你的店铺名 / 称号，让其他玩家看见你
+              </p>
+            </div>
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="店铺名 / 昵称（2~20字）"
+              maxLength={20}
+              className="w-full px-3 py-3 rounded-xl border-2 border-border bg-white text-sm text-title mb-3 focus:border-brand outline-none"
+            />
+            <div className="space-y-2">
+              <button
+                onClick={handleSubmitName}
+                disabled={nameInput.trim().length < 2}
+                className="btn-raised text-sm disabled:opacity-40"
+              >
+                上榜留名
+              </button>
+              <button
+                onClick={() => setShowNameModal(false)}
+                className="btn-raised-ghost text-sm"
+              >
+                算了不留
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

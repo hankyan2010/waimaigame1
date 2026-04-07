@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
+import { getLeaderboard } from "@/lib/leaderboard";
+import { setupWxShare } from "@/lib/wx-share";
 
 export default function HomePage() {
   const router = useRouter();
@@ -12,9 +14,16 @@ export default function HomePage() {
   const [hydrated, setHydrated] = useState(false);
   const [showShareGate, setShowShareGate] = useState(false);
 
+  const [boardCount, setBoardCount] = useState(0);
+  const [topName, setTopName] = useState<string | null>(null);
+
   useEffect(() => {
     setHydrated(true);
     track("page_view");
+    const board = getLeaderboard();
+    setBoardCount(board.length);
+    setTopName(board[0]?.displayName ?? null);
+    setupWxShare();
   }, []);
 
   const canPlay = hydrated ? store.canPlay() : true;
@@ -122,11 +131,15 @@ export default function HomePage() {
         {/* Initial stats */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
           <p className="text-sm font-bold text-title mb-3">开局状态</p>
-          <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="grid grid-cols-3 gap-2 text-center mb-2">
             <Stat label="现金" value={`¥${GAME_CONFIG.initialCash}`} />
             <Stat label="曝光" value={GAME_CONFIG.initialExposure} />
-            <Stat label="转化率" value={`${(GAME_CONFIG.initialConversion * 100).toFixed(0)}%`} />
             <Stat label="客单价" value={`¥${GAME_CONFIG.initialAvgPrice}`} />
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <Stat label="入店率" value={`${(GAME_CONFIG.initialEnterConversion * 100).toFixed(0)}%`} />
+            <Stat label="下单率" value={`${(GAME_CONFIG.initialOrderConversion * 100).toFixed(0)}%`} />
+            <Stat label="差评率" value={`${(GAME_CONFIG.initialBadReviewRate * 100).toFixed(0)}%`} />
           </div>
         </div>
       </div>
@@ -141,6 +154,12 @@ export default function HomePage() {
             : totalPlays === 0
             ? "开始首次挑战"
             : "再来一局"}
+        </button>
+        <button
+          onClick={() => router.push("/leaderboard")}
+          className="btn-raised-ghost text-sm mt-2"
+        >
+          🏆 英雄榜{hydrated && boardCount > 0 ? `（${boardCount}人在榜${topName ? "·榜首 " + topName : ""}）` : ""}
         </button>
       </div>
 

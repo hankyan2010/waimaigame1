@@ -75,10 +75,10 @@ export default function PlayPage() {
             <p className="text-xs font-bold text-title mb-2">📊 营业额是怎么算出来的</p>
             <div className="bg-bg/40 rounded-xl p-3 mb-2">
               <div className="text-[11px] text-secondary text-center mb-1">
-                曝光量 × 有效转化率 × 客单价
+                曝光 × 入店率 × 下单率 × 客单价
               </div>
               <div className="text-center text-sm font-black text-title">
-                {summary.exposureEnd} × {(summary.effectiveConversion * 100).toFixed(1)}% × ¥{summary.avgPriceEnd}
+                {summary.exposureEnd} × {(summary.enterConversionEnd * 100).toFixed(1)}% × {(summary.effectiveOrderConv * 100).toFixed(1)}% × ¥{summary.avgPriceEnd}
               </div>
               <div className="text-center text-[11px] text-secondary mt-1">
                 ≈ {summary.estimatedOrders} 单 × ¥{summary.avgPriceEnd} = <span className="font-bold text-title">¥{summary.incomeRevenue}</span>
@@ -117,9 +117,10 @@ export default function PlayPage() {
           {/* 关键指标 */}
           <div className="bg-card rounded-2xl p-4 shadow-sm">
             <p className="text-xs font-bold text-title mb-2">📈 期末关键指标</p>
-            <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="grid grid-cols-5 gap-2 text-center">
               <Stat label="曝光" value={summary.exposureEnd} />
-              <Stat label="转化率" value={`${(summary.conversionEnd * 100).toFixed(1)}%`} />
+              <Stat label="入店率" value={`${(summary.enterConversionEnd * 100).toFixed(1)}%`} />
+              <Stat label="下单率" value={`${(summary.orderConversionEnd * 100).toFixed(1)}%`} />
               <Stat label="客单价" value={`¥${summary.avgPriceEnd}`} />
               <Stat label="差评率" value={`${(summary.badReviewEnd * 100).toFixed(1)}%`} />
             </div>
@@ -223,10 +224,11 @@ export default function PlayPage() {
           )}
 
           <div className="bg-card rounded-2xl p-3 shadow-sm mb-6">
-            <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="grid grid-cols-5 gap-1.5 text-center">
               <Stat label="现金" value={`¥${s.cash}`} />
               <Stat label="曝光" value={s.exposure} />
-              <Stat label="转化" value={`${(s.conversion * 100).toFixed(0)}%`} />
+              <Stat label="入店" value={`${(s.enterConversion * 100).toFixed(0)}%`} />
+              <Stat label="下单" value={`${(s.orderConversion * 100).toFixed(0)}%`} />
               <Stat label="差评" value={`${(s.badReviewRate * 100).toFixed(0)}%`} />
             </div>
           </div>
@@ -268,10 +270,11 @@ export default function PlayPage() {
         </div>
 
         {/* Status strip */}
-        <div className="grid grid-cols-4 gap-1.5 text-center">
+        <div className="grid grid-cols-5 gap-1 text-center">
           <MiniStat label="现金" value={`¥${s.cash}`} />
           <MiniStat label="曝光" value={s.exposure.toString()} />
-          <MiniStat label="转化" value={`${(s.conversion * 100).toFixed(0)}%`} />
+          <MiniStat label="入店" value={`${(s.enterConversion * 100).toFixed(0)}%`} />
+          <MiniStat label="下单" value={`${(s.orderConversion * 100).toFixed(0)}%`} />
           <MiniStat label="差评" value={`${(s.badReviewRate * 100).toFixed(0)}%`} />
         </div>
       </div>
@@ -372,10 +375,16 @@ function effectChips(effect: OptionEffect): { text: string; cls: string }[] {
       cls: effect.exposure > 0 ? positive : negative,
     });
   }
-  if (effect.conversion !== undefined && effect.conversion !== 0) {
+  if (effect.enterConversion !== undefined && effect.enterConversion !== 0) {
     chips.push({
-      text: `转化 ${effect.conversion > 0 ? "+" : ""}${(effect.conversion * 100).toFixed(1)}%`,
-      cls: effect.conversion > 0 ? positive : negative,
+      text: `入店率 ${effect.enterConversion > 0 ? "+" : ""}${(effect.enterConversion * 100).toFixed(1)}%`,
+      cls: effect.enterConversion > 0 ? positive : negative,
+    });
+  }
+  if (effect.orderConversion !== undefined && effect.orderConversion !== 0) {
+    chips.push({
+      text: `下单率 ${effect.orderConversion > 0 ? "+" : ""}${(effect.orderConversion * 100).toFixed(1)}%`,
+      cls: effect.orderConversion > 0 ? positive : negative,
     });
   }
   if (effect.avgPrice !== undefined && effect.avgPrice !== 0) {

@@ -75,10 +75,14 @@ export async function setupWxShare(shareData?: Partial<ShareData>) {
 
   if (!configured) return;
 
-  // Set share data
+  // Set share data — 高 CTR 文案
   const data: ShareData = {
-    title: shareData?.title || "外卖老板段位测试，90%的人拿不到黄金",
-    desc: shareData?.desc || "随机10题，测测你到底是青铜掌柜还是王者掌门",
+    title:
+      shareData?.title ||
+      "1万本金 + 7天，看你能赚多少 or 亏多少？",
+    desc:
+      shareData?.desc ||
+      "外卖老板生存模拟器：每天4个真实经营决策，曝光、转化、客单、差评，玩一局你就懂为什么有人爆单有人倒闭。",
     link: shareData?.link || window.location.href,
     imgUrl: shareData?.imgUrl || SHARE_IMG,
   };

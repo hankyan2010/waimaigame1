@@ -2,19 +2,21 @@
 
 /** 核心经营指标 */
 export interface GameState {
-  cash: number;          // 现金
-  day: number;           // 当前天数（1-7）
-  exposure: number;      // 曝光量
-  conversion: number;    // 转化率 (0-1)
-  avgPrice: number;      // 客单价
-  badReviewRate: number; // 差评率 (0-1)
+  cash: number;            // 现金
+  day: number;             // 当前天数（1-7）
+  exposure: number;        // 曝光量（每日触达人数）
+  enterConversion: number; // 入店转化率 (0-1)
+  orderConversion: number; // 下单转化率 (0-1)
+  avgPrice: number;        // 客单价
+  badReviewRate: number;   // 差评率 (0-1)
 }
 
 /** 选项效果：对各项指标的增减 */
 export interface OptionEffect {
   cash?: number;
   exposure?: number;
-  conversion?: number;
+  enterConversion?: number;  // 入店转化率变化
+  orderConversion?: number;  // 下单转化率变化
   avgPrice?: number;
   badReviewRate?: number;
 }
@@ -63,23 +65,24 @@ export interface DayChoiceLogItem {
 /** 每日结算 */
 export interface DaySummary {
   day: number;
-  incomeRevenue: number;  // 订单收入
-  fixedCost: number;      // 固定成本（租金+员工）
-  choiceImpact: number;   // 题目现金影响总和
-  profit: number;         // 净利润
-  cashBefore: number;     // 结算前现金
-  cashAfter: number;      // 结算后现金
+  incomeRevenue: number;    // 订单收入
+  fixedCost: number;        // 固定成本（租金+员工）
+  choiceImpact: number;     // 题目现金影响总和
+  profit: number;           // 净利润
+  cashBefore: number;       // 结算前现金
+  cashAfter: number;        // 结算后现金
   exposureEnd: number;
-  conversionEnd: number;
+  enterConversionEnd: number;
+  orderConversionEnd: number;
   badReviewEnd: number;
   avgPriceEnd: number;
   // 营业额公式分解
-  estimatedOrders: number;        // = exposure × 有效转化率
-  effectiveConversion: number;    // 折算差评后的转化率
+  estimatedOrders: number;     // = exposure × enterConv × orderConv × (差评折扣)
+  effectiveOrderConv: number;  // 折算差评后的下单转化率
   // 当日决策回顾
   choiceLog: DayChoiceLogItem[];
-  comment: string;        // 自动点评
-  eventTitle?: string;    // 当天触发的事件
+  comment: string;          // 自动点评
+  eventTitle?: string;      // 当天触发的事件
   eventEmoji?: string;
   eventDesc?: string;
 }
@@ -149,12 +152,14 @@ export interface StoreState {
   member: number;
 }
 
+/** 排行榜条目 (v3.2) */
 export interface LeaderboardEntry {
   id: string;
-  displayName: string;
-  bestScore: number;       // 改为：最高一次的赚钱数
-  bestCorrectCount: number; // 改为：最高一次的存活天数
-  highestTier: string;      // 改为：最高结局类型
+  displayName: string;       // 玩家昵称或店铺名
+  profit: number;            // 7天净利润
+  finalCash: number;         // 最终现金
+  daysSurvived: number;      // 存活天数
+  ending: EndingType;
+  tag: PlayerTag;
   createdAt: number;
-  updatedAt: number;
 }
