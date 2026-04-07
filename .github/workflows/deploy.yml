@@ -21,11 +21,11 @@ jobs:
 
       - name: Inspect nginx config
         env:
-          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+          SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
         run: |
           sudo apt-get install -y sshpass
           sshpass -e ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            ${{ secrets.SERVER_USER || 'root' }}@${{ secrets.SERVER_HOST || '121.36.105.43' }} << 'EOF'
           echo "=== Nginx config files ==="
           nginx -T 2>/dev/null | grep -E "^\s*(server_name|root|location|alias)" | head -50
           echo ""
@@ -41,7 +41,9 @@ jobs:
 
       - name: Deploy to all candidate paths
         env:
-          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+          SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
+          SERVER_USER: ${{ secrets.SERVER_USER || 'root' }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST || '121.36.105.43' }}
         run: |
           # 部署到所有可能的路径，以确保命中实际服务路径
           for TARGET in \
@@ -53,22 +55,24 @@ jobs:
           do
             echo "=== Trying: $TARGET ==="
             sshpass -e ssh -o StrictHostKeyChecking=no \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+              "$SERVER_USER@$SERVER_HOST" \
               "[ -d '$TARGET' ] || [ -d \"\$(dirname $TARGET)\" ]" && {
               sshpass -e ssh -o StrictHostKeyChecking=no \
-                ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+                "$SERVER_USER@$SERVER_HOST" \
                 "rm -rf $TARGET/* 2>/dev/null; mkdir -p $TARGET"
               sshpass -e scp -o StrictHostKeyChecking=no -r \
                 out/* \
-                ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TARGET/
+                "$SERVER_USER@$SERVER_HOST:$TARGET/"
               echo "Deployed to $TARGET"
             } || echo "Skipped $TARGET (parent not exist)"
           done
 
       - name: Reload nginx
         env:
-          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+          SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
+          SERVER_USER: ${{ secrets.SERVER_USER || 'root' }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST || '121.36.105.43' }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "$SERVER_USER@$SERVER_HOST" \
             "nginx -s reload 2>&1 || systemctl reload nginx 2>&1 || true && echo 'Reload done'"
