@@ -1,0 +1,81 @@
+name: Diagnose wx-share backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-wx-share.yml'
+
+# 一次性诊断脚本：ssh 到华为云，查 18901 端口占用 / /wx-config 代理链路 /
+# systemd 单元状态 / nginx+apache 配置。完全只读，不会改服务器任何文件。
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get update -qq && sudo apt-get install -y sshpass
+
+      - name: Run remote diagnostics
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
+          SERVER_USER: ${{ secrets.SERVER_USER || 'root' }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST || '121.36.105.43' }}
+        run: |
+          set +e
+          SSH="sshpass -e ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15 $SERVER_USER@$SERVER_HOST"
+
+          echo "================================================================"
+          echo "STEP 1  who owns port 18901"
+          echo "================================================================"
+          $SSH 'ss -lntp 2>/dev/null | grep 18901 || netstat -lntp 2>/dev/null | grep 18901 || echo "(nothing listening on 18901)"'
+
+          echo
+          echo "================================================================"
+          echo "STEP 2  curl local 127.0.0.1:18901/wx-config"
+          echo "================================================================"
+          $SSH "curl -sv -m 8 'http://127.0.0.1:18901/wx-config?url=http%3A%2F%2Fwaimaiketang.com%2Fgame%2F' 2>&1 | tail -40"
+
+          echo
+          echo "================================================================"
+          echo "STEP 3  curl public http://waimaiketang.com/wx-config  (via nginx/apache)"
+          echo "================================================================"
+          $SSH "curl -sv -m 8 'http://waimaiketang.com/wx-config?url=http%3A%2F%2Fwaimaiketang.com%2Fgame%2F' 2>&1 | tail -40"
+
+          echo
+          echo "================================================================"
+          echo "STEP 4  systemd units related to wx/sign/wechat"
+          echo "================================================================"
+          $SSH 'systemctl list-units --type=service --all 2>/dev/null | grep -iE "wx|sign|wechat" || echo "(no matching systemd unit)"'
+          echo "--- wx-sign-server status ---"
+          $SSH 'systemctl status wx-sign-server 2>&1 | head -20 || true'
+          echo "--- wechat service status (any) ---"
+          $SSH 'systemctl status wechat 2>&1 | head -20 || true'
+
+          echo
+          echo "================================================================"
+          echo "STEP 5  where is /wx-config proxied (nginx + apache + files)"
+          echo "================================================================"
+          echo "--- nginx -T | grep wx-config ---"
+          $SSH 'nginx -T 2>/dev/null | grep -B2 -A5 wx-config || echo "(no nginx match)"'
+          echo "--- apachectl -S ---"
+          $SSH 'apachectl -S 2>&1 | head -20 || echo "(no apache)"'
+          echo "--- grep wx-config in config dirs ---"
+          $SSH 'grep -RHn "wx-config" /etc/nginx /etc/apache2 /etc/httpd 2>/dev/null | head -20 || echo "(no match in config dirs)"'
+
+          echo
+          echo "================================================================"
+          echo "STEP 6  ps for node/python processes (to see who's actually running)"
+          echo "================================================================"
+          $SSH 'ps auxf 2>/dev/null | grep -iE "wx-sign|wechat-api|node |python.*sign" | grep -v grep || echo "(no matching process)"'
+
+          echo
+          echo "================================================================"
+          echo "STEP 7  scripts actually on disk on the server"
+          echo "================================================================"
+          $SSH 'ls -la /root/*.js /root/*.py /root/scripts 2>/dev/null; find /root /opt /home -maxdepth 3 -type f \( -name "wx-sign*" -o -name "wechat-api*" \) 2>/dev/null | head -20 || true'
+
+          echo
+          echo "================================================================"
+          echo "DIAGNOSTICS DONE  (this workflow is read-only, nothing was changed)"
+          echo "================================================================"
