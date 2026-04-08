@@ -105,7 +105,7 @@ async function configForCurrentUrl(): Promise<boolean> {
 
     const wx = (window as unknown as { wx: { config: (c: unknown) => void; ready: (cb: () => void) => void; error: (cb: (e: unknown) => void) => void } }).wx;
     wx.config({
-      debug: false,
+      debug: typeof window !== "undefined" && new URLSearchParams(window.location.search).has("wxdebug"),
       appId: config.appId,
       timestamp: config.timestamp,
       nonceStr: config.nonceStr,
