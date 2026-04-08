@@ -82,7 +82,15 @@ async function configForCurrentUrl(): Promise<boolean> {
     log("requesting signature for", pageUrl);
     const res = await fetch(`${WX_CONFIG_URL}?url=${encodeURIComponent(pageUrl)}`);
     if (!res.ok) {
-      throw new Error(`wx-config http ${res.status}`);
+      // 抓一段响应 body 方便排查：405 = 后端服务没挂 /wx-config 路由，
+      // 404 = nginx 没代理，502/504 = 签名服务宕机，403 = nginx 拦了。
+      let bodySnippet = "";
+      try {
+        bodySnippet = (await res.text()).slice(0, 200);
+      } catch {
+        /* ignore */
+      }
+      throw new Error(`wx-config http ${res.status} body=${bodySnippet}`);
     }
     const config = (await res.json()) as {
       appId?: string;
