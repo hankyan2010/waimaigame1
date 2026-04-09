@@ -2,34 +2,37 @@
 
 import { useMemo } from "react";
 
+// 5 个方向变体 - 中心、左近、左远、右近、右远
+// 故意预定义而不是用 CSS var()，因为 iOS WebKit 在 transform 函数里解析 var() 偶有问题
+const VARIANTS = [
+  "coin-shoot-c",
+  "coin-shoot-l1",
+  "coin-shoot-l2",
+  "coin-shoot-r1",
+  "coin-shoot-r2",
+];
+
 interface Props {
-  /**
-   * 每次 trigger 变化就会生成新一批金币。父组件配合 key 使用，
-   * 例：{showCoin && <CoinRain key={coinKey} />}
-   */
   count?: number;
 }
 
-export function CoinRain({ count = 32 }: Props) {
+export function CoinRain({ count = 36 }: Props) {
   const coins = useMemo(() => {
     return Array.from({ length: count }, (_, i) => {
-      const isBigCoin = Math.random() < 0.25;
-      const emoji = isBigCoin ? "💰" : "🪙";
+      const isBig = Math.random() < 0.25;
+      // 均匀分配方向，不让某个方向扎堆
+      const variant = VARIANTS[i % VARIANTS.length];
       return {
         id: i,
-        // 横向位置：0-100% 均匀分布 + 一点抖动
-        left: (i / count) * 100 + (Math.random() - 0.5) * 8,
-        // 延迟：前半段更密集，营造"爆发感"
-        delay: Math.pow(Math.random(), 1.8) * 700,
-        // 下落时长：1.4-2.4s
-        duration: 1400 + Math.random() * 1000,
-        // 随机旋转 -720 ~ +720 度
-        rotation: Math.floor((Math.random() - 0.5) * 1440),
-        // 横向漂移 -40 ~ +40 px，模拟重力+空气阻力
-        drift: Math.floor((Math.random() - 0.5) * 80),
-        // 大小：大金币 36-48，小金币 22-34
-        size: isBigCoin ? 36 + Math.random() * 12 : 22 + Math.random() * 12,
-        emoji,
+        // 起始位置在屏幕中心 ±6vw 抖动一下，模拟"从一个区域喷出"
+        startX: 50 + (Math.random() - 0.5) * 12,
+        // 时间错位 0-700ms，造成"爆发感"（前段更密集）
+        delay: Math.pow(Math.random(), 1.6) * 700,
+        // 总时长 1.6-2.4s
+        duration: 1600 + Math.random() * 800,
+        size: isBig ? 36 + Math.random() * 12 : 24 + Math.random() * 12,
+        emoji: isBig ? "💰" : "🪙",
+        variant,
       };
     });
   }, [count]);
@@ -39,17 +42,13 @@ export function CoinRain({ count = 32 }: Props) {
       {coins.map((c) => (
         <div
           key={c.id}
-          className="coin-particle"
-          style={
-            {
-              left: `${c.left}%`,
-              fontSize: `${c.size}px`,
-              animationDelay: `${c.delay}ms`,
-              animationDuration: `${c.duration}ms`,
-              "--rotation": `${c.rotation}deg`,
-              "--drift": `${c.drift}px`,
-            } as React.CSSProperties
-          }
+          className={`coin-particle ${c.variant}`}
+          style={{
+            left: `${c.startX}vw`,
+            fontSize: `${c.size}px`,
+            animationDelay: `${c.delay}ms`,
+            animationDuration: `${c.duration}ms`,
+          }}
         >
           {c.emoji}
         </div>

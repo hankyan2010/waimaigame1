@@ -322,7 +322,7 @@ export default function HomePage() {
         </button>
       </div>
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v3.3.1-coins · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
+        v3.4.0-fountain · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}

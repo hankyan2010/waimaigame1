@@ -483,31 +483,62 @@ html, body {
   animation: knowledge-in 0.35s ease-out both;
 }
 
-/* === 答对题掉金币特效 === */
-@keyframes coin-fall {
-  0% {
-    transform: translate3d(0, -80px, 0) rotate(0deg) scale(0.8);
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(var(--rotation, 720deg)) scale(1);
-    opacity: 0.4;
-  }
-}
+/* === 答对题喷金币特效（从底部喷出 → 上升 → 弹道下落） === */
+/* 故意不使用 CSS var() 在 transform 函数里 —— iOS WebKit 旧版有时会解析失败导致整个动画废掉 */
 
 .coin-particle {
   position: absolute;
-  top: 0;
-  left: var(--x);
-  font-size: var(--size);
+  bottom: 0;
+  left: 50vw;
   line-height: 1;
   will-change: transform, opacity;
-  animation: coin-fall var(--duration) cubic-bezier(0.33, 0.1, 0.66, 1) var(--delay) forwards;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.25, 0.5, 0.5, 1);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
 }
+
+/* 中心垂直喷射 */
+@keyframes coin-shoot-c {
+  0%   { transform: translate(-50%, 0)     rotate(0deg)    scale(0.5); opacity: 0; }
+  8%   { opacity: 1; }
+  42%  { transform: translate(-50%, -65vh) rotate(360deg)  scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, 20vh)  rotate(720deg)  scale(0.9);  opacity: 0.2; }
+}
+.coin-shoot-c { animation-name: coin-shoot-c; }
+
+/* 左近 */
+@keyframes coin-shoot-l1 {
+  0%   { transform: translate(-50%, 0)                rotate(0deg)     scale(0.5); opacity: 0; }
+  8%   { opacity: 1; }
+  42%  { transform: translate(calc(-50% - 25vw), -58vh) rotate(-360deg)  scale(1.05); opacity: 1; }
+  100% { transform: translate(calc(-50% - 45vw), 25vh)  rotate(-720deg)  scale(0.9);  opacity: 0.2; }
+}
+.coin-shoot-l1 { animation-name: coin-shoot-l1; }
+
+/* 左远 */
+@keyframes coin-shoot-l2 {
+  0%   { transform: translate(-50%, 0)                rotate(0deg)     scale(0.5); opacity: 0; }
+  8%   { opacity: 1; }
+  42%  { transform: translate(calc(-50% - 42vw), -48vh) rotate(-540deg)  scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% - 65vw), 25vh)  rotate(-1080deg) scale(0.85); opacity: 0.2; }
+}
+.coin-shoot-l2 { animation-name: coin-shoot-l2; }
+
+/* 右近 */
+@keyframes coin-shoot-r1 {
+  0%   { transform: translate(-50%, 0)                rotate(0deg)    scale(0.5); opacity: 0; }
+  8%   { opacity: 1; }
+  42%  { transform: translate(calc(-50% + 25vw), -58vh) rotate(360deg)  scale(1.05); opacity: 1; }
+  100% { transform: translate(calc(-50% + 45vw), 25vh)  rotate(720deg)  scale(0.9);  opacity: 0.2; }
+}
+.coin-shoot-r1 { animation-name: coin-shoot-r1; }
+
+/* 右远 */
+@keyframes coin-shoot-r2 {
+  0%   { transform: translate(-50%, 0)                rotate(0deg)    scale(0.5); opacity: 0; }
+  8%   { opacity: 1; }
+  42%  { transform: translate(calc(-50% + 42vw), -48vh) rotate(540deg)  scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + 65vw), 25vh)  rotate(1080deg) scale(0.85); opacity: 0.2; }
+}
+.coin-shoot-r2 { animation-name: coin-shoot-r2; }
