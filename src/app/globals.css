@@ -482,3 +482,32 @@ html, body {
 .animate-knowledge-in {
   animation: knowledge-in 0.35s ease-out both;
 }
+
+/* === 答对题掉金币特效 === */
+@keyframes coin-fall {
+  0% {
+    transform: translate3d(0, -80px, 0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(var(--rotation, 720deg)) scale(1);
+    opacity: 0.4;
+  }
+}
+
+.coin-particle {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  font-size: var(--size);
+  line-height: 1;
+  will-change: transform, opacity;
+  animation: coin-fall var(--duration) cubic-bezier(0.33, 0.1, 0.66, 1) var(--delay) forwards;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}

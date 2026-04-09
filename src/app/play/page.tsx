@@ -6,6 +6,8 @@ import { useGameStore } from "@/lib/store";
 import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
 import type { OptionEffect } from "@/lib/types";
+import { CoinRain } from "@/components/CoinRain";
+import { playCoinSound } from "@/lib/sound";
 
 interface PendingAnswer {
   optionIndex: number;
@@ -20,6 +22,17 @@ export default function PlayPage() {
   const [hydrated, setHydrated] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [pending, setPending] = useState<PendingAnswer | null>(null);
+  const [coinKey, setCoinKey] = useState(0);
+  const [showCoin, setShowCoin] = useState(false);
+
+  // 触发"疯狂掉金币"效果 + 音效
+  const triggerCoinRain = () => {
+    setCoinKey((k) => k + 1);
+    setShowCoin(true);
+    playCoinSound();
+    // 2.8s 后清理 DOM（动画最长 2.4s + 延迟 0.4s 冗余）
+    setTimeout(() => setShowCoin(false), 2800);
+  };
 
   useEffect(() => {
     setHydrated(true);
@@ -342,6 +355,10 @@ export default function PlayPage() {
                     knowledge: opt.knowledge ?? "",
                   });
                   track("answer_choice", { qid: question.id, opt: idx });
+                  // 答对题（现金正增益）→ 疯狂掉金币 + 音效
+                  if ((opt.effect.cash ?? 0) > 0) {
+                    triggerCoinRain();
+                  }
                 }}
                 className="btn-raised-card"
               >
@@ -352,7 +369,10 @@ export default function PlayPage() {
         )}
       </div>
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v3.1.0-knowledge</p>
+      {/* 掉金币特效层 */}
+      {showCoin && <CoinRain key={coinKey} />}
+
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v3.2.0-coins</p>
     </div>
   );
 }
