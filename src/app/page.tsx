@@ -89,6 +89,11 @@ export default function HomePage() {
   const bestDays = hydrated ? store.bestDaysSurvived : 0;
   const inviteScannerCount = hydrated ? store.inviteScannerCount : 0;
   const inviteCredits = hydrated ? store.inviteCredits : 0;
+  // 调试用：把次数模型的所有维度直接显示在 footer，方便用户/我快速排错
+  const playsToday = hydrated ? store.playsToday : 0;
+  const sharedPlaysToday = hydrated ? store.sharedPlaysToday : 0;
+  const maxShared = hydrated ? store.maxSharedPlays : 5;
+  const inviteConsumed = hydrated ? store.inviteCreditsConsumed : 0;
 
   const handleStart = () => {
     if (canPlay) {
@@ -241,20 +246,32 @@ export default function HomePage() {
                 今日挑战次数已用完
               </h3>
               <p className="text-sm text-secondary">
-                生成你的专属挑战海报
-                <br />
-                保存或转发，立刻 +1 次挑战机会
-                <br />
-                每个朋友扫码再帮你 +1 次（最多 +5 次）
+                {sharedPlaysToday >= maxShared ? (
+                  <>
+                    今日自分享次数已用完（{sharedPlaysToday}/{maxShared}）
+                    <br />
+                    等朋友扫你的码 +1 次，或明天再来
+                  </>
+                ) : (
+                  <>
+                    生成你的专属挑战海报
+                    <br />
+                    保存或转发，立刻 +1 次挑战机会
+                    <br />
+                    每个朋友扫码再帮你 +1 次（最多 +{store.inviteCap || 5} 次）
+                  </>
+                )}
               </p>
             </div>
 
             <div className="space-y-2">
-              <button onClick={handleOpenPoster} className="btn-raised text-sm">
-                生成专属海报
-              </button>
+              {sharedPlaysToday < maxShared && (
+                <button onClick={handleOpenPoster} className="btn-raised text-sm">
+                  生成专属海报
+                </button>
+              )}
               <button onClick={() => setShowShareGate(false)} className="btn-raised-ghost text-sm">
-                明天再玩
+                {sharedPlaysToday >= maxShared ? "知道了" : "明天再玩"}
               </button>
             </div>
           </div>
@@ -271,7 +288,9 @@ export default function HomePage() {
         </div>
       )}
 
-      <p className="text-center text-[10px] text-secondary/40 pb-1">v3.2.0-coins</p>
+      <p className="text-center text-[10px] text-secondary/40 pb-1">
+        v3.3.0-fix · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
+      </p>
     </div>
   );
 }

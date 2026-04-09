@@ -154,11 +154,11 @@ export const useGameStore = create<GameStore>()(
       bestFinalCash: 0,
       bestDaysSurvived: 0,
 
-      freePlaysPerDay: 1,           // 改为：每天免费 1 次
+      freePlaysPerDay: 1,           // 每天免费 1 次
       playsToday: 0,
       lastPlayDate: "",
       sharedPlaysToday: 0,
-      maxSharedPlays: 1,            // 改为：自分享海报只能 +1 次
+      maxSharedPlays: 5,            // 自分享海报每天最多 +5 次（之前是 1，太严格，会让用户分享后看不到效果）
       inviteCredits: 0,
       inviteScannerCount: 0,
       inviteCap: 5,
