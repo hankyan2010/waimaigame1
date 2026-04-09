@@ -63,58 +63,65 @@ export function PosterModal({ open, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl p-4 max-w-sm w-full max-h-[92vh] overflow-y-auto"
+        className="bg-white rounded-2xl max-w-sm w-full max-h-[92vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-sm font-bold text-center mb-2 text-title">
+        {/* 头部标题 - 固定 */}
+        <p className="text-sm font-bold text-center text-title pt-4 pb-2 px-4 flex-shrink-0">
           长按图片保存 / 发送给朋友
         </p>
-        <canvas ref={canvasRef} className="hidden" />
 
-        {generating && (
-          <div className="aspect-[3/5] bg-gray-100 rounded-lg flex items-center justify-center text-xs text-secondary">
-            正在生成海报...
-          </div>
-        )}
+        {/* 海报区 - 可滚动，min-h-0 让 flex-1 在被挤压时正确允许滚动 */}
+        <div className="flex-1 overflow-y-auto px-4 min-h-0">
+          <canvas ref={canvasRef} className="hidden" />
 
-        {error && (
-          <div className="aspect-[3/5] bg-red-50 rounded-lg flex items-center justify-center text-xs text-red-600 p-4 text-center">
-            {error}
-          </div>
-        )}
+          {generating && (
+            <div className="aspect-[3/5] bg-gray-100 rounded-lg flex items-center justify-center text-xs text-secondary">
+              正在生成海报...
+            </div>
+          )}
 
-        {imgUrl && !generating && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imgUrl}
-            alt="挑战海报"
-            className="w-full rounded-lg shadow-md"
-          />
-        )}
+          {error && (
+            <div className="aspect-[3/5] bg-red-50 rounded-lg flex items-center justify-center text-xs text-red-600 p-4 text-center">
+              {error}
+            </div>
+          )}
 
-        <div className="mt-3 text-[11px] text-secondary text-center leading-relaxed">
-          ✓ 保存图片即可获得 1 次额外挑战
-          <br />
-          ✓ 每个朋友扫你的码也帮你 +1 次（最多 +{store.inviteCap} 次）
+          {imgUrl && !generating && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imgUrl}
+              alt="挑战海报"
+              className="w-full rounded-lg shadow-md"
+            />
+          )}
         </div>
 
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={onClose}
-            className="flex-1 py-2.5 text-sm font-medium border border-gray-300 text-secondary rounded-lg"
-          >
-            关闭
-          </button>
-          <button
-            onClick={() => {
-              store.markSharedForExtraPlay();
-              onClose();
-            }}
-            disabled={generating || !!error}
-            className="flex-1 py-2.5 text-sm font-bold bg-brand text-title rounded-lg disabled:opacity-50"
-          >
-            我已保存 +1次
-          </button>
+        {/* 底部按钮区 - 固定，永远在第一屏可见 */}
+        <div className="flex-shrink-0 px-4 pb-4 pt-3 border-t border-gray-100 bg-white">
+          <p className="text-[11px] text-secondary text-center leading-relaxed mb-3">
+            ✓ 保存图片即可获得 1 次额外挑战
+            <br />
+            ✓ 每个朋友扫你的码也帮你 +1 次（最多 +{store.inviteCap} 次）
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="flex-1 py-2.5 text-sm font-medium border border-gray-300 text-secondary rounded-lg"
+            >
+              关闭
+            </button>
+            <button
+              onClick={() => {
+                store.markSharedForExtraPlay();
+                onClose();
+              }}
+              disabled={generating || !!error}
+              className="flex-1 py-2.5 text-sm font-bold bg-brand text-title rounded-lg disabled:opacity-50"
+            >
+              我已保存 +1次
+            </button>
+          </div>
         </div>
       </div>
     </div>
