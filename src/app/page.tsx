@@ -21,6 +21,19 @@ export default function HomePage() {
   const [topName, setTopName] = useState<string | null>(null);
 
   useEffect(() => {
+    // 紧急重置通道：?reset=1 清 localStorage 然后跳回干净 URL
+    // 用途：当 store schema 变动导致老用户被锁死时的自救入口
+    const resetParams = new URLSearchParams(window.location.search);
+    if (resetParams.get("reset") === "1") {
+      try {
+        localStorage.removeItem("waimai-sim-progress");
+      } catch {
+        /* ignore */
+      }
+      window.location.replace(window.location.pathname);
+      return;
+    }
+
     setHydrated(true);
     track("page_view");
     const board = getLeaderboard();
