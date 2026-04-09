@@ -34,6 +34,18 @@ export default function PlayPage() {
     setTimeout(() => setShowCoin(false), 2800);
   };
 
+  // 判定一个选项是不是"答对" - 凡是任意维度有正向经营改善都算
+  // (之前只判 cash > 0 太严格，很多好选项是花钱换流量/口碑而不是直接进账)
+  const isWinChoice = (effect: OptionEffect): boolean => {
+    if ((effect.cash ?? 0) > 0) return true;
+    if ((effect.exposure ?? 0) > 0) return true;
+    if ((effect.enterConversion ?? 0) > 0) return true;
+    if ((effect.orderConversion ?? 0) > 0) return true;
+    if ((effect.avgPrice ?? 0) > 0) return true;
+    if ((effect.badReviewRate ?? 0) < 0) return true; // 差评下降是好的
+    return false;
+  };
+
   useEffect(() => {
     setHydrated(true);
     if (store.phase === "home" || store.dayQuestions.length === 0) {
@@ -355,8 +367,8 @@ export default function PlayPage() {
                     knowledge: opt.knowledge ?? "",
                   });
                   track("answer_choice", { qid: question.id, opt: idx });
-                  // 答对题（现金正增益）→ 疯狂掉金币 + 音效
-                  if ((opt.effect.cash ?? 0) > 0) {
+                  // 答对题（任意正向经营改善）→ 疯狂掉金币 + 音效
+                  if (isWinChoice(opt.effect)) {
                     triggerCoinRain();
                   }
                 }}
@@ -372,7 +384,7 @@ export default function PlayPage() {
       {/* 掉金币特效层 */}
       {showCoin && <CoinRain key={coinKey} />}
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v3.2.0-coins</p>
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v3.3.1-coins</p>
     </div>
   );
 }

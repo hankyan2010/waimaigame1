@@ -8,6 +8,8 @@ import { GAME_CONFIG } from "@/lib/config";
 import { getLeaderboard } from "@/lib/leaderboard";
 import { setupWxShare } from "@/lib/wx-share";
 import { PosterModal } from "@/components/PosterModal";
+import { CoinRain } from "@/components/CoinRain";
+import { playCoinSound } from "@/lib/sound";
 
 export default function HomePage() {
   const router = useRouter();
@@ -16,6 +18,15 @@ export default function HomePage() {
   const [showShareGate, setShowShareGate] = useState(false);
   const [showPoster, setShowPoster] = useState(false);
   const [inviteToast, setInviteToast] = useState<string>("");
+  // 金币雨测试用
+  const [coinKey, setCoinKey] = useState(0);
+  const [showCoin, setShowCoin] = useState(false);
+  const triggerTestCoin = () => {
+    setCoinKey((k) => k + 1);
+    setShowCoin(true);
+    playCoinSound();
+    setTimeout(() => setShowCoin(false), 2800);
+  };
 
   const [boardCount, setBoardCount] = useState(0);
   const [topName, setTopName] = useState<string | null>(null);
@@ -301,9 +312,21 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* 临时调试：测试金币动画 + 音效（不依赖游戏流程，独立验证） */}
+      <div className="text-center pb-1">
+        <button
+          onClick={triggerTestCoin}
+          className="text-[11px] text-secondary/60 underline px-3 py-1"
+        >
+          🪙 测试掉金币动画 + 音效
+        </button>
+      </div>
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v3.3.0-fix · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
+        v3.3.1-coins · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
       </p>
+
+      {/* 金币雨层（被测试按钮触发） */}
+      {showCoin && <CoinRain key={coinKey} />}
     </div>
   );
 }
