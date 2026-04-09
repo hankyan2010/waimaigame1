@@ -514,6 +514,25 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "waimai-sim-progress",
+      // v2 (2026-04-09): 次数模型从「免费 3 + 分享 2」改为「免费 1 + 自分享 1 + 邀请扫码 +N」
+      // 旧 playsToday / sharedPlaysToday 在新 schema 下含义错位，老用户进来会立刻被锁死
+      // 这里强制把它们清零，让所有老用户的当日次数从 0 开始，立即可玩
+      version: 2,
+      migrate: (persistedState: unknown, fromVersion: number) => {
+        const s = (persistedState ?? {}) as Record<string, unknown>;
+        if (fromVersion < 2) {
+          return {
+            ...s,
+            playsToday: 0,
+            sharedPlaysToday: 0,
+            lastPlayDate: "",
+            inviteCredits: typeof s.inviteCredits === "number" ? s.inviteCredits : 0,
+            inviteCreditsConsumed: 0,
+            inviteScannerCount: typeof s.inviteScannerCount === "number" ? s.inviteScannerCount : 0,
+          };
+        }
+        return s;
+      },
       partialize: (state) => ({
         totalPlays: state.totalPlays,
         bestFinalCash: state.bestFinalCash,
