@@ -271,7 +271,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <p className="text-center text-[10px] text-secondary/40 pb-1">v3.0.0-sim</p>
+      <p className="text-center text-[10px] text-secondary/40 pb-1">v3.2.0-coins</p>
     </div>
   );
 }
