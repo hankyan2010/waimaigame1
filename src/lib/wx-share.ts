@@ -9,8 +9,9 @@
 // 2. 微信只接受 https/http 的 imgUrl，不接受 dataURL/blob。
 // 3. wx.updateAppMessageShareData 必须在 wx.ready 之后调用。
 
-const WX_CONFIG_URL = "http://waimaiketang.com/wx-config";
-const SHARE_IMG = "http://waimaiketang.com/game/share-cover.png";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
+const WX_CONFIG_URL = "https://waimaiketang.com/wx-config";
+const SHARE_IMG = `https://waimaiketang.com${BASE_PATH}/share-cover.png`;
 
 export interface ShareData {
   title: string;

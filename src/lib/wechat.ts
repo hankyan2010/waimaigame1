@@ -2,7 +2,8 @@ const WECHAT_PROXY = "http://121.36.105.43:18902/bot";
 const TOKEN = "78cc1bf7b5bc@im.bot:060000e5acb57d965f7df51dedfb31455107cc";
 const BOT_USER_ID = "o9cq80zqkS6GwMFOH9QwnXq9-J40@im.wechat";
 const CONTEXT_TOKEN = "AARzJWAFAAABAAAAAADHROBZuYV6jzHakmXKaSAAAAB+9905Q6UiugPBawU3n3cyzQX+LkN8ofRzsCZYN0mt7tD5Pz4j0PZz25Ou3ad61Fye1qWPlDiK9aotbFWHwIXQxcy8WPOt";
-const QUIZ_URL = "http://waimaiketang.com/game/";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
+const QUIZ_URL = `https://waimaiketang.com${BASE_PATH}/`;
 
 function randomUin(): string {
   const arr = new Uint8Array(4);

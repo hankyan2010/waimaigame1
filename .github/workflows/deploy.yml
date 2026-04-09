@@ -1,9 +1,13 @@
-name: Deploy to Server
+name: Deploy Game1 to /var/www/html/oldgame/
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+env:
+  TARGET_DIR: /var/www/html/oldgame
+  NEXT_PUBLIC_BASE_PATH: /oldgame
 
 jobs:
   deploy:
@@ -17,62 +21,53 @@ jobs:
           cache: 'npm'
 
       - run: npm ci
-      - run: npm run build
 
-      - name: Inspect nginx config
+      - name: Build with basePath=/oldgame
+        env:
+          NEXT_PUBLIC_BASE_PATH: /oldgame
+        run: npm run build
+
+      - name: Verify build output uses /oldgame
+        run: |
+          test -f out/index.html
+          if grep -q '"/game/_next' out/index.html; then
+            echo "ERROR: build still references /game/, basePath not applied" && exit 1
+          fi
+          echo "Build looks good (uses /oldgame paths)"
+
+      - name: Backup current oldgame on server
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
         run: |
           sudo apt-get install -y sshpass
           sshpass -e ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SERVER_USER || 'root' }}@${{ secrets.SERVER_HOST || '121.36.105.43' }} << 'EOF'
-          echo "=== Nginx config files ==="
-          nginx -T 2>/dev/null | grep -E "^\s*(server_name|root|location|alias)" | head -50
-          echo ""
-          echo "=== Existing dirs under /usr/share/nginx/html/ ==="
-          ls -la /usr/share/nginx/html/ 2>/dev/null
-          echo ""
-          echo "=== Existing dirs under /var/www/ ==="
-          ls -la /var/www/ 2>/dev/null || echo "no /var/www/"
-          echo ""
-          echo "=== Find waimai/game dirs ==="
-          find / -type d \( -name "waimai*" -o -name "game" \) 2>/dev/null | grep -v proc | head -20
-          EOF
+            ${{ secrets.SERVER_USER || 'root' }}@${{ secrets.SERVER_HOST || '121.36.105.43' }} \
+            "cd /var/www/html && tar czf /tmp/oldgame-backup-\$(date +%Y%m%d-%H%M%S).tgz oldgame 2>/dev/null && ls -lt /tmp/oldgame-backup-*.tgz | head -3"
 
-      - name: Deploy to all candidate paths
+      - name: Deploy to /var/www/html/oldgame/
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
-          SERVER_USER: ${{ secrets.SERVER_USER || 'root' }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST || '121.36.105.43' }}
-        run: |
-          # 部署到所有可能的路径，以确保命中实际服务路径
-          for TARGET in \
-            "/usr/share/nginx/html/game" \
-            "/usr/share/nginx/html/waimai-game" \
-            "/usr/share/nginx/html/waimai-quiz-game" \
-            "/var/www/html/game" \
-            "/var/www/game"
-          do
-            echo "=== Trying: $TARGET ==="
-            sshpass -e ssh -o StrictHostKeyChecking=no \
-              "$SERVER_USER@$SERVER_HOST" \
-              "[ -d '$TARGET' ] || [ -d \"\$(dirname $TARGET)\" ]" && {
-              sshpass -e ssh -o StrictHostKeyChecking=no \
-                "$SERVER_USER@$SERVER_HOST" \
-                "rm -rf $TARGET/* 2>/dev/null; mkdir -p $TARGET"
-              sshpass -e scp -o StrictHostKeyChecking=no -r \
-                out/* \
-                "$SERVER_USER@$SERVER_HOST:$TARGET/"
-              echo "Deployed to $TARGET"
-            } || echo "Skipped $TARGET (parent not exist)"
-          done
-
-      - name: Reload nginx
-        env:
-          SSHPASS: ${{ secrets.SERVER_PASSWORD || 'HankyHh441402@@' }}
-          SERVER_USER: ${{ secrets.SERVER_USER || 'root' }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST || '121.36.105.43' }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no \
-            "$SERVER_USER@$SERVER_HOST" \
-            "nginx -s reload 2>&1 || systemctl reload nginx 2>&1 || true && echo 'Reload done'"
+            ${{ secrets.SERVER_USER || 'root' }}@${{ secrets.SERVER_HOST || '121.36.105.43' }} \
+            "rm -rf /var/www/html/oldgame/* /var/www/html/oldgame/.[!.]* 2>/dev/null; mkdir -p /var/www/html/oldgame"
+          sshpass -e scp -o StrictHostKeyChecking=no -r out/* \
+            ${{ secrets.SERVER_USER || 'root' }}@${{ secrets.SERVER_HOST || '121.36.105.43' }}:/var/www/html/oldgame/
+          echo "Deployed to /var/www/html/oldgame/"
+
+      - name: Smoke test
+        run: |
+          sleep 2
+          STATUS=$(curl -sS -o /dev/null -w "%{http_code}" https://waimaiketang.com/oldgame/)
+          if [ "$STATUS" != "200" ]; then
+            echo "ERROR: smoke test failed, got HTTP $STATUS" && exit 1
+          fi
+          echo "Smoke test OK"
+
+      # ⚠️ 重要说明（2026-04-09 重写）：
+      # 之前的 deploy.yml 把 Game1 部署到了 /usr/share/nginx/html/game 和 /var/www/html/game
+      # 等多个目录，其中 /var/www/html/game 是 QuizGame 的目录，导致 Game1 每次 push 都会
+      # 偷偷覆盖 QuizGame，而 Game1 自己反而不会更新到 oldgame 目录。
+      #
+      # 现在的 deploy.yml 只部署到 /var/www/html/oldgame/，且 build 时强制 basePath=/oldgame，
+      # 不再触碰 game 目录、不再 reload nginx（线上是 Apache）、构建后会校验路径前缀。

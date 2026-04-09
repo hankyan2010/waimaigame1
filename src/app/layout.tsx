@@ -2,32 +2,32 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { WxShareInit } from "@/components/WxShareInit";
 
-const SITE_URL = "http://waimaiketang.com/game";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
+const SITE_URL = `https://waimaiketang.com${BASE_PATH}`;
 
 export const metadata: Metadata = {
-  title: "外卖老板段位测试，90%的人拿不到黄金",
-  description: "随机10题，测测你到底是青铜掌柜还是王者掌门",
+  title: "外卖老板7天生存挑战",
+  description: "1万本金起步，7天经营，看看你能赚多少 or 亏多少",
   openGraph: {
-    title: "外卖老板段位测试，90%的人拿不到黄金",
-    description: "随机10题，测测你到底是青铜掌柜还是王者掌门。完成挑战免费领经营诊断+实战攻略+专属方案！",
+    title: "外卖老板7天生存挑战",
+    description: "1万本金起步，7天经营，每天4个决策，看看你能赚多少 or 亏多少",
     url: `${SITE_URL}/`,
-    siteName: "外卖经营知识挑战",
+    siteName: "外卖经营模拟",
     images: [
       {
         url: `${SITE_URL}/share-cover.png`,
         width: 600,
         height: 600,
-        alt: "答题领经营大礼包",
+        alt: "外卖老板7天生存挑战",
       },
     ],
     type: "website",
     locale: "zh_CN",
   },
   other: {
-    // WeChat specific meta tags
     "twitter:card": "summary",
-    "twitter:title": "外卖老板段位测试，90%的人拿不到黄金",
-    "twitter:description": "随机10题，测测你到底是青铜掌柜还是王者掌门",
+    "twitter:title": "外卖老板7天生存挑战",
+    "twitter:description": "1万本金起步，7天经营，看看你能赚多少 or 亏多少",
     "twitter:image": `${SITE_URL}/share-cover.png`,
   },
 };

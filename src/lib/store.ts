@@ -63,11 +63,18 @@ interface GameStore {
   bestDaysSurvived: number;
 
   // 裂变：每日次数+分享解锁
-  freePlaysPerDay: number;
-  playsToday: number;
+  freePlaysPerDay: number;        // 每天免费次数
+  playsToday: number;             // 今天已玩次数
   lastPlayDate: string;
-  sharedPlaysToday: number;
-  maxSharedPlays: number;
+  sharedPlaysToday: number;       // 今天通过【自己分享海报】解锁的次数
+  maxSharedPlays: number;         // 自分享解锁次数上限
+  inviteCredits: number;          // 通过【别人扫码】累积的额外次数（来自后端）
+  inviteScannerCount: number;     // 已被多少人扫码（统计展示用）
+  inviteCap: number;              // 邀请扫码上限（来自后端）
+  inviteCreditsConsumed: number;  // 已经用掉的邀请次数
+
+  // 玩家身份（用于裂变追踪）
+  playerId: string;
 
   // 展示名（排行榜兼容）
   displayName: string;
@@ -91,12 +98,26 @@ interface GameStore {
   setDisplayName: (name: string) => void;
   goToReward: () => void;
   reset: () => void;
+
+  // 裂变 actions
+  ensurePlayerId: () => string;
+  refreshInviteCredits: () => Promise<void>;
+  recordInviteScan: (inviterId: string) => Promise<{ credited: boolean; reason: string }>;
 }
 
 function todayStr(): string {
   const d = new Date();
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
+
+function generatePlayerId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `p_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+const API_BASE = "/api";
 
 function pickQuestions(count: number, excludeIds: string[]): SimQuestion[] {
   const available = QUESTION_BANK.filter((q) => !excludeIds.includes(q.id));
@@ -133,11 +154,17 @@ export const useGameStore = create<GameStore>()(
       bestFinalCash: 0,
       bestDaysSurvived: 0,
 
-      freePlaysPerDay: 3,
+      freePlaysPerDay: 1,           // 改为：每天免费 1 次
       playsToday: 0,
       lastPlayDate: "",
       sharedPlaysToday: 0,
-      maxSharedPlays: 2,
+      maxSharedPlays: 1,            // 改为：自分享海报只能 +1 次
+      inviteCredits: 0,
+      inviteScannerCount: 0,
+      inviteCap: 5,
+      inviteCreditsConsumed: 0,
+
+      playerId: "",
 
       displayName: "",
       hasSubmittedDisplayName: false,
@@ -150,15 +177,27 @@ export const useGameStore = create<GameStore>()(
       canPlay: () => {
         const s = get();
         const today = todayStr();
+        // 跨天 → 今天的免费次数和自分享次数都重置，邀请扫码额度跨天保留
         if (s.lastPlayDate !== today) return true;
-        return s.playsToday < s.freePlaysPerDay + s.sharedPlaysToday;
+        const dailyTotal = s.freePlaysPerDay + s.sharedPlaysToday;
+        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+        return s.playsToday < dailyTotal || inviteAvailable > 0;
       },
 
       remainingFreePlays: () => {
         const s = get();
         const today = todayStr();
-        if (s.lastPlayDate !== today) return s.freePlaysPerDay;
-        return Math.max(0, s.freePlaysPerDay + s.sharedPlaysToday - s.playsToday);
+        if (s.lastPlayDate !== today) {
+          // 新的一天：免费次数 + 历史邀请未消费的额度
+          const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+          return s.freePlaysPerDay + inviteAvailable;
+        }
+        const dailyRemaining = Math.max(
+          0,
+          s.freePlaysPerDay + s.sharedPlaysToday - s.playsToday
+        );
+        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+        return dailyRemaining + inviteAvailable;
       },
 
       todaysRevenue: () => {
@@ -176,8 +215,19 @@ export const useGameStore = create<GameStore>()(
       startNewGame: () => {
         const s = get();
         const today = todayStr();
-        const playsToday = s.lastPlayDate === today ? s.playsToday + 1 : 1;
-        const sharedPlaysToday = s.lastPlayDate === today ? s.sharedPlaysToday : 0;
+        const isNewDay = s.lastPlayDate !== today;
+        const playsToday = isNewDay ? 1 : s.playsToday + 1;
+        const sharedPlaysToday = isNewDay ? 0 : s.sharedPlaysToday;
+
+        // 决定这局消耗的是哪一种次数：
+        // 优先消耗当日免费 + 自分享次数；用完了才消耗邀请额度
+        const dailyTotal = s.freePlaysPerDay + sharedPlaysToday;
+        let inviteCreditsConsumed = isNewDay ? 0 : s.inviteCreditsConsumed;
+        // 跨天：邀请已消费数清零，因为 inviteCredits 是累计的、跨天保留
+        // 当天里：如果已经把 daily 用完了，这局要消耗一个邀请额度
+        if (!isNewDay && playsToday > dailyTotal) {
+          inviteCreditsConsumed = inviteCreditsConsumed + 1;
+        }
 
         set({
           phase: "day-intro",
@@ -197,6 +247,7 @@ export const useGameStore = create<GameStore>()(
           lastPlayDate: today,
           playsToday,
           sharedPlaysToday,
+          inviteCreditsConsumed,
         });
 
         // 直接进入第一天
@@ -383,8 +434,57 @@ export const useGameStore = create<GameStore>()(
 
       markSharedForExtraPlay: () => {
         const s = get();
+        const today = todayStr();
+        // 跨天先重置自分享计数
+        if (s.lastPlayDate !== today) {
+          set({ lastPlayDate: today, sharedPlaysToday: 1, playsToday: 0 });
+          return;
+        }
         if (s.sharedPlaysToday >= s.maxSharedPlays) return;
         set({ sharedPlaysToday: s.sharedPlaysToday + 1 });
+      },
+
+      ensurePlayerId: () => {
+        const s = get();
+        if (s.playerId) return s.playerId;
+        const id = generatePlayerId();
+        set({ playerId: id });
+        return id;
+      },
+
+      refreshInviteCredits: async () => {
+        const s = get();
+        const id = s.playerId || get().ensurePlayerId();
+        try {
+          const res = await fetch(
+            `${API_BASE}/invite/credits?player=${encodeURIComponent(id)}`
+          );
+          if (!res.ok) return;
+          const data = await res.json();
+          set({
+            inviteCredits: data.credits ?? 0,
+            inviteScannerCount: data.scannerCount ?? 0,
+            inviteCap: data.cap ?? 5,
+          });
+        } catch {
+          // 静默失败，不影响游戏主流程
+        }
+      },
+
+      recordInviteScan: async (inviterId: string) => {
+        const scanner = get().playerId || get().ensurePlayerId();
+        try {
+          const res = await fetch(`${API_BASE}/invite/scan`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ inviter: inviterId, scanner }),
+          });
+          if (!res.ok) return { credited: false, reason: "http_error" };
+          const data = await res.json();
+          return { credited: !!data.credited, reason: data.reason || "unknown" };
+        } catch {
+          return { credited: false, reason: "network_error" };
+        }
       },
 
       setDisplayName: (name: string) => {
@@ -421,6 +521,10 @@ export const useGameStore = create<GameStore>()(
         playsToday: state.playsToday,
         lastPlayDate: state.lastPlayDate,
         sharedPlaysToday: state.sharedPlaysToday,
+        inviteCredits: state.inviteCredits,
+        inviteScannerCount: state.inviteScannerCount,
+        inviteCreditsConsumed: state.inviteCreditsConsumed,
+        playerId: state.playerId,
         displayName: state.displayName,
         hasSubmittedDisplayName: state.hasSubmittedDisplayName,
       }),

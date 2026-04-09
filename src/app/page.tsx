@@ -7,12 +7,15 @@ import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
 import { getLeaderboard } from "@/lib/leaderboard";
 import { setupWxShare } from "@/lib/wx-share";
+import { PosterModal } from "@/components/PosterModal";
 
 export default function HomePage() {
   const router = useRouter();
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
   const [showShareGate, setShowShareGate] = useState(false);
+  const [showPoster, setShowPoster] = useState(false);
+  const [inviteToast, setInviteToast] = useState<string>("");
 
   const [boardCount, setBoardCount] = useState(0);
   const [topName, setTopName] = useState<string | null>(null);
@@ -24,8 +27,36 @@ export default function HomePage() {
     setBoardCount(board.length);
     setTopName(board[0]?.displayName ?? null);
 
+    // 确保有玩家 ID + 拉取邀请额度
+    useGameStore.getState().ensurePlayerId();
+    useGameStore.getState().refreshInviteCredits();
+
+    // 检测 ?invite= 参数：如果是从别人海报扫码进来，记录扫码事件
+    const params = new URLSearchParams(window.location.search);
+    const inviter = params.get("invite");
+    if (inviter) {
+      const myId = useGameStore.getState().playerId;
+      if (inviter !== myId) {
+        useGameStore
+          .getState()
+          .recordInviteScan(inviter)
+          .then((res) => {
+            if (res.credited) {
+              setInviteToast("✨ 你帮朋友增加了 1 次挑战机会");
+              track("invite_scan_success", { inviter });
+            } else if (res.reason === "duplicate") {
+              setInviteToast("已经扫过这位朋友的码啦");
+            } else if (res.reason === "self") {
+              // silent
+            }
+          });
+      }
+      // 清掉 URL 参数避免刷新重复（不影响 hash router）
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+
     // D1 分享：老用户晒最佳战绩，新用户走悬念测试
-    // 直接从 store 读，不依赖上面的 hydrated 状态变量
     const s = useGameStore.getState();
     const hasRecord = s.totalPlays > 0 && s.bestFinalCash > 0;
     if (hasRecord) {
@@ -44,11 +75,20 @@ export default function HomePage() {
     }
   }, []);
 
+  // inviteToast 自动消失
+  useEffect(() => {
+    if (!inviteToast) return;
+    const t = setTimeout(() => setInviteToast(""), 3500);
+    return () => clearTimeout(t);
+  }, [inviteToast]);
+
   const canPlay = hydrated ? store.canPlay() : true;
-  const remainingPlays = hydrated ? store.remainingFreePlays() : 3;
+  const remainingPlays = hydrated ? store.remainingFreePlays() : 1;
   const totalPlays = hydrated ? store.totalPlays : 0;
   const bestCash = hydrated ? store.bestFinalCash : 0;
   const bestDays = hydrated ? store.bestDaysSurvived : 0;
+  const inviteScannerCount = hydrated ? store.inviteScannerCount : 0;
+  const inviteCredits = hydrated ? store.inviteCredits : 0;
 
   const handleStart = () => {
     if (canPlay) {
@@ -61,10 +101,10 @@ export default function HomePage() {
     }
   };
 
-  const handleShareToUnlock = () => {
-    store.markSharedForExtraPlay();
+  const handleOpenPoster = () => {
     setShowShareGate(false);
-    track("share_unlock_success");
+    setShowPoster(true);
+    track("poster_open");
   };
 
   return (
@@ -114,13 +154,23 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-bold text-title">今日挑战次数</p>
-              <p className="text-xs text-secondary">每日刷新，分享可加次数</p>
+              <p className="text-xs text-secondary">
+                每天免费 1 次 · 分享海报 +1 次 · 朋友扫码每人 +1 次
+              </p>
             </div>
             <div className="text-right">
               <div className="text-2xl font-black text-title">{remainingPlays}</div>
               <div className="text-[10px] text-secondary">剩余</div>
             </div>
           </div>
+          {hydrated && inviteScannerCount > 0 && (
+            <div className="mt-2 pt-2 border-t border-black/5 flex items-center justify-between text-[11px]">
+              <span className="text-secondary">
+                🎯 已有 <span className="font-bold text-title">{inviteScannerCount}</span> 位朋友扫了你的码
+              </span>
+              <span className="text-brand-dark font-bold">+{inviteCredits} 次</span>
+            </div>
+          )}
         </div>
 
         {/* How it works */}
@@ -191,21 +241,33 @@ export default function HomePage() {
                 今日挑战次数已用完
               </h3>
               <p className="text-sm text-secondary">
-                你已经超过 80% 的玩家
+                生成你的专属挑战海报
                 <br />
-                想继续挑战更高收益？
+                保存或转发，立刻 +1 次挑战机会
+                <br />
+                每个朋友扫码再帮你 +1 次（最多 +5 次）
               </p>
             </div>
 
             <div className="space-y-2">
-              <button onClick={handleShareToUnlock} className="btn-raised text-sm">
-                分享朋友圈 +1 次
+              <button onClick={handleOpenPoster} className="btn-raised text-sm">
+                生成专属海报
               </button>
               <button onClick={() => setShowShareGate(false)} className="btn-raised-ghost text-sm">
                 明天再玩
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Poster modal */}
+      <PosterModal open={showPoster} onClose={() => setShowPoster(false)} />
+
+      {/* Invite scan toast */}
+      {inviteToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] bg-black/85 text-white text-xs px-4 py-2 rounded-full shadow-lg">
+          {inviteToast}
         </div>
       )}
 

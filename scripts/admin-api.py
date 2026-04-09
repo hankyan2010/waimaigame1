@@ -11,6 +11,8 @@ DATA_DIR = '/opt/waimai-data'
 QUESTIONS_FILE = os.path.join(DATA_DIR, 'questions.json')
 STATS_FILE = os.path.join(DATA_DIR, 'stats.json')
 LEADERBOARD_FILE = os.path.join(DATA_DIR, 'leaderboard.json')
+INVITES_FILE = os.path.join(DATA_DIR, 'invites.json')
+INVITE_CREDIT_CAP = 5  # 单个玩家最多通过邀请扫码获得多少次额外挑战
 TOKEN_SECRET = 'waimai-quiz-token-2024'
 
 # Ensure data dir exists
@@ -65,6 +67,16 @@ def save_leaderboard(entries):
     with open(LEADERBOARD_FILE, 'w', encoding='utf-8') as f:
         json.dump(entries, f, ensure_ascii=False, indent=2)
 
+def load_invites():
+    if os.path.exists(INVITES_FILE):
+        with open(INVITES_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def save_invites(data):
+    with open(INVITES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
 # --- HTTP Handler ---
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -93,6 +105,9 @@ class Handler(BaseHTTPRequestHandler):
 
         elif path == '/api/leaderboard':
             return self.handle_get_leaderboard(query)
+
+        elif path == '/api/invite/credits':
+            return self.handle_get_invite_credits(query)
 
         self.respond(404, {'error': 'not found'})
 
@@ -138,6 +153,9 @@ class Handler(BaseHTTPRequestHandler):
 
         elif path == '/api/leaderboard':
             return self.handle_post_leaderboard(body)
+
+        elif path == '/api/invite/scan':
+            return self.handle_post_invite_scan(body)
 
         self.respond(404, {'error': 'not found'})
 
@@ -252,6 +270,70 @@ class Handler(BaseHTTPRequestHandler):
                 break
 
         return self.respond(200, {'ok': True, 'rank': rank})
+
+    # --- Invite handlers ---
+
+    def handle_get_invite_credits(self, query):
+        """GET /api/invite/credits?player=ID - 查询某玩家通过被扫码累积的额外挑战次数"""
+        player = query.get('player', [''])[0]
+        if not player:
+            return self.respond(400, {'error': 'player required'})
+        invites = load_invites()
+        record = invites.get(player, {})
+        return self.respond(200, {
+            'player': player,
+            'credits': record.get('credits', 0),
+            'scannerCount': len(record.get('scanners', [])),
+            'cap': INVITE_CREDIT_CAP,
+        })
+
+    def handle_post_invite_scan(self, body):
+        """POST /api/invite/scan body {inviter, scanner} - 记录扫码事件，给 inviter +1 次（去重 + 上限）"""
+        inviter = (body.get('inviter') or '').strip()
+        scanner = (body.get('scanner') or '').strip()
+        if not inviter or not scanner:
+            return self.respond(400, {'error': 'inviter and scanner required'})
+        if inviter == scanner:
+            # 防自刷
+            return self.respond(200, {'credited': False, 'reason': 'self', 'credits': 0})
+
+        invites = load_invites()
+        record = invites.get(inviter)
+        now = int(time.time() * 1000)
+        if record is None:
+            record = {'credits': 0, 'scanners': [], 'createdAt': now, 'updatedAt': now}
+            invites[inviter] = record
+
+        scanners = record.get('scanners', [])
+        if scanner in scanners:
+            return self.respond(200, {
+                'credited': False,
+                'reason': 'duplicate',
+                'credits': record.get('credits', 0),
+                'cap': INVITE_CREDIT_CAP,
+            })
+
+        # 新扫码人
+        scanners.append(scanner)
+        record['scanners'] = scanners
+        record['updatedAt'] = now
+
+        # 上限保护：scanners 可以无上限增长（用于统计），但 credits 卡上限
+        current_credits = record.get('credits', 0)
+        if current_credits < INVITE_CREDIT_CAP:
+            record['credits'] = current_credits + 1
+            credited = True
+        else:
+            credited = False  # 已达上限，扫码记录但不再 +1
+
+        save_invites(invites)
+        return self.respond(200, {
+            'credited': credited,
+            'reason': 'ok' if credited else 'cap_reached',
+            'credits': record['credits'],
+            'cap': INVITE_CREDIT_CAP,
+            'scannerCount': len(scanners),
+        })
 
     # --- Helpers ---
     def get_token(self):

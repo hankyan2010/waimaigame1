@@ -5,19 +5,24 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import { track } from "@/lib/track";
+import { PosterModal } from "@/components/PosterModal";
 
-const BASE = "/game";
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
 
 export default function RewardPage() {
   const router = useRouter();
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
+  const [showPoster, setShowPoster] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
     if (store.endingType) {
       track("reward_page_view", { ending: store.endingType });
     }
+    // 确保有玩家 ID + 拉取邀请额度
+    useGameStore.getState().ensurePlayerId();
+    useGameStore.getState().refreshInviteCredits();
   }, []);
 
   if (!hydrated) return null;
@@ -39,9 +44,17 @@ export default function RewardPage() {
   const profit = finalCash - GAME_CONFIG.initialCash;
   const isBankrupt = store.endingType === "bankrupt";
 
+  const canPlay = store.canPlay();
+
   const handleReplay = () => {
-    store.reset();
-    router.push("/");
+    if (canPlay) {
+      store.reset();
+      router.push("/");
+      track("reward_replay");
+    } else {
+      setShowPoster(true);
+      track("reward_share_gate");
+    }
   };
 
   return (
@@ -146,11 +159,22 @@ export default function RewardPage() {
       </div>
 
       {/* Bottom */}
-      <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
-        <button onClick={handleReplay} className="btn-raised-ghost text-base">
-          再来一局
+      <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent space-y-2">
+        <button
+          onClick={handleReplay}
+          className={canPlay ? "btn-raised-ghost text-base" : "btn-raised text-base"}
+        >
+          {canPlay ? "再来一局" : "分享海报解锁挑战"}
         </button>
+        {!canPlay && (
+          <p className="text-center text-[10px] text-secondary">
+            今日次数已用完 · 分享海报 +1 次 · 朋友扫码每人 +1 次
+          </p>
+        )}
       </div>
+
+      {/* Poster modal */}
+      <PosterModal open={showPoster} onClose={() => setShowPoster(false)} />
     </div>
   );
 }
