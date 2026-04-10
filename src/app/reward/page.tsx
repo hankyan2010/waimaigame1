@@ -23,20 +23,11 @@ export default function RewardPage() {
 
   if (!hydrated) return null;
 
-  if (!store.endingType || !store.playerTag) {
-    return (
-      <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6">
-        <p className="text-sm text-secondary mb-4">还没完成一局挑战</p>
-        <button onClick={() => router.push("/")} className="btn-raised text-sm max-w-xs">
-          回首页
-        </button>
-      </div>
-    );
-  }
-
-  const ending = ENDING_INFO[store.endingType];
-  const tag = TAG_INFO[store.playerTag];
-  const finalCash = store.state.cash;
+  // 允许直接访问领奖页（测试用），没有游戏数据时用默认值
+  const hasGameData = !!store.endingType && !!store.playerTag;
+  const ending = hasGameData ? ENDING_INFO[store.endingType!] : ENDING_INFO.survive;
+  const tag = hasGameData ? TAG_INFO[store.playerTag!] : TAG_INFO.balanced_master;
+  const finalCash = hasGameData ? store.state.cash : GAME_CONFIG.initialCash;
   const profit = finalCash - GAME_CONFIG.initialCash;
   const isBankrupt = store.endingType === "bankrupt";
 
@@ -73,6 +64,9 @@ export default function RewardPage() {
         <div className="bg-card rounded-2xl p-4 shadow-sm">
           <p className="text-base font-black text-title text-center mb-1">
             🔥 外卖实战资料包
+          </p>
+          <p className="text-lg font-black text-red-600 text-center mb-1">
+            全部免费领取
           </p>
           <p className="text-xs text-secondary text-center mb-3">
             300+外卖老板验证有效 · 拿到就能用 · 用了就能涨
@@ -153,7 +147,7 @@ export default function RewardPage() {
               </p>
               <div className="bg-brand/10 rounded-lg p-2">
                 <p className="text-[11px] text-title leading-snug">
-                  <span className="font-bold">额外福利：</span>加微信还能免费获得1次一对一经营诊断，闫寒老师亲自帮你看店铺数据。
+                  <span className="font-bold">额外福利：</span>加微信还能免费获得1次一对一经营诊断，由资深外卖运营专家帮你看店铺数据。
                 </p>
               </div>
             </div>

@@ -232,17 +232,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* 临时调试：测试金币动画 + 音效（不依赖游戏流程，独立验证） */}
-      <div className="text-center pb-1">
-        <button
-          onClick={triggerTestCoin}
-          className="text-[11px] text-secondary/60 underline px-3 py-1"
-        >
-          🪙 测试掉金币动画 + 音效
-        </button>
-      </div>
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v3.5.0
+        v4.1.0
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}
