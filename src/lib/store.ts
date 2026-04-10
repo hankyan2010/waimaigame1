@@ -180,12 +180,9 @@ export const useGameStore = create<GameStore>()(
       },
 
       canPlay: () => {
-        const s = get();
-        const today = todayStr();
-        if (s.lastPlayDate !== today) return true; // 新的一天
-        const dailyTotal = s.freePlaysPerDay;
-        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-        return s.playsToday < dailyTotal + inviteAvailable;
+        // v4.2.4: 暂时取消次数限制，先让产品跑通
+        // 分享引导改在高光时刻触发（result页thrive结局），不靠限次
+        return true;
       },
 
       remainingFreePlays: () => {

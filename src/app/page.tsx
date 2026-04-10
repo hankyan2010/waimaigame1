@@ -237,7 +237,7 @@ export default function HomePage() {
       )}
 
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v4.2.0
+        v4.2.4
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}
