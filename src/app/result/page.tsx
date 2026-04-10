@@ -20,6 +20,7 @@ export default function ResultPage() {
   const [pendingRank, setPendingRank] = useState<number | null>(null);
   const [submittedRank, setSubmittedRank] = useState<number | null>(null);
   const [nameInput, setNameInput] = useState("");
+  const [showShareTip, setShowShareTip] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
@@ -268,9 +269,18 @@ export default function ResultPage() {
             >
               查看英雄榜
             </button>
-            <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
-              再来一局
-            </button>
+            {store.canPlay() ? (
+              <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
+                再来一局
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowShareTip(true)}
+                className="btn-raised-ghost text-sm"
+              >
+                分享获得更多次数
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -310,6 +320,20 @@ export default function ResultPage() {
               >
                 算了不留
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 分享引导 */}
+      {showShareTip && (
+        <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
+             onClick={() => setShowShareTip(false)}>
+          <div className="text-right mt-0">
+            <div className="text-6xl animate-bounce">👆</div>
+            <div className="bg-white rounded-2xl p-4 mt-2 max-w-[260px]">
+              <p className="text-sm font-bold text-title mb-1">点击右上角「...」</p>
+              <p className="text-xs text-secondary">发给朋友来挑战，每个朋友参与你就多一次机会</p>
             </div>
           </div>
         </div>
