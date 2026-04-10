@@ -26,9 +26,9 @@ export const GAME_CONFIG = {
   initialEnterConversion: 0.08,  // 入店转化 8%
   initialOrderConversion: 0.15,  // 下单转化 15%
   initialAvgPrice: 25,           // 客单 ¥25
-  initialBadReviewRate: 0.05,    // 开局差评 5%
-  dailyRent: 300,
-  dailyStaff: 200,
+  initialBadReviewRate: 0.03,    // 开局差评 3%（降低给好玩家更高天花板）
+  dailyRent: 450,
+  dailyStaff: 350,
 };
 
 export const INITIAL_STATE: GameState = {
@@ -42,6 +42,15 @@ export const INITIAL_STATE: GameState = {
 };
 
 export const DAILY_COST = GAME_CONFIG.dailyRent + GAME_CONFIG.dailyStaff;
+
+/**
+ * v4.4 数值设计目标：
+ * - 差的情况：1000 × 5% × 10% × ¥20 = ¥100/天
+ * - 好的情况：3000 × 15% × 25% × ¥30 = ¥3375/天
+ * - 差距33倍，乘法效应让每个决策都是生死抉择
+ * - 倒闭率目标：30-40%
+ * - 暴赚路线：5天 ¥50000+
+ */
 
 export const DAY_STORIES: DayStory[] = [
   {
@@ -125,16 +134,27 @@ export { QUESTION_BANK };
 // === 随机事件库 ===
 
 export const RANDOM_EVENTS: RandomEvent[] = [
-  { id: "e1", title: "平台流量扶持", desc: "被选中为本区新店推荐，免费曝光大涨", effect: { exposure: 250 }, emoji: "🎁" },
-  { id: "e2", title: "爆品火了", desc: "你家招牌菜突然被小红书推爆", effect: { exposure: 200, orderConversion: 0.015 }, emoji: "🔥" },
-  { id: "e3", title: "差评爆发", desc: "一个恶意差评被顶到首位", effect: { badReviewRate: 0.03, orderConversion: -0.01 }, emoji: "💢" },
-  { id: "e4", title: "骑手延误", desc: "暴雨导致骑手严重延误", effect: { badReviewRate: 0.02, exposure: -50 }, emoji: "🌧️" },
-  { id: "e5", title: "网红探店", desc: "一位小网红主动来探店", effect: { exposure: 150, enterConversion: 0.01 }, emoji: "📸" },
-  { id: "e6", title: "食品安全检查", desc: "今日突击检查，需要整改", effect: { cash: -300, badReviewRate: -0.01 }, emoji: "🏥" },
-  { id: "e7", title: "下雨订单暴涨", desc: "大雨导致外卖订单翻倍", effect: { exposure: 300, cash: 200 }, emoji: "☔" },
-  { id: "e8", title: "老客集中消费", desc: "几个大客户同时点单", effect: { cash: 400, avgPrice: 1 }, emoji: "💰" },
-  { id: "e9", title: "员工请假", desc: "后厨有人请假，出餐慢了", effect: { badReviewRate: 0.02, cash: 100 }, emoji: "😷" },
-  { id: "e10", title: "竞品关店", desc: "隔壁家突然关门，你捡到流量", effect: { exposure: 200, enterConversion: 0.01 }, emoji: "🎉" },
+  // === 暴赚事件 ===
+  { id: "e1", title: "平台爆量扶持", desc: "被选为本区重点扶持新店，曝光暴涨！", effect: { exposure: 2000 }, emoji: "🎁" },
+  { id: "e2", title: "美食博主百万播放", desc: "一个百万粉博主自发推荐了你的店！入店率翻倍", effect: { exposure: 1500, enterConversion: 0.06 }, emoji: "🔥" },
+  { id: "e7", title: "暴雨订单狂潮", desc: "连续暴雨，全城点外卖，订单翻3倍", effect: { exposure: 1000, cash: 1500, orderConversion: 0.03 }, emoji: "☔" },
+  { id: "e8", title: "企业团餐大单", desc: "隔壁公司200人团建，全点了你家", effect: { cash: 3000, avgPrice: 5 }, emoji: "💰" },
+  { id: "e10", title: "竞品集体关门", desc: "同品类3家店同时关门，你独吞流量", effect: { exposure: 1500, enterConversion: 0.04 }, emoji: "🎉" },
+  { id: "e12", title: "抖音自然爆单", desc: "顾客发的短视频突然火了，50万播放", effect: { exposure: 2000, enterConversion: 0.05, orderConversion: 0.03 }, emoji: "📱" },
+
+  // === 暴死事件 ===
+  { id: "e3", title: "食品安全事故", desc: "顾客吃出异物，12315投诉+差评轰炸", effect: { cash: -5000, badReviewRate: 0.08, orderConversion: -0.04 }, emoji: "☠️" },
+  { id: "e4", title: "平台封店3天", desc: "被举报违规操作，平台暂停营业3天", effect: { cash: -3000, exposure: -1000 }, emoji: "🚫" },
+  { id: "e6", title: "骑手集体罢工", desc: "配送站骑手集体请假，今天几乎0配送", effect: { cash: -2000, badReviewRate: 0.06 }, emoji: "🏃" },
+  { id: "e9", title: "后厨集体辞职", desc: "主厨带走两个帮工，今天出餐崩了", effect: { cash: -2500, badReviewRate: 0.06, orderConversion: -0.03 }, emoji: "😱" },
+  { id: "e11", title: "食材全部变质", desc: "冷柜半夜断电，今天的食材全废了", effect: { cash: -3000, badReviewRate: 0.04 }, emoji: "🤮" },
+  { id: "e13", title: "恶意差评轰炸", desc: "竞品雇水军刷了20条1星差评", effect: { badReviewRate: 0.10, enterConversion: -0.03, orderConversion: -0.04 }, emoji: "💢" },
+
+  // === 中等事件 ===
+  { id: "e5", title: "网红探店", desc: "一位小网红主动来探店发帖", effect: { exposure: 800, enterConversion: 0.03 }, emoji: "📸" },
+  { id: "e14", title: "隔壁开了新店", desc: "同品类新店开业大促，分走你的流量", effect: { exposure: -500, enterConversion: -0.02 }, emoji: "😤" },
+  { id: "e15", title: "房东涨租", desc: "房东突然要涨租30%，这个月多交¥1500", effect: { cash: -1500 }, emoji: "🏠" },
+  { id: "e16", title: "老客带新客", desc: "忠实顾客在业主群推荐了你", effect: { exposure: 600, orderConversion: 0.02 }, emoji: "👥" },
 ];
 
 export function pickQuestionsForDay(day: number, excludeIds: string[]): SimQuestion[] {
@@ -217,19 +237,19 @@ export function determinePlayerTag(
 
   // === 倒闭类（3种） ===
   if (ending === "bankrupt") {
-    if (totalAdSpend >= 2000) return "traffic_gambler";  // 砸推广砸死的
-    if (avgPriceChange <= -5) return "price_killer";     // 降价降死的
-    return "rookie_dead";                                 // 其他原因倒闭
+    if (totalAdSpend >= 6000) return "traffic_gambler";   // 砸推广砸死的
+    if (avgPriceChange <= -12) return "price_killer";     // 降价降死的
+    return "rookie_dead";                                  // 其他原因倒闭
   }
 
   // === 爆赚类（5种） ===
   if (ending === "thrive") {
-    if (finalState.badReviewRate <= 0.02 && finalState.orderConversion >= 0.20)
+    if (finalState.badReviewRate <= 0.02 && finalState.orderConversion >= 0.30)
       return "speed_demon";                               // 差评超低+下单率超高
-    if (profitRate >= 0.6) return "profit_harvester";     // 暴利
-    if (finalState.enterConversion >= 0.12 && finalState.orderConversion >= 0.18)
+    if (profitRate >= 2.0) return "profit_harvester";     // 暴利（赚了2倍以上）
+    if (finalState.enterConversion >= 0.18 && finalState.orderConversion >= 0.25)
       return "menu_artist";                               // 双转化率都高=菜单牛逼
-    if (totalAdSpend <= 300 && profit > 0)
+    if (totalAdSpend <= 1000 && profit > 0)
       return "cost_miser";                                // 几乎不花钱还赚了
     return "balanced_master";                             // 其他爆赚
   }
@@ -237,24 +257,24 @@ export function determinePlayerTag(
   // === 存活类（8种）——大部分人在这里，要足够丰富 ===
 
   // 先判断极端特征
-  if (avgPriceChange <= -4) return "price_killer";        // 疯狂降价
-  if (totalAdSpend >= 1500) return "coupon_addict";       // 满减/推广上瘾
+  if (avgPriceChange <= -10) return "price_killer";       // 疯狂降价
+  if (totalAdSpend >= 5000) return "coupon_addict";       // 满减/推广上瘾
 
   // 口碑相关
   if (finalState.badReviewRate <= 0.02) return "reputation_guard"; // 差评极低
-  if (finalState.badReviewRate >= 0.10) return "disaster_magnet";  // 差评爆炸
+  if (finalState.badReviewRate >= 0.15) return "disaster_magnet";  // 差评爆炸
 
   // 数据相关
-  if (finalState.enterConversion >= 0.11 && finalState.orderConversion >= 0.18)
+  if (finalState.enterConversion >= 0.16 && finalState.orderConversion >= 0.25)
     return "data_nerd";                                   // 双转化高=懂数据
 
   // 利润相关
-  if (profitRate >= 0.15) return "yolo_boss";             // 中等盈利，敢搏
-  if (profitRate > 0 && profitRate < 0.05) return "survivor_king"; // 勉强赚了一点
+  if (profitRate >= 0.5) return "yolo_boss";              // 中等盈利，敢搏
+  if (profitRate > 0 && profitRate < 0.1) return "survivor_king"; // 勉强赚了一点
 
   // 随机事件运气（看最终曝光变化）
-  if (finalState.exposure >= 2200) return "lucky_dog";    // 曝光特别高=运气好
-  if (finalState.exposure <= 800) return "disaster_magnet"; // 曝光特别低=运气差
+  if (finalState.exposure >= 4000) return "lucky_dog";    // 曝光特别高=运气好
+  if (finalState.exposure <= 500) return "disaster_magnet"; // 曝光特别低=运气差
 
   // 兜底：随机给一个有趣的
   const fallbacks: PlayerTag[] = ["review_beggar", "survivor_king", "data_nerd", "yolo_boss"];
@@ -272,12 +292,15 @@ export function generateDailyComment(summary: {
 }): string {
   const { profit, exposure, badReviewRate, avgPriceDelta } = summary;
 
-  if (profit < -500) return "今天方向错误，正在严重亏损";
-  if (profit < 0) return "今天在烧钱换增长，小心现金流";
-  if (avgPriceDelta < -2) return "你在用低价换流量，利润被压扁了";
-  if (badReviewRate > 0.05) return "差评在积累，口碑是外卖的命根";
-  if (exposure > 150) return "曝光拉起来了，继续优化转化";
-  if (profit > 500) return "稳中有升，这就是做外卖的正道";
+  if (profit < -3000) return "血亏！再来一天这样的就要倒闭了";
+  if (profit < -1500) return "今天亏得肉疼，方向必须调整";
+  if (profit < 0) return "今天在烧钱换增长，小心现金流见底";
+  if (avgPriceDelta < -5) return "客单价崩了，你在用底裤换流量";
+  if (badReviewRate > 0.10) return "差评炸了！再不管口碑就废了";
+  if (badReviewRate > 0.06) return "差评在积累，口碑是外卖的命根";
+  if (profit > 3000) return "大赚！今天每个决策都踩对了";
+  if (profit > 1500) return "稳中有升，这就是做外卖的正道";
+  if (exposure > 500) return "曝光拉起来了，继续优化转化";
   return "今天平稳过渡，看明天能不能发力";
 }
 
@@ -329,16 +352,16 @@ export function generateDiagnosisReport(
     : 0;
   let trafficScore = 60;
   let trafficComment = "";
-  if (adRatio > 0.08) {
+  if (adRatio > 0.15) {
     trafficScore = 30;
-    trafficComment = "推广费占实收超过8%，严重倒挂。所有推广都要和点金比投产比，划算就用不划算就停，没有玄学。";
-  } else if (adRatio > 0.05) {
+    trafficComment = "推广费占实收超过15%，严重倒挂。所有推广都要和点金比投产比，划算就用不划算就停，没有玄学。";
+  } else if (adRatio > 0.08) {
     trafficScore = 50;
-    trafficComment = "推广费略高。一般点金花费占实收的2-5%是健康范围。超过5%就该停下来想想了。";
-  } else if (finalState.exposure > 2000) {
+    trafficComment = "推广费略高。一般点金花费占实收的2-5%是健康范围。超过8%就该停下来想想了。";
+  } else if (finalState.exposure > 3000) {
     trafficScore = 85;
     trafficComment = "流量获取不错。记住：店铺权重越高推广越便宜，持续做好基础功就是在降低获客成本。";
-  } else if (finalState.exposure < 1000) {
+  } else if (finalState.exposure < 800) {
     trafficScore = 40;
     trafficComment = "曝光量偏低。建议组合获客：点金推广+传单+社群。线下发传单现在反而比线上流量便宜。";
   } else {
@@ -351,13 +374,13 @@ export function generateDiagnosisReport(
   let convComment = "";
   const enterPct = finalState.enterConversion;
   const orderPct = finalState.orderConversion;
-  if (enterPct >= 0.12 && orderPct >= 0.20) {
+  if (enterPct >= 0.18 && orderPct >= 0.28) {
     convScore = 90;
     convComment = "双转化率优秀！入店率和下单率都在高位，同样的流量你能比对手多接很多单。";
-  } else if (enterPct >= 0.10 || orderPct >= 0.18) {
+  } else if (enterPct >= 0.12 || orderPct >= 0.22) {
     convScore = 70;
     convComment = "转化率不错。继续优化：入店率低改封面图和评分，下单率低改菜单结构和价格。";
-  } else if (enterPct < 0.06 || orderPct < 0.12) {
+  } else if (enterPct < 0.05 || orderPct < 0.08) {
     convScore = 30;
     convComment = "转化率很低，流量进来了但接不住。最优先：精简菜单、主推品放首位、封面图重拍。";
   } else {
@@ -387,13 +410,13 @@ export function generateDiagnosisReport(
   // 4. 成本控制
   let costScore = 60;
   let costComment = "";
-  if (avgPriceChange <= -4) {
+  if (avgPriceChange <= -10) {
     costScore = 25;
-    costComment = "客单价暴跌！降价超过4元等于每单少赚16%。正确做法：主食微利引流，利润靠福利品赚。福利品应占菜单30%。";
-  } else if (avgPriceChange <= -2) {
+    costComment = "客单价暴跌！降价超过10元等于每单少赚40%。正确做法：主食微利引流，利润靠福利品赚。福利品应占菜单30%。";
+  } else if (avgPriceChange <= -5) {
     costScore = 45;
     costComment = "客单价下滑明显。降价容易涨价难。建议用套餐组合拉客单价，比直接涨价更自然。";
-  } else if (avgPriceChange >= 3) {
+  } else if (avgPriceChange >= 8) {
     costScore = 75;
     costComment = "客单价提升了，利润结构在改善。注意观察涨价后的流量变化。";
   } else {
@@ -411,7 +434,7 @@ export function generateDiagnosisReport(
   if (ending === "bankrupt") {
     stratScore = 20;
     stratComment = "经营节奏没踩对。核心：固定成本结构不合理+决策节奏差+口碑管理不到位。外卖是持久战，前3天应该保守试水。";
-  } else if (profitTrend > 300) {
+  } else if (profitTrend > 1500) {
     stratScore = 85;
     stratComment = "经营策略很稳，后期利润在增长。为平台留住老客、减少客诉、提升流量利用率 = 平台给更多流量。";
   } else if (profitTrend > 0) {
