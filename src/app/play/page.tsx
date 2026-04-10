@@ -66,6 +66,16 @@ export default function PlayPage() {
     if (store.phase === "day-intro") setShowIntro(true);
   }, [store.state.day, store.phase]);
 
+  // 每日结算埋点
+  useEffect(() => {
+    if (store.phase === "day-settle") {
+      const summary = store.dailySummaries[store.dailySummaries.length - 1];
+      if (summary) {
+        track("day_settle", { day: summary.day, profit: summary.profit });
+      }
+    }
+  }, [store.phase, store.dailySummaries.length]);
+
   if (!hydrated) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
@@ -214,7 +224,10 @@ export default function PlayPage() {
 
         <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
           <button
-            onClick={() => store.nextDay()}
+            onClick={() => {
+              track("next_day", { day: s.day });
+              store.nextDay();
+            }}
             className="btn-raised text-base"
           >
             {isBankrupt

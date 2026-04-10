@@ -88,11 +88,13 @@ export default function ResultPage() {
     : Math.max(40, Math.min(95, 50 + Math.floor(profit / 200)));
 
   const handlePlayAgain = () => {
+    track("replay_from_result");
     store.reset();
     router.push("/play");
   };
 
   const handleGoReward = () => {
+    track("go_reward");
     router.push("/reward");
   };
 

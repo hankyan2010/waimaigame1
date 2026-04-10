@@ -218,7 +218,10 @@ export default function HomePage() {
             : "再来一局"}
         </button>
         <button
-          onClick={() => router.push("/leaderboard")}
+          onClick={() => {
+            track("view_leaderboard");
+            router.push("/leaderboard");
+          }}
           className="btn-raised-ghost text-sm mt-2"
         >
           🏆 英雄榜{hydrated && boardCount > 0 ? `（${boardCount}人在榜${topName ? "·榜首 " + topName : ""}）` : ""}
