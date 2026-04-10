@@ -15,7 +15,7 @@ export interface ShareData {
 }
 
 const DEFAULT_SHARE: ShareData = {
-  title: "我用外卖模拟器7天赚了¥63,000，你能赚多少？来比试一下真功夫",
+  title: "我用外卖模拟器5天赚了¥63,000，你能赚多少？来比试一下真功夫",
   desc: "1万本金起步，100道真实经营决策，曝光、转化、差评全实时变化",
   link: "",
   imgUrl: SHARE_IMG,

@@ -199,7 +199,7 @@ async function generatePoster(
   const profit = opts.finalCash - GAME_CONFIG.initialCash;
   ctx.font = "26px -apple-system, sans-serif";
   ctx.fillStyle = profit >= 0 ? "#2E7D32" : "#E53935";
-  const profitText = profit >= 0 ? `7天净赚 ¥${profit}` : `7天亏损 ¥${Math.abs(profit)}`;
+  const profitText = profit >= 0 ? `5天净赚 ¥${profit}` : `5天亏损 ¥${Math.abs(profit)}`;
   ctx.fillText(profitText, W / 2, cardY + 195);
 
   // 段位

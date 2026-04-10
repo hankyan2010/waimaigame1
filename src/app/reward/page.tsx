@@ -52,7 +52,7 @@ export default function RewardPage() {
           <p className="text-xs text-title/70 mt-0.5">
             {isBankrupt
               ? `你亏了¥${Math.abs(profit)}——但下面这套资料能帮你在真实经营中赚回来`
-              : `7天赚了¥${profit}——想在真实经营中复制这个成绩吗？`}
+              : `5天赚了¥${profit}——想在真实经营中复制这个成绩吗？`}
           </p>
         </div>
       </div>

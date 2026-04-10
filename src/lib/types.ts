@@ -160,7 +160,7 @@ export interface StoreState {
 export interface LeaderboardEntry {
   id: string;
   displayName: string;       // 玩家昵称或店铺名
-  profit: number;            // 7天净利润
+  profit: number;            // 5天净利润
   finalCash: number;         // 最终现金
   daysSurvived: number;      // 存活天数
   ending: EndingType;

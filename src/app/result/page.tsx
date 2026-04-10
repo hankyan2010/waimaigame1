@@ -115,7 +115,7 @@ export default function ResultPage() {
         <div className="relative z-10 text-center">
           <div className="text-5xl mb-2">{ending.emoji}</div>
           <p className="text-xs text-title/60 uppercase tracking-wider mb-1">
-            七天经营结束
+            五天经营结束
           </p>
           <h1 className="text-2xl font-black text-title mb-2">{ending.title}</h1>
           <div className="text-[44px] font-black text-title leading-none">
@@ -129,6 +129,13 @@ export default function ResultPage() {
 
       {/* Content */}
       <div className="flex-1 px-4 -mt-6 space-y-3 relative z-10">
+        {store.endingType === "thrive" && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+            <p className="text-sm font-black text-green-700 mb-1">🎉 你赚翻了！晒一下？</p>
+            <p className="text-xs text-secondary">点右上角「...」分享给朋友，看谁能超过你</p>
+          </div>
+        )}
+
         {/* Tag card */}
         <div className="bg-card rounded-2xl p-5 shadow-sm text-center">
           <div className="text-3xl mb-2">{tag.emoji}</div>
@@ -182,9 +189,32 @@ export default function ResultPage() {
           <p className="text-xs text-secondary">的外卖老板</p>
         </div>
 
+        {/* 免费资料包 - 直接内嵌 */}
+        <div className="bg-card rounded-2xl p-4 shadow-sm">
+          <div className="flex gap-3 items-start">
+            <div className="shrink-0 text-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/qrcode.png`}
+                alt="扫码领取"
+                className="w-24 h-24 rounded-lg"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-black text-title mb-0.5">
+                📦 免费领：定价公式+差评话术
+              </p>
+              <p className="text-lg font-black text-red-600 mb-1">全部免费</p>
+              <p className="text-xs text-secondary leading-relaxed">
+                扫码加微信，回复「资料包」30秒发你。额外赠送1次资深专家一对一经营诊断。
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Daily history - 完整账本 */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
-          <p className="text-sm font-bold text-title mb-3">📒 7天经营账本</p>
+          <p className="text-sm font-bold text-title mb-3">📒 5天经营账本</p>
           <div className="space-y-3">
             {store.dailySummaries.map((d) => (
               <div
@@ -229,7 +259,7 @@ export default function ResultPage() {
             </div>
           )}
           <button onClick={handleGoReward} className="btn-raised text-base">
-            {isBankrupt ? "看高手怎么做" : "领取经营福利"}
+            {isBankrupt ? "免费领避坑指南+资料包" : "免费领全套经营资料包"}
           </button>
           <div className="grid grid-cols-2 gap-2">
             <button

@@ -23,6 +23,7 @@ export default function PlayPage() {
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [showDetail, setShowDetail] = useState(false);
   const [pending, setPending] = useState<PendingAnswer | null>(null);
   const [coinKey, setCoinKey] = useState(0);
   const [showCoin, setShowCoin] = useState(false);
@@ -107,53 +108,16 @@ export default function PlayPage() {
         </div>
 
         <div className="flex-1 px-4 -mt-5 space-y-3 relative z-10 pb-4">
-          {/* 营业额公式分解 */}
+          {/* 自动点评（始终显示） */}
           <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <p className="text-xs font-bold text-title mb-2">📊 营业额是怎么算出来的</p>
-            <div className="bg-bg/40 rounded-xl p-3 mb-2">
-              <div className="text-[11px] text-secondary text-center mb-1">
-                曝光 × 入店率 × 下单率 × 客单价
-              </div>
-              <div className="text-center text-sm font-black text-title">
-                {summary.exposureEnd} × {(summary.enterConversionEnd * 100).toFixed(1)}% × {(summary.effectiveOrderConv * 100).toFixed(1)}% × ¥{summary.avgPriceEnd}
-              </div>
-              <div className="text-center text-[11px] text-secondary mt-1">
-                ≈ {summary.estimatedOrders} 单 × ¥{summary.avgPriceEnd} = <span className="font-bold text-title">¥{summary.incomeRevenue}</span>
-              </div>
-            </div>
-            <p className="text-[10px] text-secondary leading-relaxed">
-              注：差评率会按 50% 折扣有效转化率 — 当前差评 {(summary.badReviewEnd * 100).toFixed(1)}%
-            </p>
-          </div>
-
-          {/* 账本 */}
-          <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <p className="text-xs font-bold text-title mb-2">📒 今日账本</p>
-            <div className="space-y-1.5">
-              <Row label="期初现金" value={`¥${summary.cashBefore}`} />
-              <Row label="订单收入" value={`+¥${summary.incomeRevenue}`} positive />
-              <Row label={`固定成本（租金${GAME_CONFIG.dailyRent}+员工${GAME_CONFIG.dailyStaff}）`} value={`-¥${summary.fixedCost}`} negative />
-              <Row
-                label="经营决策投入"
-                value={`${summary.choiceImpact >= 0 ? "+" : ""}¥${summary.choiceImpact}`}
-                positive={summary.choiceImpact >= 0}
-                negative={summary.choiceImpact < 0}
-              />
-              <div className="border-t border-border pt-1.5 mt-1.5" />
-              <Row label="期末现金" value={`¥${summary.cashAfter}`} bold />
-              <Row
-                label="今日净利润"
-                value={`${summary.profit >= 0 ? "+" : ""}¥${summary.profit}`}
-                bold
-                positive={summary.profit >= 0}
-                negative={summary.profit < 0}
-              />
+            <div className="flex items-start gap-2">
+              <span className="text-lg">💡</span>
+              <p className="text-sm text-body leading-relaxed">{summary.comment}</p>
             </div>
           </div>
 
-          {/* 关键指标 */}
+          {/* 关键指标（始终显示） */}
           <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <p className="text-xs font-bold text-title mb-2">📈 期末关键指标</p>
             <div className="grid grid-cols-5 gap-2 text-center">
               <Stat label="曝光" value={summary.exposureEnd} />
               <Stat label="入店率" value={`${(summary.enterConversionEnd * 100).toFixed(1)}%`} />
@@ -163,63 +127,112 @@ export default function PlayPage() {
             </div>
           </div>
 
-          {/* 当日决策回顾 */}
-          {summary.choiceLog.length > 0 && (
-            <div className="bg-card rounded-2xl p-4 shadow-sm">
-              <p className="text-xs font-bold text-title mb-2">🎯 今日决策影响</p>
-              <div className="space-y-2">
-                {summary.choiceLog.map((log, i) => (
-                  <div key={i} className="border-b border-border last:border-0 pb-2 last:pb-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] text-secondary truncate">{log.questionTitle}</p>
-                        <p className="text-xs font-bold text-title leading-snug">{log.optionText}</p>
-                      </div>
-                      {log.cashDelta !== 0 && (
-                        <span className={`text-xs font-black flex-shrink-0 ${
-                          log.cashDelta > 0 ? "text-green-600" : "text-red-500"
-                        }`}>
-                          {log.cashDelta > 0 ? "+" : ""}¥{log.cashDelta}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {effectChips(log.effects).map((chip, ci) => (
-                        <span
-                          key={ci}
-                          className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${chip.cls}`}
-                        >
-                          {chip.text}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* 查看详情按钮 */}
+          <button
+            onClick={() => setShowDetail(!showDetail)}
+            className="text-xs text-secondary underline text-center w-full py-1"
+          >
+            {showDetail ? "收起详情 ↑" : "查看营业额计算详情 ↓"}
+          </button>
 
-          {/* 事件回顾 */}
-          {summary.eventTitle && (
-            <div className="bg-card rounded-2xl p-4 shadow-sm">
-              <p className="text-xs font-bold text-title mb-2">⚡ 今日突发事件</p>
-              <div className="flex items-start gap-2">
-                <span className="text-2xl">{summary.eventEmoji}</span>
-                <div>
-                  <p className="text-sm font-bold text-title">{summary.eventTitle}</p>
-                  <p className="text-[11px] text-secondary">{summary.eventDesc}</p>
+          {/* 折叠区域 */}
+          {showDetail && (
+            <>
+              {/* 营业额公式分解 */}
+              <div className="bg-card rounded-2xl p-4 shadow-sm">
+                <p className="text-xs font-bold text-title mb-2">📊 营业额是怎么算出来的</p>
+                <div className="bg-bg/40 rounded-xl p-3 mb-2">
+                  <div className="text-[11px] text-secondary text-center mb-1">
+                    曝光 × 入店率 × 下单率 × 客单价
+                  </div>
+                  <div className="text-center text-sm font-black text-title">
+                    {summary.exposureEnd} × {(summary.enterConversionEnd * 100).toFixed(1)}% × {(summary.effectiveOrderConv * 100).toFixed(1)}% × ¥{summary.avgPriceEnd}
+                  </div>
+                  <div className="text-center text-[11px] text-secondary mt-1">
+                    ≈ {summary.estimatedOrders} 单 × ¥{summary.avgPriceEnd} = <span className="font-bold text-title">¥{summary.incomeRevenue}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-secondary leading-relaxed">
+                  注：差评率会按 50% 折扣有效转化率 — 当前差评 {(summary.badReviewEnd * 100).toFixed(1)}%
+                </p>
+              </div>
+
+              {/* 账本 */}
+              <div className="bg-card rounded-2xl p-4 shadow-sm">
+                <p className="text-xs font-bold text-title mb-2">📒 今日账本</p>
+                <div className="space-y-1.5">
+                  <Row label="期初现金" value={`¥${summary.cashBefore}`} />
+                  <Row label="订单收入" value={`+¥${summary.incomeRevenue}`} positive />
+                  <Row label={`固定成本（租金${GAME_CONFIG.dailyRent}+员工${GAME_CONFIG.dailyStaff}）`} value={`-¥${summary.fixedCost}`} negative />
+                  <Row
+                    label="经营决策投入"
+                    value={`${summary.choiceImpact >= 0 ? "+" : ""}¥${summary.choiceImpact}`}
+                    positive={summary.choiceImpact >= 0}
+                    negative={summary.choiceImpact < 0}
+                  />
+                  <div className="border-t border-border pt-1.5 mt-1.5" />
+                  <Row label="期末现金" value={`¥${summary.cashAfter}`} bold />
+                  <Row
+                    label="今日净利润"
+                    value={`${summary.profit >= 0 ? "+" : ""}¥${summary.profit}`}
+                    bold
+                    positive={summary.profit >= 0}
+                    negative={summary.profit < 0}
+                  />
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* 自动点评 */}
-          <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <div className="flex items-start gap-2">
-              <span className="text-lg">💡</span>
-              <p className="text-sm text-body leading-relaxed">{summary.comment}</p>
-            </div>
-          </div>
+              {/* 当日决策回顾 */}
+              {summary.choiceLog.length > 0 && (
+                <div className="bg-card rounded-2xl p-4 shadow-sm">
+                  <p className="text-xs font-bold text-title mb-2">🎯 今日决策影响</p>
+                  <div className="space-y-2">
+                    {summary.choiceLog.map((log, i) => (
+                      <div key={i} className="border-b border-border last:border-0 pb-2 last:pb-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] text-secondary truncate">{log.questionTitle}</p>
+                            <p className="text-xs font-bold text-title leading-snug">{log.optionText}</p>
+                          </div>
+                          {log.cashDelta !== 0 && (
+                            <span className={`text-xs font-black flex-shrink-0 ${
+                              log.cashDelta > 0 ? "text-green-600" : "text-red-500"
+                            }`}>
+                              {log.cashDelta > 0 ? "+" : ""}¥{log.cashDelta}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {effectChips(log.effects).map((chip, ci) => (
+                            <span
+                              key={ci}
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${chip.cls}`}
+                            >
+                              {chip.text}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 事件回顾 */}
+              {summary.eventTitle && (
+                <div className="bg-card rounded-2xl p-4 shadow-sm">
+                  <p className="text-xs font-bold text-title mb-2">⚡ 今日突发事件</p>
+                  <div className="flex items-start gap-2">
+                    <span className="text-2xl">{summary.eventEmoji}</span>
+                    <div>
+                      <p className="text-sm font-bold text-title">{summary.eventTitle}</p>
+                      <p className="text-[11px] text-secondary">{summary.eventDesc}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
@@ -233,7 +246,7 @@ export default function PlayPage() {
             {isBankrupt
               ? "查看结局"
               : isLastDay
-              ? "查看7天战绩"
+              ? "查看5天战绩"
               : `进入第${s.day + 1}天`}
           </button>
         </div>
@@ -247,7 +260,9 @@ export default function PlayPage() {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center px-6">
         <div className="text-center max-w-sm w-full">
-          <p className="text-sm text-secondary mb-1">第{s.day}天 / 共{GAME_CONFIG.maxDay}天</p>
+          <p className="text-xs text-secondary mb-1">
+            第{s.day}天 / 共{GAME_CONFIG.maxDay}天 · 进度 {Math.round((s.day - 1) / GAME_CONFIG.maxDay * 100)}%
+          </p>
           <div className="text-4xl mb-2">{story?.emoji || "📋"}</div>
           <h2 className="text-2xl font-black text-title mb-2">
             {story?.title || `第 ${s.day} 天`}
@@ -325,6 +340,18 @@ export default function PlayPage() {
           <MiniStat label="入店" value={`${(s.enterConversion * 100).toFixed(0)}%`} />
           <MiniStat label="下单" value={`${(s.orderConversion * 100).toFixed(0)}%`} />
           <MiniStat label="差评" value={`${(s.badReviewRate * 100).toFixed(0)}%`} />
+        </div>
+
+        {/* 总进度条 */}
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-[9px] text-title/60">进度</span>
+          <div className="flex-1 bg-black/10 rounded-full h-1.5">
+            <div
+              className="bg-title h-1.5 rounded-full transition-all duration-300"
+              style={{ width: `${((s.day - 1) * GAME_CONFIG.questionsPerDay + store.dayQuestionIndex) / (GAME_CONFIG.maxDay * GAME_CONFIG.questionsPerDay) * 100}%` }}
+            />
+          </div>
+          <span className="text-[9px] text-title/60">{Math.round(((s.day - 1) * GAME_CONFIG.questionsPerDay + store.dayQuestionIndex) / (GAME_CONFIG.maxDay * GAME_CONFIG.questionsPerDay) * 100)}%</span>
         </div>
       </div>
 
@@ -434,7 +461,7 @@ export default function PlayPage() {
       {/* 掉金币特效层 */}
       {showCoin && <CoinRain key={coinKey} />}
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.0.0-knowledge</p>
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.2.0</p>
     </div>
   );
 }

@@ -19,7 +19,7 @@ import {
 // === 游戏参数 (v3.2 重新平衡) ===
 
 export const GAME_CONFIG = {
-  maxDay: 7,
+  maxDay: 5,
   questionsPerDay: 4,
   initialCash: 10000,
   initialExposure: 1500,         // 开局曝光 1500人/天
@@ -74,24 +74,10 @@ export const DAY_STORIES: DayStory[] = [
   },
   {
     day: 5,
-    title: "对面来了个新店",
-    emoji: "⚔️",
-    intro: "对面新开了一家同品类的店，满减力度比你大，价格比你低2块。今天你的单量掉了30%。你知道他在亏本冲量，但你的老客已经开始流失了。",
-    mood: "紧张",
-  },
-  {
-    day: 6,
-    title: "流量越来越贵",
-    emoji: "💸",
-    intro: "你发现同样的推广预算，这周的曝光比上周少了20%。客户经理说'竞争加剧了，建议加预算'。但你上个月推广费已经占了实收的8%。",
-    mood: "纠结",
-  },
-  {
-    day: 7,
-    title: "十字路口",
-    emoji: "🔀",
-    intro: "房东通知：下月涨租15%。你算了一下，按现在的利润率，涨完租就是干赔。摆在你面前三条路：硬撑、转型、关店。",
-    mood: "决断",
+    title: "最终决战",
+    emoji: "🔥",
+    intro: "最后一天了。房东说下月涨租，对面新开了竞品，推广费越来越贵。今天的每一个决策，都决定你是赚着离场还是亏本出局。",
+    mood: "背水一战",
   },
 ];
 
@@ -194,7 +180,7 @@ export const ENDING_INFO: Record<EndingType, EndingInfo> = {
     type: "thrive",
     title: "爆赚出圈",
     emoji: "🚀",
-    description: "7天赚翻，你就是外卖圈的隐藏高手！",
+    description: "5天赚翻，你就是外卖圈的隐藏高手！",
     color: "#F59E0B",
   },
 };

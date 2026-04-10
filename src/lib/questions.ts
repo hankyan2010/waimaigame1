@@ -419,7 +419,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q026",
-    day: 6,
+    day: 5,
     title: "产品稳定性",
     desc: "顾客反馈：你家味道每次都不一样。",
     options: [
@@ -433,7 +433,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q027",
-    day: 6,
+    day: 5,
     title: "单次补偿 vs 持续体验",
     desc: "用户投诉，到底是补偿一次了事还是改流程？",
     options: [
@@ -447,7 +447,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q028",
-    day: 6,
+    day: 5,
     title: "评价是经营工具",
     desc: "新员工把评价当客服任务在处理。",
     options: [
@@ -461,7 +461,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q029",
-    day: 6,
+    day: 5,
     title: "长期评分先抓什么",
     desc: "想让评分稳定在4.8以上。",
     options: [
@@ -475,7 +475,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q030",
-    day: 6,
+    day: 5,
     title: "主动设计邀评",
     desc: "想设计一个固定的邀评动作。",
     options: [

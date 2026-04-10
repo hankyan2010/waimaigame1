@@ -140,11 +140,11 @@ export default function HomePage() {
           <h1 className="text-2xl font-black text-title leading-tight mb-1">
             外卖老板
             <br />
-            <span className="text-[30px]">7天生存挑战</span>
+            <span className="text-[30px]">5天生存挑战</span>
           </h1>
 
           <p className="text-sm text-title/70 leading-snug max-w-[280px] mx-auto">
-            1万本金起步，7天经营
+            1万本金起步，5天经营
             <br />
             看看你能赚多少 or 亏多少
           </p>
@@ -237,7 +237,7 @@ export default function HomePage() {
       )}
 
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v4.1.0
+        v4.2.0
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}
@@ -248,32 +248,36 @@ export default function HomePage() {
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-card rounded-2xl p-6 max-w-sm w-full animate-slide-up">
             <div className="text-center mb-4">
-              <div className="text-4xl mb-2">🎮</div>
-              <h3 className="text-lg font-black text-title mb-2">今日免费次数已用完</h3>
+              <div className="text-4xl mb-2">🏆</div>
+              <h3 className="text-lg font-black text-title mb-1">
+                {hydrated && store.bestFinalCash > 0
+                  ? `你的最高纪录：¥${store.bestFinalCash - GAME_CONFIG.initialCash > 0 ? "+" : ""}${store.bestFinalCash - GAME_CONFIG.initialCash}`
+                  : "今日免费次数已用完"}
+              </h3>
               <p className="text-sm text-secondary leading-relaxed">
-                把游戏转发到朋友圈，每个朋友点一次你的链接，你就多一次挑战机会！
+                发给朋友来挑战，看谁经营得更好！<br/>
+                每个朋友参与，你还能额外获得1次机会
               </p>
             </div>
 
-            <div className="bg-brand/10 rounded-xl p-3 mb-4 text-center">
-              <p className="text-xs text-secondary mb-1">已有 {store.inviteScannerCount} 位朋友帮你助力</p>
-              <p className="text-lg font-black text-title">额外获得 {store.inviteCredits} 次机会</p>
-            </div>
+            {store.inviteScannerCount > 0 && (
+              <div className="bg-brand/10 rounded-xl p-3 mb-4 text-center">
+                <p className="text-xs text-secondary">已有 {store.inviteScannerCount} 位朋友参与挑战</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <button
-                onClick={() => {
-                  setShowShareTip(true);
-                }}
+                onClick={() => setShowShareTip(true)}
                 className="btn-raised text-sm"
               >
-                转发到朋友圈，获得更多次数
+                发给朋友来挑战
               </button>
               <button
                 onClick={() => setShowShareGate(false)}
-                className="btn-raised-ghost text-sm"
+                className="text-xs text-secondary/50 text-center w-full py-1"
               >
-                算了，明天再来
+                关闭
               </button>
             </div>
           </div>
