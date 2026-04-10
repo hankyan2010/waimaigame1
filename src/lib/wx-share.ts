@@ -79,12 +79,9 @@ async function loadJssdk(): Promise<void> {
 }
 
 async function configForCurrentUrl(): Promise<boolean> {
-  // 签名用的URL必须和浏览器地址栏完全一致（去掉#后面的部分）
-  // 但要去掉 wxdebug 参数，因为这个参数不是页面本身的一部分
-  const rawUrl = window.location.href.split("#")[0];
-  const urlObj = new URL(rawUrl);
-  urlObj.searchParams.delete("wxdebug");
-  const pageUrl = urlObj.toString();
+  // 签名用的URL必须和浏览器地址栏【完全一致】（只去掉#后面的部分）
+  // 不能删任何query参数，否则微信校验会报 invalid signature
+  const pageUrl = window.location.href.split("#")[0];
 
   dbg(`pageUrl for sign: ${pageUrl}`);
 
@@ -120,9 +117,8 @@ async function configForCurrentUrl(): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wx = (window as any).wx;
 
+    // 只注册老API——新API对认证订阅号没有权限（报 offline verifying）
     const jsApiList = [
-      "updateAppMessageShareData",
-      "updateTimelineShareData",
       "onMenuShareAppMessage",
       "onMenuShareTimeline",
     ];
@@ -209,49 +205,28 @@ export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void
   const wx = (window as any).wx;
 
   try {
-    // 新API
-    if (wx.updateAppMessageShareData) {
-      wx.updateAppMessageShareData({
-        title: data.title,
-        desc: data.desc,
-        link: data.link,
-        imgUrl: data.imgUrl,
-        success: () => dbg("updateAppMsg OK ✓"),
-        fail: (err: unknown) => dbg(`updateAppMsg FAIL: ${JSON.stringify(err)}`),
-      });
-    }
-    if (wx.updateTimelineShareData) {
-      wx.updateTimelineShareData({
-        title: data.title,
-        link: data.link,
-        imgUrl: data.imgUrl,
-        success: () => dbg("updateTimeline OK ✓"),
-        fail: (err: unknown) => dbg(`updateTimeline FAIL: ${JSON.stringify(err)}`),
-      });
-    }
+    // 只用老API（onMenuShare*）——认证订阅号只有这个权限
+    // 新API（update*ShareData）对订阅号报 "offline verifying"，不调
+    wx.onMenuShareAppMessage({
+      title: data.title,
+      desc: data.desc,
+      link: data.link,
+      imgUrl: data.imgUrl,
+      success: () => dbg("onMenuShareAppMessage OK ✓"),
+      cancel: () => dbg("onMenuShareAppMessage cancel"),
+      fail: (err: unknown) => dbg(`onMenuShareAppMessage FAIL: ${JSON.stringify(err)}`),
+    });
 
-    // 老API兜底
-    if (wx.onMenuShareAppMessage) {
-      wx.onMenuShareAppMessage({
-        title: data.title,
-        desc: data.desc,
-        link: data.link,
-        imgUrl: data.imgUrl,
-        success: () => dbg("onMenuShareAppMessage OK ✓"),
-        cancel: () => dbg("onMenuShareAppMessage cancel"),
-      });
-    }
-    if (wx.onMenuShareTimeline) {
-      wx.onMenuShareTimeline({
-        title: data.title,
-        link: data.link,
-        imgUrl: data.imgUrl,
-        success: () => dbg("onMenuShareTimeline OK ✓"),
-        cancel: () => dbg("onMenuShareTimeline cancel"),
-      });
-    }
+    wx.onMenuShareTimeline({
+      title: data.title,
+      link: data.link,
+      imgUrl: data.imgUrl,
+      success: () => dbg("onMenuShareTimeline OK ✓"),
+      cancel: () => dbg("onMenuShareTimeline cancel"),
+      fail: (err: unknown) => dbg(`onMenuShareTimeline FAIL: ${JSON.stringify(err)}`),
+    });
 
-    dbg("all share APIs called ✓");
+    dbg("old share APIs called ✓");
   } catch (e) {
     dbg(`share apply error: ${(e as Error).message}`);
   }
