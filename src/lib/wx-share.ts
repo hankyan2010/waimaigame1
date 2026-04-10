@@ -1,16 +1,10 @@
 "use client";
 
 // 微信 JS-SDK 分享配置
-//
-// 关键约束：
-// 1. wx.config 的 signature 是和「当前页面 URL（去掉 #）」绑定的，
-//    SPA 内 router.push 之后要重新拉签名、重新 config，否则签名失效，
-//    分享出去就是裸链接。
-// 2. 微信只接受 https/http 的 imgUrl，不接受 dataURL/blob。
-// 3. wx.updateAppMessageShareData 必须在 wx.ready 之后调用。
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
-const WX_CONFIG_URL = "https://waimaiketang.com/wx-config";
+// 用相对路径请求签名，避免跨域和协议不一致问题
+const WX_CONFIG_URL = "/wx-config";
 const SHARE_IMG = `https://waimaiketang.com${BASE_PATH}/share-cover.png`;
 
 export interface ShareData {
@@ -27,25 +21,41 @@ const DEFAULT_SHARE: ShareData = {
   imgUrl: SHARE_IMG,
 };
 
-// 记录已经成功 config 过的 URL，避免短时间内重复签名
 let configuredUrl: string | null = null;
 let inflight: Promise<void> | null = null;
 
-/** 外部可调用：强制清除签名缓存，下次 setupWxShare 会重新签名 */
 export function resetWxConfig() {
   configuredUrl = null;
   inflight = null;
 }
 
-function log(stage: string, payload?: unknown) {
-  // 用 info 等级，方便线上抓日志，但不会刷屏
-  // eslint-disable-next-line no-console
-  console.info(`[wx-share] ${stage}`, payload ?? "");
+// === 可视化 debug 面板（微信内始终显示，方便排查） ===
+let debugEl: HTMLDivElement | null = null;
+let debugEnabled = false;
+
+function ensureDebugPanel() {
+  if (typeof window === "undefined") return;
+  // URL 带 wxdebug 就开启
+  debugEnabled = new URLSearchParams(window.location.search).has("wxdebug");
+  if (!debugEnabled) return;
+  if (debugEl) return;
+  debugEl = document.createElement("div");
+  debugEl.style.cssText =
+    "position:fixed;bottom:0;left:0;right:0;max-height:35vh;overflow:auto;" +
+    "background:rgba(0,0,0,0.9);color:#0f0;font:11px/1.5 monospace;padding:8px;" +
+    "z-index:99999;white-space:pre-wrap;word-break:break-all;";
+  document.body.appendChild(debugEl);
 }
 
-function warn(stage: string, payload?: unknown) {
+function dbg(msg: string) {
+  const time = new Date().toLocaleTimeString();
+  const line = `[${time}] ${msg}`;
   // eslint-disable-next-line no-console
-  console.warn(`[wx-share] ${stage}`, payload ?? "");
+  console.info(`[wx] ${line}`);
+  if (debugEnabled && debugEl) {
+    debugEl.textContent += line + "\n";
+    debugEl.scrollTop = debugEl.scrollHeight;
+  }
 }
 
 function isWeChat(): boolean {
@@ -53,100 +63,107 @@ function isWeChat(): boolean {
   return navigator.userAgent.toLowerCase().includes("micromessenger");
 }
 
-async function loadJssdk(): Promise<unknown> {
+async function loadJssdk(): Promise<void> {
   if ((window as unknown as { wx?: unknown }).wx) {
-    return (window as unknown as { wx: unknown }).wx;
+    dbg("jssdk already loaded");
+    return;
   }
-  log("loading jssdk");
+  dbg("loading jssdk...");
   await new Promise<void>((resolve, reject) => {
     const script = document.createElement("script");
     script.src = "https://res.wx.qq.com/open/js/jweixin-1.6.0.js";
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load wx jssdk"));
+    script.onload = () => { dbg("jssdk loaded OK"); resolve(); };
+    script.onerror = () => { dbg("jssdk FAILED to load"); reject(new Error("jssdk load fail")); };
     document.head.appendChild(script);
   });
-  return (window as unknown as { wx?: unknown }).wx;
 }
 
 async function configForCurrentUrl(): Promise<boolean> {
-  const pageUrl = window.location.href.split("#")[0];
+  // 签名用的URL必须和浏览器地址栏完全一致（去掉#后面的部分）
+  // 但要去掉 wxdebug 参数，因为这个参数不是页面本身的一部分
+  const rawUrl = window.location.href.split("#")[0];
+  const urlObj = new URL(rawUrl);
+  urlObj.searchParams.delete("wxdebug");
+  const pageUrl = urlObj.toString();
+
+  dbg(`pageUrl for sign: ${pageUrl}`);
+
   if (configuredUrl === pageUrl) {
-    log("already configured for", pageUrl);
+    dbg("already configured, skip");
     return true;
   }
 
-  // 如果已经有进行中的 config，等它结束
   if (inflight) {
-    try {
-      await inflight;
-    } catch {
-      /* ignore, retry below */
-    }
+    try { await inflight; } catch { /* retry */ }
     if (configuredUrl === pageUrl) return true;
   }
 
   inflight = (async () => {
-    log("requesting signature for", pageUrl);
-    const res = await fetch(`${WX_CONFIG_URL}?url=${encodeURIComponent(pageUrl)}`);
+    const fetchUrl = `${WX_CONFIG_URL}?url=${encodeURIComponent(pageUrl)}`;
+    dbg(`fetch: ${fetchUrl}`);
+
+    const res = await fetch(fetchUrl);
+    dbg(`fetch status: ${res.status}`);
     if (!res.ok) {
-      // 抓一段响应 body 方便排查：405 = 后端服务没挂 /wx-config 路由，
-      // 404 = nginx 没代理，502/504 = 签名服务宕机，403 = nginx 拦了。
-      let bodySnippet = "";
-      try {
-        bodySnippet = (await res.text()).slice(0, 200);
-      } catch {
-        /* ignore */
-      }
-      throw new Error(`wx-config http ${res.status} body=${bodySnippet}`);
-    }
-    const config = (await res.json()) as {
-      appId?: string;
-      timestamp?: number;
-      nonceStr?: string;
-      signature?: string;
-      error?: string;
-    };
-    if (config.error || !config.appId || !config.signature) {
-      throw new Error(`wx-config error: ${config.error || "missing fields"}`);
+      let body = "";
+      try { body = (await res.text()).slice(0, 200); } catch {}
+      throw new Error(`http ${res.status} body=${body}`);
     }
 
-    const wx = (window as unknown as { wx: { config: (c: unknown) => void; ready: (cb: () => void) => void; error: (cb: (e: unknown) => void) => void } }).wx;
+    const config = await res.json();
+    dbg(`config resp: appId=${config.appId} ts=${config.timestamp} sig=${config.signature?.slice(0, 12)}...`);
+
+    if (config.error || !config.appId || !config.signature) {
+      throw new Error(`config error: ${config.error || "missing fields"}`);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wx = (window as any).wx;
+
+    const jsApiList = [
+      "updateAppMessageShareData",
+      "updateTimelineShareData",
+      "onMenuShareAppMessage",
+      "onMenuShareTimeline",
+    ];
+
+    dbg(`wx.config debug=${debugEnabled} apiList=${jsApiList.join(",")}`);
     wx.config({
-      debug: typeof window !== "undefined" && new URLSearchParams(window.location.search).has("wxdebug"),
+      debug: debugEnabled,
       appId: config.appId,
       timestamp: config.timestamp,
       nonceStr: config.nonceStr,
       signature: config.signature,
-      // 新老API都要注册，很多微信版本只认老API
-      jsApiList: [
-        "updateAppMessageShareData",
-        "updateTimelineShareData",
-        "onMenuShareAppMessage",
-        "onMenuShareTimeline",
-      ],
+      jsApiList,
     });
 
     await new Promise<void>((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error("wx.ready timeout")), 5000);
+      const t = setTimeout(() => {
+        dbg("wx.ready TIMEOUT 5s");
+        reject(new Error("wx.ready timeout"));
+      }, 5000);
+
       wx.ready(() => {
         clearTimeout(t);
+        dbg("wx.ready OK ✓");
         resolve();
       });
+
       wx.error((err: unknown) => {
         clearTimeout(t);
+        dbg(`wx.error: ${JSON.stringify(err)}`);
         reject(new Error("wx.error: " + JSON.stringify(err)));
       });
     });
 
     configuredUrl = pageUrl;
-    log("configured ok for", pageUrl);
   })();
 
   try {
     await inflight;
     return true;
   } catch (e) {
-    warn("config failed", (e as Error).message);
+    dbg(`config FAILED: ${(e as Error).message}`);
     return false;
   } finally {
     inflight = null;
@@ -155,20 +172,28 @@ async function configForCurrentUrl(): Promise<boolean> {
 
 export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void> {
   if (typeof window === "undefined") return;
+
+  ensureDebugPanel();
+
+  dbg(`isWeChat=${isWeChat()} UA=${navigator.userAgent.slice(0, 80)}`);
+
   if (!isWeChat()) {
-    log("not wechat browser, skip");
+    dbg("not wechat, skip");
     return;
   }
 
   try {
     await loadJssdk();
   } catch (e) {
-    warn("jssdk load failed", (e as Error).message);
+    dbg(`jssdk fail: ${(e as Error).message}`);
     return;
   }
 
   const ok = await configForCurrentUrl();
-  if (!ok) return;
+  if (!ok) {
+    dbg("config failed, share will be raw URL");
+    return;
+  }
 
   const data: ShareData = {
     title: shareData?.title || DEFAULT_SHARE.title,
@@ -177,18 +202,22 @@ export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void
     imgUrl: shareData?.imgUrl || DEFAULT_SHARE.imgUrl,
   };
 
+  dbg(`share data: title=${data.title.slice(0, 30)} link=${data.link.slice(0, 50)}`);
+  dbg(`share img: ${data.imgUrl}`);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const wx = (window as unknown as { wx: any }).wx;
+  const wx = (window as any).wx;
+
   try {
-    // === 新API（微信7.0.12+） ===
+    // 新API
     if (wx.updateAppMessageShareData) {
       wx.updateAppMessageShareData({
         title: data.title,
         desc: data.desc,
         link: data.link,
         imgUrl: data.imgUrl,
-        success: () => log("updateAppMsg ok"),
-        fail: (err: unknown) => warn("updateAppMsg fail", err),
+        success: () => dbg("updateAppMsg OK ✓"),
+        fail: (err: unknown) => dbg(`updateAppMsg FAIL: ${JSON.stringify(err)}`),
       });
     }
     if (wx.updateTimelineShareData) {
@@ -196,20 +225,20 @@ export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void
         title: data.title,
         link: data.link,
         imgUrl: data.imgUrl,
-        success: () => log("updateTimeline ok"),
-        fail: (err: unknown) => warn("updateTimeline fail", err),
+        success: () => dbg("updateTimeline OK ✓"),
+        fail: (err: unknown) => dbg(`updateTimeline FAIL: ${JSON.stringify(err)}`),
       });
     }
 
-    // === 老API（兼容微信6.x-7.0.11，很多用户还在用） ===
+    // 老API兜底
     if (wx.onMenuShareAppMessage) {
       wx.onMenuShareAppMessage({
         title: data.title,
         desc: data.desc,
         link: data.link,
         imgUrl: data.imgUrl,
-        success: () => log("onMenuShareAppMessage ok"),
-        cancel: () => log("onMenuShareAppMessage cancel"),
+        success: () => dbg("onMenuShareAppMessage OK ✓"),
+        cancel: () => dbg("onMenuShareAppMessage cancel"),
       });
     }
     if (wx.onMenuShareTimeline) {
@@ -217,13 +246,13 @@ export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void
         title: data.title,
         link: data.link,
         imgUrl: data.imgUrl,
-        success: () => log("onMenuShareTimeline ok"),
-        cancel: () => log("onMenuShareTimeline cancel"),
+        success: () => dbg("onMenuShareTimeline OK ✓"),
+        cancel: () => dbg("onMenuShareTimeline cancel"),
       });
     }
 
-    log("share data applied (new+old API)", { title: data.title });
+    dbg("all share APIs called ✓");
   } catch (e) {
-    warn("apply share data failed", (e as Error).message);
+    dbg(`share apply error: ${(e as Error).message}`);
   }
 }
