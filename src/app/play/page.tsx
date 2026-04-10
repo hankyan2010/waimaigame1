@@ -462,7 +462,7 @@ export default function PlayPage() {
       {/* 掉金币特效层 */}
       {showCoin && <CoinRain key={coinKey} />}
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.2.5</p>
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.2.6</p>
     </div>
   );
 }

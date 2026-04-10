@@ -32,9 +32,14 @@ export default function RewardPage() {
   const isBankrupt = store.endingType === "bankrupt";
 
   const handleReplay = () => {
-    store.reset();
-    router.push("/");
     track("reward_replay");
+    if (store.canPlay()) {
+      store.startNewGame();
+      router.push("/play");
+    } else {
+      store.reset();
+      router.push("/");
+    }
   };
 
   return (

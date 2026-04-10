@@ -90,8 +90,13 @@ export default function ResultPage() {
 
   const handlePlayAgain = () => {
     track("replay_from_result");
-    store.reset();
-    router.push("/");
+    if (store.canPlay()) {
+      store.startNewGame();
+      router.push("/play");
+    } else {
+      store.reset();
+      router.push("/");
+    }
   };
 
   const handleGoReward = () => {
