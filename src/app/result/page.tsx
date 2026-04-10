@@ -51,8 +51,8 @@ export default function ResultPage() {
       const endingTitle = ENDING_INFO[store.endingType].title;
       const tagLabel = TAG_INFO[store.playerTag!].label;
       setupWxShare({
-        title: `我经营外卖7天${profitText}，段位：${endingTitle}`,
-        desc: `存活 ${days} 天 · 经营人格：${tagLabel} · 1万本金 + 100道决策。你来一局，看看能不能超过我。`,
+        title: `我经营外卖7天${profitText}，你能超过我吗？`,
+        desc: `存活${days}天 · ${tagLabel} · 1万本金+7天经营，看看你能赚多少`,
       });
     }
   }, [hydrated]);

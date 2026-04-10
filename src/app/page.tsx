@@ -86,12 +86,12 @@ export default function HomePage() {
         profit >= 0 ? `净赚 ¥${profit.toLocaleString()}` : `亏 ¥${Math.abs(profit).toLocaleString()}`;
       setupWxShare({
         title: `我经营外卖7天${profitText}，你能超过我吗？`,
-        desc: `存活 ${s.bestDaysSurvived} 天 · 1万本金起步 · 100道经营决策。来一局，看看你是青铜还是王者。`,
+        desc: `存活${s.bestDaysSurvived}天 · 1万本金+7天经营，看看你能赚多少`,
       });
     } else {
       setupWxShare({
-        title: "你是什么段位的外卖老板？10分钟见分晓",
-        desc: "1万本金 + 7天 + 100道真实经营决策，曝光、入店转化、下单转化、差评全实时变化。90% 的老板拿不到黄金。",
+        title: "外卖老板7天经营挑战，1万本金你能赚多少？",
+        desc: "100道真实经营决策，曝光、转化、差评全实时变化。来试试你的经营能力",
       });
     }
   }, []);

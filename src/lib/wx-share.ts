@@ -15,9 +15,8 @@ export interface ShareData {
 }
 
 const DEFAULT_SHARE: ShareData = {
-  // 避免"测试""段位""见分晓"等可能触发微信敏感词审查的词
-  title: "外卖老板经营挑战",
-  desc: "1万本金，7天经营，你能赚多少？",
+  title: "外卖老板7天经营挑战，1万本金你能赚多少？",
+  desc: "100道真实经营决策，曝光、转化、差评全实时变化。来试试你的经营能力",
   link: "",
   imgUrl: SHARE_IMG,
 };
