@@ -84,15 +84,9 @@ export default function HomePage() {
       const profit = s.bestFinalCash - GAME_CONFIG.initialCash;
       const profitText =
         profit >= 0 ? `净赚 ¥${profit.toLocaleString()}` : `亏 ¥${Math.abs(profit).toLocaleString()}`;
-      setupWxShare({
-        title: `我用外卖模拟器7天赚了¥${Math.abs(profit).toLocaleString()}，你能赚多少？来比试一下真功夫`,
-        desc: `存活${s.bestDaysSurvived}天 · 1万本金起步，100道真实经营决策`,
-      });
+      setupWxShare();
     } else {
-      setupWxShare({
-        title: "外卖模拟器：1万本金经营7天，你能赚多少？来比试一下真功夫",
-        desc: "100道真实经营决策，曝光、转化、差评全实时变化",
-      });
+      setupWxShare();
     }
   }, []);
 

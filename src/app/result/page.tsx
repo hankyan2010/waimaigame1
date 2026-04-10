@@ -50,10 +50,7 @@ export default function ResultPage() {
           : `亏 ¥${Math.abs(profitNow).toLocaleString()}`;
       const endingTitle = ENDING_INFO[store.endingType].title;
       const tagLabel = TAG_INFO[store.playerTag!].label;
-      setupWxShare({
-        title: `我用外卖模拟器7天赚了¥${Math.abs(profitNow).toLocaleString()}，你能赚多少？来比试一下真功夫`,
-        desc: `存活${days}天 · ${tagLabel} · 1万本金起步，100道真实经营决策`,
-      });
+      setupWxShare();
     }
   }, [hydrated]);
 
