@@ -5,7 +5,7 @@
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
 const WX_CONFIG_URL = "/wx-config";
 // 图片必须 HTTPS（http在https页面会被iOS WebKit拦截）
-const SHARE_IMG = `https://waimaiketang.com${BASE_PATH}/share-cover.png`;
+const SHARE_IMG = `https://waimaiketang.com${BASE_PATH}/share-cover.png?v=2`;
 
 export interface ShareData {
   title: string;
