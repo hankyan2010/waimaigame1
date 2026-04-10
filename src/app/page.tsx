@@ -118,7 +118,9 @@ export default function HomePage() {
       track("share_gate_shown");
       return;
     }
-    store.reset();
+    // 直接在首页调 startNewGame()，不要 reset() + 跳play让play再调一次
+    // 这样 playsToday 只递增一次
+    store.startNewGame();
     router.push("/play");
     track("start_click");
   };
@@ -237,7 +239,7 @@ export default function HomePage() {
       )}
 
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v4.2.4
+        v4.2.5
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}

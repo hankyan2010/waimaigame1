@@ -51,14 +51,10 @@ export default function PlayPage() {
 
   useEffect(() => {
     setHydrated(true);
-    if (store.phase === "home" || store.dayQuestions.length === 0) {
-      // 次数用完了不要自动开始，跳回首页让用户看到分享蒙版
-      if (!store.canPlay()) {
-        router.push("/");
-        return;
-      }
-      store.startNewGame();
-      track("start_game");
+    // 正常流程：首页已经调过 startNewGame()，这里不需要再调
+    // 只有直接访问 /play（没有游戏数据）时才兜底跳回首页
+    if (store.phase === "home" && store.dayQuestions.length === 0) {
+      router.push("/");
     }
   }, []);
 
@@ -466,7 +462,7 @@ export default function PlayPage() {
       {/* 掉金币特效层 */}
       {showCoin && <CoinRain key={coinKey} />}
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.2.4</p>
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.2.5</p>
     </div>
   );
 }
