@@ -269,18 +269,9 @@ export default function ResultPage() {
             >
               查看英雄榜
             </button>
-            {store.canPlay() ? (
-              <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
-                再来一局
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowShareTip(true)}
-                className="btn-raised-ghost text-sm"
-              >
-                分享获得更多次数
-              </button>
-            )}
+            <button onClick={handlePlayAgain} className="btn-raised-ghost text-sm">
+              再来一局
+            </button>
           </div>
         </div>
       </div>
