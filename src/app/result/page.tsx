@@ -54,12 +54,12 @@ export default function ResultPage() {
     }
   }, [hydrated]);
 
-  const handleSubmitName = () => {
+  const handleSubmitName = async () => {
     const name = nameInput.trim().slice(0, 20);
     if (name.length < 2) return;
     if (!store.endingType || !store.playerTag) return;
     const profitNow = store.state.cash - GAME_CONFIG.initialCash;
-    submitEntry({
+    const result = await submitEntry({
       displayName: name,
       profit: profitNow,
       finalCash: store.state.cash,
@@ -68,9 +68,9 @@ export default function ResultPage() {
       tag: store.playerTag,
     });
     store.setDisplayName(name);
-    setSubmittedRank(predictRank(profitNow, store.state.day));
+    setSubmittedRank(result.rank ?? predictRank(profitNow, store.state.day));
     setShowNameModal(false);
-    track("leaderboard_submit", { rank: pendingRank });
+    track("leaderboard_submit", { rank: result.rank ?? pendingRank });
   };
 
   if (!hydrated || !store.endingType || !store.playerTag) return null;

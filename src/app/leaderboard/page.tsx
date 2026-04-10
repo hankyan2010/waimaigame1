@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getLeaderboard } from "@/lib/leaderboard";
+import { fetchLeaderboard } from "@/lib/leaderboard";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import type { LeaderboardEntry } from "@/lib/types";
 
@@ -13,7 +13,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     setHydrated(true);
-    setEntries(getLeaderboard());
+    fetchLeaderboard().then((data) => setEntries(data));
   }, []);
 
   return (
@@ -103,7 +103,7 @@ export default function LeaderboardPage() {
         <p className="text-center text-[10px] text-secondary mt-4">
           初始本金 ¥{GAME_CONFIG.initialCash} · 经营 {GAME_CONFIG.maxDay} 天
           <br />
-          榜单仅本机可见，清缓存会清空
+          全服实时排行，所有玩家同榜竞技
         </p>
       </div>
     </div>

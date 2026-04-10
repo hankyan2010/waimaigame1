@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
-import { getLeaderboard } from "@/lib/leaderboard";
+import { fetchLeaderboard } from "@/lib/leaderboard";
 import { setupWxShare, setSharePlayerId } from "@/lib/wx-share";
 import { CoinRain } from "@/components/CoinRain";
 import { playCoinSound } from "@/lib/sound";
@@ -46,9 +46,10 @@ export default function HomePage() {
 
     setHydrated(true);
     track("page_view");
-    const board = getLeaderboard();
-    setBoardCount(board.length);
-    setTopName(board[0]?.displayName ?? null);
+    fetchLeaderboard().then((board) => {
+      setBoardCount(board.length);
+      setTopName(board[0]?.displayName ?? null);
+    });
 
     // 确保有玩家 ID + 拉取邀请额度
     const pid = useGameStore.getState().ensurePlayerId();
