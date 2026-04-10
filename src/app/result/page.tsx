@@ -138,6 +138,39 @@ export default function ResultPage() {
           <p className="text-xs text-secondary">{tag.desc}</p>
         </div>
 
+        {store.diagnosisReport && (
+          <div className="bg-card rounded-2xl p-5 shadow-sm">
+            <p className="text-sm font-bold text-title mb-3">📊 你的经营诊断</p>
+            <div className="space-y-3">
+              {store.diagnosisReport.dimensions.map((dim) => (
+                <div key={dim.id}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-title">{dim.name}</span>
+                    <span className={`text-xs font-black ${
+                      dim.score >= 70 ? "text-green-600" : dim.score >= 45 ? "text-orange-500" : "text-red-500"
+                    }`}>{dim.score}分</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 mb-1.5">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        dim.score >= 70 ? "bg-green-500" : dim.score >= 45 ? "bg-orange-400" : "bg-red-400"
+                      }`}
+                      style={{ width: `${dim.score}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-secondary leading-relaxed">{dim.comment}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t border-border">
+              <div className="flex items-start gap-2">
+                <span className="text-lg flex-shrink-0">💡</span>
+                <p className="text-sm font-bold text-body leading-relaxed">{store.diagnosisReport.summary}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Verdict */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
           <p className="text-sm text-body leading-relaxed">{ending.description}</p>

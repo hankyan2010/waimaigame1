@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { track } from "@/lib/track";
-import { GAME_CONFIG } from "@/lib/config";
+import { GAME_CONFIG, DAY_STORIES } from "@/lib/config";
 import type { OptionEffect } from "@/lib/types";
 import { CoinRain } from "@/components/CoinRain";
 import { playCoinSound } from "@/lib/sound";
@@ -14,6 +14,8 @@ interface PendingAnswer {
   optionText: string;
   effect: OptionEffect;
   knowledge: string;
+  verdict?: string;
+  realCase?: string;
 }
 
 export default function PlayPage() {
@@ -228,27 +230,36 @@ export default function PlayPage() {
 
   // === 每日开场 intro ===
   if (store.phase === "day-intro" && showIntro) {
+    const story = DAY_STORIES.find((st) => st.day === s.day);
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center px-6">
         <div className="text-center max-w-sm w-full">
-          <p className="text-sm text-secondary mb-2">Day {s.day} / {GAME_CONFIG.maxDay}</p>
-          <h2 className="text-3xl font-black text-title mb-3">
-            {s.day === 1 ? "开业第一天" : s.day === GAME_CONFIG.maxDay ? "最后一天冲刺" : `第 ${s.day} 天`}
+          <p className="text-sm text-secondary mb-1">Day {s.day} / {GAME_CONFIG.maxDay}</p>
+          <div className="text-4xl mb-2">{story?.emoji || "📋"}</div>
+          <h2 className="text-2xl font-black text-title mb-2">
+            {story?.title || `第 ${s.day} 天`}
           </h2>
 
-          {store.dayEvent ? (
-            <div className="bg-card rounded-2xl p-4 shadow-sm mb-4">
-              <div className="text-3xl mb-2">{store.dayEvent.emoji}</div>
-              <p className="text-sm font-bold text-title mb-1">{store.dayEvent.title}</p>
-              <p className="text-xs text-secondary">{store.dayEvent.desc}</p>
+          {story && (
+            <div className="bg-card rounded-2xl p-4 shadow-sm mb-3 text-left">
+              <p className="text-sm text-body leading-relaxed">{story.intro}</p>
+              <p className="text-[10px] text-secondary mt-2 text-right">—— {story.mood}</p>
             </div>
-          ) : (
-            <p className="text-sm text-secondary mb-4">
-              今天没有特殊事件，看你的决策
-            </p>
           )}
 
-          <div className="bg-card rounded-2xl p-3 shadow-sm mb-6">
+          {store.dayEvent ? (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-3 mb-3">
+              <div className="flex items-center gap-2 justify-center">
+                <span className="text-xl">{store.dayEvent.emoji}</span>
+                <span className="text-sm font-bold text-title">{store.dayEvent.title}</span>
+              </div>
+              <p className="text-xs text-secondary mt-1">{store.dayEvent.desc}</p>
+            </div>
+          ) : s.day > 1 ? (
+            <p className="text-xs text-secondary mb-2">今天没有突发事件</p>
+          ) : null}
+
+          <div className="bg-card rounded-2xl p-3 shadow-sm mb-5">
             <div className="grid grid-cols-5 gap-1.5 text-center">
               <Stat label="现金" value={`¥${s.cash}`} />
               <Stat label="曝光" value={s.exposure} />
@@ -332,6 +343,18 @@ export default function PlayPage() {
               </div>
             </div>
 
+            {pending.verdict && (
+              <div className={`rounded-xl px-3 py-2 text-center ${
+                pending.verdict.startsWith("推荐") ? "bg-green-50 border border-green-200" : "bg-orange-50 border border-orange-200"
+              }`}>
+                <span className={`text-sm font-black ${
+                  pending.verdict.startsWith("推荐") ? "text-green-700" : "text-orange-700"
+                }`}>
+                  {pending.verdict.startsWith("推荐") ? "✅ " : "⚠️ "}{pending.verdict}
+                </span>
+              </div>
+            )}
+
             {/* 知识点 */}
             <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-brand/60 rounded-2xl p-4 shadow-sm">
               <div className="flex items-start gap-2">
@@ -342,6 +365,18 @@ export default function PlayPage() {
                 </div>
               </div>
             </div>
+
+            {pending.realCase && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-start gap-2">
+                  <span className="text-lg flex-shrink-0">📋</span>
+                  <div>
+                    <p className="text-[11px] font-bold text-blue-700 mb-1">实战案例</p>
+                    <p className="text-[13px] text-blue-900 leading-relaxed">{pending.realCase}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => {
@@ -365,6 +400,8 @@ export default function PlayPage() {
                     optionText: opt.text,
                     effect: opt.effect,
                     knowledge: opt.knowledge ?? "",
+                    verdict: opt.verdict,
+                    realCase: question.realCase,
                   });
                   track("answer_choice", { qid: question.id, opt: idx });
                   // 答对题（任意正向经营改善）→ 疯狂掉金币 + 音效
@@ -384,7 +421,7 @@ export default function PlayPage() {
       {/* 掉金币特效层 */}
       {showCoin && <CoinRain key={coinKey} />}
 
-      <p className="text-center text-[10px] text-secondary/40 pt-4">v3.3.1-coins</p>
+      <p className="text-center text-[10px] text-secondary/40 pt-4">v4.0.0-knowledge</p>
     </div>
   );
 }

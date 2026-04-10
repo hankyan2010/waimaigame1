@@ -27,6 +27,7 @@ export interface SimOption {
   effect: OptionEffect;
   hint?: string;        // 选后的小提示
   knowledge?: string;   // 知识点：为什么会涨/跌这些值
+  verdict?: string;     // 闫寒风格的直接判断（如"推荐""饮鸩止渴"）
 }
 
 /** 模拟题目 */
@@ -35,6 +36,9 @@ export interface SimQuestion {
   title: string;       // 标题，如"曝光下降了20%"
   desc: string;        // 背景描述
   options: SimOption[];
+  day?: number;         // 指定第几天出现（1-7），不填则随机
+  difficulty?: "basic" | "intermediate" | "advanced";
+  realCase?: string;    // 真实案例引用
 }
 
 /** 随机事件 */
@@ -162,4 +166,28 @@ export interface LeaderboardEntry {
   ending: EndingType;
   tag: PlayerTag;
   createdAt: number;
+}
+
+/** 每日叙事线 */
+export interface DayStory {
+  day: number;
+  title: string;
+  emoji: string;
+  intro: string;
+  mood: string;
+}
+
+/** 经营诊断维度 */
+export interface DiagnosisDimension {
+  id: string;
+  name: string;
+  score: number;
+  comment: string;
+}
+
+/** 完整经营诊断报告 */
+export interface DiagnosisReport {
+  dimensions: DiagnosisDimension[];
+  summary: string;
+  playerTag: PlayerTag;
 }

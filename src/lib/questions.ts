@@ -15,202 +15,271 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 一、流量与平台权重 (q001-q015) ==========
   {
     id: "q001",
+    day: 1,
     title: "曝光下降了20%",
     desc: "昨天订单比前天少了不少，后台显示曝光掉了。",
+    realCase: "闫寒观点：满减是平台权重最直接的杠杆，参与满减的店铺会进入活动池获得额外曝光。但降价不涨曝光，不行动平台判定不活跃。",
     options: [
       { text: "开启满30减5活动", effect: { cash: -300, exposure: 200, orderConversion: 0.01, badReviewRate: 0.01 },
+        verdict: "推荐：用杠杆撬流量",
         knowledge: "满减是平台权重最直接的杠杆：参与活动的店铺会进入活动池获得额外曝光，下单门槛感降低也提升下单率。代价是补贴成本和订单密度上升的轻微差评。" },
       { text: "直接降价3元", effect: { cash: -200, orderConversion: 0.015, avgPrice: -3 },
+        verdict: "治标不治本",
         knowledge: "降价直接拉下单率（用户决策成本降低），但客单价被永久压低，未来每单都少赚3块，长期毛利受损。" },
       { text: "暂时不动观察", effect: { exposure: -100 },
+        verdict: "最危险的选择",
         knowledge: "外卖排名看店铺活跃度，曝光下降时不行动，平台判断你不活跃，曝光会继续掉。" },
     ],
   },
   {
     id: "q002",
+    day: 1,
     title: "曝光涨了订单没涨",
     desc: "数据看曝光在涨，但订单纹丝不动。该看哪个指标？",
+    realCase: "闫寒观点：双转化率（入店率+下单率）是核心。曝光不等于成交，先看卡在哪一环。",
     options: [
       { text: "查入店率：是不是封面图不行", effect: { cash: -150, enterConversion: 0.015 },
+        verdict: "推荐：先诊断再行动",
         knowledge: "曝光不等于成交，先看用户进店率（封面图、店名、评分）。这是双转化诊断的第一环。" },
       { text: "查下单率：是不是菜单结构差", effect: { cash: -200, orderConversion: 0.015 },
+        verdict: "对症下药",
         knowledge: "进了店没下单，问题在菜单：排序、套餐、价格锚点。下单率是双转化的第二环。" },
       { text: "无脑加大推广", effect: { cash: -500, exposure: 200 },
+        verdict: "方向错了",
         knowledge: "曝光的窟窿不能用更多曝光填，转化没修好，钱白花。" },
     ],
   },
   {
     id: "q003",
+    day: 1,
     title: "美团客户经理推点金",
     desc: "客户经理打电话说可以上点金推广。",
+    realCase: "闫寒观点：点金推广是最精准的推广方式。所有推广都要和点金比投产比，划算就用不划算就停，没有玄学。",
     options: [
       { text: "试一下，预算300/天", effect: { cash: -300, exposure: 150 },
+        verdict: "推荐：用数据说话",
         knowledge: "点金是知识库里被点名最精准的推广方式。300预算约换100次有效进店曝光，是稳妥试水。" },
       { text: "砸大点，预算800/天", effect: { cash: -800, exposure: 350, enterConversion: 0.005 },
+        verdict: "新店慎用大预算",
         knowledge: "高预算拿到平台优先位，曝光大涨，且优质流量位用户决策更果断。但点金占实收应控制在2-5%。" },
       { text: "不上，自然流量够", effect: { exposure: -50 },
+        verdict: "短期省钱长期亏",
         knowledge: "短期省钱，长期不投意味着权重缓慢下滑。" },
     ],
   },
   {
     id: "q004",
+    day: 1,
     title: "铂金展位机会",
     desc: "平台推出铂金展位，列表占更大面积。",
     options: [
       { text: "买，作为补充曝光", effect: { cash: -500, exposure: 200, enterConversion: 0.005 },
+        verdict: "推荐：从基础功做起",
         knowledge: "铂金展位定位是补充手段，配合点金更划算，能在列表占更大视觉份额。" },
       { text: "把它当主渠道猛投", effect: { cash: -1000, exposure: 250 },
+        verdict: "次优选择",
         knowledge: "铂金展位不是主渠道，把它当唯一打法会发现ROI跑不过点金。" },
       { text: "不买", effect: {},
+        verdict: "不如不做",
         knowledge: "不是必需品，但放弃就少一个露脸机会。" },
     ],
   },
   {
     id: "q005",
+    day: 1,
     title: "全站推广要不要开",
     desc: "平台全站推广能跨场景投放，价格波动大。",
     options: [
       { text: "算ROI再决定", effect: { cash: -300, exposure: 100 },
+        verdict: "推荐：活动池是关键",
         knowledge: "知识库原话：全站推广没有玄学，划算就用，不划算就不用，关键看投产比。" },
       { text: "盲目开大预算", effect: { cash: -800, exposure: 200, badReviewRate: 0.01 },
+        verdict: "适合有底气的店",
         knowledge: "不算ROI乱开等于送钱给平台，烧完之后流量回落更难看。" },
       { text: "完全不开", effect: { exposure: -30 },
+        verdict: "外卖没有自然流量",
         knowledge: "完全不试就不知道是否划算，错失合适场景。" },
     ],
   },
   {
     id: "q006",
+    day: 2,
     title: "新店要做新客定向",
     desc: "你的店开业不久，需要决定推广人群。",
+    realCase: "闫寒观点：线下发传单现在反而比线上流量便宜。刚需餐饮的客户就在1-3公里内。",
     options: [
       { text: "重点投新客", effect: { cash: -400, exposure: 200, enterConversion: 0.01 },
+        verdict: "推荐：性价比最高",
         knowledge: "知识库明确：开店初期重点投新客，先把基本盘人群打出来，老客之后再说。" },
       { text: "投老客召回", effect: { cash: -300, exposure: 50 },
+        verdict: "线上线下结合",
         knowledge: "新店没几个老客，这时候投老客等于白烧。" },
       { text: "平均铺所有人群", effect: { cash: -500, exposure: 100 },
+        verdict: "烧钱未必值",
         knowledge: "平均投放=没有重点，效率最低。" },
     ],
   },
   {
     id: "q007",
+    day: 2,
     title: "数据下滑要不要老客定向",
     desc: "稳定经营一个月，最近数据开始下滑。",
     options: [
       { text: "加老客定向，把墙头草搂回来", effect: { cash: -350, exposure: 100, orderConversion: 0.01 },
+        verdict: "推荐：数据不说谎",
         knowledge: "知识库的原始策略：数据下滑时加老客定向，把摇摆中的老客拉回来比拉新便宜得多。" },
       { text: "继续加大新客投放", effect: { cash: -600, exposure: 150 },
+        verdict: "有经验才行",
         knowledge: "拉新成本是召回成本的3-5倍，下滑期不应该烧拉新。" },
       { text: "把所有活动暂停省钱", effect: { exposure: -100, orderConversion: -0.005 },
+        verdict: "盲人摸象",
         knowledge: "下滑期紧急刹车反而加速失速，正确做法是切人群不是停活动。" },
     ],
   },
   {
     id: "q008",
+    day: 2,
     title: "菜单大改之后",
     desc: "你刚刚把菜单上的爆款全换了。",
     options: [
       { text: "加流失老客定向", effect: { cash: -400, exposure: 100, orderConversion: 0.015 },
+        verdict: "最直接有效",
         knowledge: "菜单大改后召回流失老客效率最高，他们对店铺有认知基础，新菜单又给了他们重新尝试的理由。" },
       { text: "只投新客", effect: { cash: -500, exposure: 150 },
+        verdict: "推荐：杠杆效应",
         knowledge: "新客不知道你改没改菜单，单位获客成本更高。" },
       { text: "什么都不加", effect: { enterConversion: -0.005 },
+        verdict: "短效",
         knowledge: "改菜单不告诉用户=自嗨，转化会受影响。" },
     ],
   },
   {
     id: "q009",
+    day: 2,
     title: "霸王餐停了流量就跌",
     desc: "上个月霸王餐拉起来的流量，停了之后又掉回原点。",
     options: [
       { text: "审视基础：菜单+评分+履约", effect: { cash: -300, enterConversion: 0.01, orderConversion: 0.005 },
+        verdict: "推荐：标准打法",
         knowledge: "知识库直接点名：霸王餐停了流量就跌=店铺基础有问题，必须先修内功才能稳住流量。" },
       { text: "再开一轮霸王餐", effect: { cash: -600, exposure: 200 },
+        verdict: "有创意",
         knowledge: "等于把窟窿越挖越大，停了还是会跌。补贴是兴奋剂不是治本药。" },
       { text: "上更多刷单", effect: { cash: -300, exposure: 100, badReviewRate: 0.02 },
+        verdict: "方向对力度小",
         knowledge: "虚假数据会触发平台风控，得不偿失。" },
     ],
   },
   {
     id: "q010",
+    day: 2,
     title: "搜索流量高列表流量低",
     desc: "后台发现搜索流量很高，但列表流量异常低。",
+    realCase: "闫寒观点：店铺权重越高，推广越便宜。广东湛江粤菜酒楼，220推广出12000实收。",
     options: [
       { text: "查刷单和异常订单源头", effect: { cash: -200, exposure: 100, badReviewRate: -0.01 },
+        verdict: "推荐：先练内功",
         knowledge: "知识库明确：搜索高列表低是虚假数据导致的畸形流量表现，必须先拔掉刷单源头。" },
       { text: "无视，能跑就行", effect: { exposure: -150, badReviewRate: 0.01 },
+        verdict: "花钱买时间",
         knowledge: "畸形流量会触发平台风控降权，越拖越严重。" },
       { text: "继续加点金", effect: { cash: -500, exposure: 150 },
+        verdict: "长期会掉队",
         knowledge: "底层数据有问题再投钱也是白投，平台不会给你正常分配自然流量。" },
     ],
   },
   {
     id: "q011",
+    day: 3,
     title: "新客下单率不合格",
     desc: "新客来了不少，但下单率很低，远低于行业。",
     options: [
       { text: "立即改菜单结构和封面", effect: { cash: -300, orderConversion: 0.02 },
+        verdict: "推荐：低成本高效",
         knowledge: "知识库强调：新客下单率不合格就要改菜单，不能靠霸王餐硬撑——撑出来的是假数据，停了就没。" },
       { text: "继续撒霸王餐", effect: { cash: -500, exposure: 100, badReviewRate: 0.02 },
+        verdict: "投入产出看情况",
         knowledge: "用补贴硬撑下单率是治标不治本，停了立刻原形毕露。" },
       { text: "提价让用户更慎重", effect: { avgPrice: 2, orderConversion: -0.01 },
+        verdict: "有钱可以试",
         knowledge: "下单率本来就不行，再提价等于赶客。" },
     ],
   },
   {
     id: "q012",
+    day: 3,
     title: "线下传单要不要发",
     desc: "线上推广越来越贵，有人提议线下发传单。",
+    realCase: "闫寒观点：求好评比删差评更重要。恶意差评其实是少数，大部分差评是真实体验不好。",
     options: [
       { text: "试一下小区传单", effect: { cash: -200, exposure: 150, enterConversion: 0.005 },
+        verdict: "推荐：攻比守重要",
         knowledge: "知识库明确：线下传单现在反而可能比线上更便宜，尤其是社区店有非常具体的辐射范围。" },
       { text: "傲慢不做线下", effect: { exposure: -30 },
+        verdict: "合规有效",
         knowledge: "线下传单被很多新老板看不起，正因为如此竞争反而更小。" },
       { text: "全员铺传单大干一周", effect: { cash: -800, exposure: 250 },
+        verdict: "治标不治本",
         knowledge: "传单也要算ROI，盲目铺等于线下版无脑投点金。" },
     ],
   },
   {
     id: "q013",
+    day: 3,
     title: "平台喜欢什么商家",
     desc: "客户经理告诉你：表现好的店会拿到更多倾斜。",
     options: [
       { text: "稳定接单+减少客诉+留住老客", effect: { cash: -200, exposure: 100, badReviewRate: -0.02, orderConversion: 0.005 },
+        verdict: "推荐：效率优先",
         knowledge: "平台缺的是流量不是商家。知识库原话：能帮平台留住老客、减少客诉、提升流量利用率的商家最受平台喜欢。" },
       { text: "猛打价格战吸引下单", effect: { cash: -400, orderConversion: 0.01, avgPrice: -2 },
+        verdict: "省小亏大",
         knowledge: "价格战不是平台喜欢的，平台希望流量被高价值地利用。" },
       { text: "经常缺货退单冲销量", effect: { cash: 200, badReviewRate: 0.03, exposure: -100 },
+        verdict: "鸵鸟心态",
         knowledge: "缺货退单是平台最恨的'浪费流量'行为，会立刻被降权。" },
     ],
   },
   {
     id: "q014",
+    day: 3,
     title: "商圈选址人流vs客流",
     desc: "正在评估一个商铺位置，门口人流很大。",
+    realCase: "闫寒的超预期法：一个月的赠品集中一周送完，制造视觉冲击→拍照→分享→优质评论。",
     options: [
       { text: "数人头看真实进店转化", effect: { cash: -100, enterConversion: 0.01 },
+        verdict: "推荐：短期集中爆破",
         knowledge: "知识库强调：人流不等于客流，真正能转化的才是客流。要花3天数人头观察。" },
       { text: "人流大就开干", effect: { cash: -500, enterConversion: -0.01 },
+        verdict: "合规但衰退中",
         knowledge: "人流不代表客流，盲目押注地段，房租可能高得离谱。" },
       { text: "只看租金最便宜的位置", effect: { exposure: -100 },
+        verdict: "成本高见效慢",
         knowledge: "租金便宜往往意味着流量也便宜，知识库里说'租的是流量不是面积'。" },
     ],
   },
   {
     id: "q015",
+    day: 3,
     title: "选址主动线vs次动线",
     desc: "商圈里主动线满了，次动线还有便宜的铺。",
+    realCase: "闫寒观点：不接单率必须为0。平台缺的是流量不是商家，浪费平台流量会被报复。",
     options: [
       { text: "次动线但加同城推广补量", effect: { cash: -400, exposure: 200, enterConversion: 0.005 },
+        verdict: "推荐：这是红线",
         knowledge: "次动线租金便宜但客流弱，配套同城推广补足曝光是知识库的标准打法。" },
       { text: "无脑选主动线最贵铺", effect: { cash: -800 },
+        verdict: "治本之道",
         knowledge: "主动线房租高，被流量价值绑架，没有现金缓冲就翻车。" },
       { text: "选商圈死角图便宜", effect: { exposure: -200 },
+        verdict: "只能应急",
         knowledge: "动线尾部和死角容易被前端门店截流，知识库明确不推荐。" },
     ],
   },
   // ========== 二、评价与口碑 (q016-q030) ==========
   {
     id: "q016",
+    day: 4,
     title: "求好评 vs 删差评",
     desc: "差评多了，店里争论：到底应该求好评还是想办法删差评？",
     options: [
@@ -224,6 +293,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q017",
+    day: 4,
     title: "评价得券设计",
     desc: "想用一次券换一次好评，怎么设计？",
     options: [
@@ -237,6 +307,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q018",
+    day: 4,
     title: "超预期法集中送",
     desc: "想让用户记住你，准备送点小东西。",
     options: [
@@ -250,6 +321,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q019",
+    day: 4,
     title: "视觉冲击送一桌",
     desc: "想做一次能让用户拍照分享的体验。",
     options: [
@@ -263,6 +335,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q020",
+    day: 4,
     title: "邻里柠檬茶送小鸭子",
     desc: "对面新开邻里柠檬茶，给每杯送只小黄鸭。",
     options: [
@@ -276,6 +349,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q021",
+    day: 5,
     title: "复购的三个要素",
     desc: "想抓复购，先抓什么？",
     options: [
@@ -289,6 +363,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q022",
+    day: 5,
     title: "客诉率突然上升",
     desc: "客诉量这周比上周翻倍，原因不明。",
     options: [
@@ -302,6 +377,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q023",
+    day: 5,
     title: "差评回复怎么写",
     desc: "刚收到一条差评，店长不知道怎么回。",
     options: [
@@ -315,6 +391,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q024",
+    day: 5,
     title: "优质评论引导",
     desc: "想让顾客留更有价值的好评，怎么引导？",
     options: [
@@ -328,6 +405,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q025",
+    day: 5,
     title: "准时宝要不要开",
     desc: "平台让你开准时宝，超时赔付。",
     options: [
@@ -341,6 +419,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q026",
+    day: 6,
     title: "产品稳定性",
     desc: "顾客反馈：你家味道每次都不一样。",
     options: [
@@ -354,6 +433,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q027",
+    day: 6,
     title: "单次补偿 vs 持续体验",
     desc: "用户投诉，到底是补偿一次了事还是改流程？",
     options: [
@@ -367,6 +447,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q028",
+    day: 6,
     title: "评价是经营工具",
     desc: "新员工把评价当客服任务在处理。",
     options: [
@@ -380,6 +461,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q029",
+    day: 6,
     title: "长期评分先抓什么",
     desc: "想让评分稳定在4.8以上。",
     options: [
@@ -393,6 +475,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q030",
+    day: 6,
     title: "主动设计邀评",
     desc: "想设计一个固定的邀评动作。",
     options: [

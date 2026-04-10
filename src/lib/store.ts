@@ -12,6 +12,7 @@ import {
   PlayerTag,
   RandomEvent,
   OptionEffect,
+  DiagnosisReport,
 } from "./types";
 import {
   GAME_CONFIG,
@@ -24,6 +25,8 @@ import {
   determineEnding,
   determinePlayerTag,
   generateDailyComment,
+  pickQuestionsForDay,
+  generateDiagnosisReport,
 } from "./config";
 
 export type GamePhase =
@@ -56,6 +59,7 @@ interface GameStore {
   // 结局
   endingType: EndingType | null;
   playerTag: PlayerTag | null;
+  diagnosisReport: DiagnosisReport | null;
 
   // 持久化字段
   totalPlays: number;
@@ -149,6 +153,7 @@ export const useGameStore = create<GameStore>()(
       dailySummaries: [],
       endingType: null,
       playerTag: null,
+      diagnosisReport: null,
 
       totalPlays: 0,
       bestFinalCash: 0,
@@ -243,6 +248,7 @@ export const useGameStore = create<GameStore>()(
           dailySummaries: [],
           endingType: null,
           playerTag: null,
+          diagnosisReport: null,
           totalPlays: s.totalPlays + 1,
           lastPlayDate: today,
           playsToday,
@@ -257,7 +263,7 @@ export const useGameStore = create<GameStore>()(
       startDay: () => {
         const s = get();
         const excludeIds = s.choices.map((c) => c.questionId);
-        const qs = pickQuestions(GAME_CONFIG.questionsPerDay, excludeIds);
+        const qs = pickQuestionsForDay(s.state.day, excludeIds);
         const event = pickRandomEvent(s.state.day);
 
         let newState = s.state;
@@ -389,12 +395,14 @@ export const useGameStore = create<GameStore>()(
           const avgPriceChange = s.state.avgPrice - INITIAL_STATE.avgPrice;
           const ending: EndingType = "bankrupt";
           const tag = determinePlayerTag(ending, s.state, avgPriceChange, totalAdSpend);
+          const diagnosis = generateDiagnosisReport(ending, s.state, s.dailySummaries, totalAdSpend, avgPriceChange);
           const bestCash = Math.max(s.bestFinalCash, s.state.cash);
           const bestDays = Math.max(s.bestDaysSurvived, s.state.day);
           set({
             phase: "result",
             endingType: ending,
             playerTag: tag,
+            diagnosisReport: diagnosis,
             bestFinalCash: bestCash,
             bestDaysSurvived: bestDays,
           });
@@ -413,12 +421,14 @@ export const useGameStore = create<GameStore>()(
             s.state.day
           );
           const tag = determinePlayerTag(ending, s.state, avgPriceChange, totalAdSpend);
+          const diagnosis = generateDiagnosisReport(ending, s.state, s.dailySummaries, totalAdSpend, avgPriceChange);
           const bestCash = Math.max(s.bestFinalCash, s.state.cash);
           const bestDays = Math.max(s.bestDaysSurvived, s.state.day);
           set({
             phase: "result",
             endingType: ending,
             playerTag: tag,
+            diagnosisReport: diagnosis,
             bestFinalCash: bestCash,
             bestDaysSurvived: bestDays,
           });
@@ -510,6 +520,7 @@ export const useGameStore = create<GameStore>()(
           dailySummaries: [],
           endingType: null,
           playerTag: null,
+          diagnosisReport: null,
         }),
     }),
     {
