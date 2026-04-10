@@ -31,6 +31,12 @@ const DEFAULT_SHARE: ShareData = {
 let configuredUrl: string | null = null;
 let inflight: Promise<void> | null = null;
 
+/** 外部可调用：强制清除签名缓存，下次 setupWxShare 会重新签名 */
+export function resetWxConfig() {
+  configuredUrl = null;
+  inflight = null;
+}
+
 function log(stage: string, payload?: unknown) {
   // 用 info 等级，方便线上抓日志，但不会刷屏
   // eslint-disable-next-line no-console
@@ -111,7 +117,13 @@ async function configForCurrentUrl(): Promise<boolean> {
       timestamp: config.timestamp,
       nonceStr: config.nonceStr,
       signature: config.signature,
-      jsApiList: ["updateAppMessageShareData", "updateTimelineShareData"],
+      // 新老API都要注册，很多微信版本只认老API
+      jsApiList: [
+        "updateAppMessageShareData",
+        "updateTimelineShareData",
+        "onMenuShareAppMessage",
+        "onMenuShareTimeline",
+      ],
     });
 
     await new Promise<void>((resolve, reject) => {
@@ -165,24 +177,52 @@ export async function setupWxShare(shareData?: Partial<ShareData>): Promise<void
     imgUrl: shareData?.imgUrl || DEFAULT_SHARE.imgUrl,
   };
 
-  const wx = (window as unknown as { wx: { updateAppMessageShareData: (d: unknown) => void; updateTimelineShareData: (d: unknown) => void } }).wx;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const wx = (window as unknown as { wx: any }).wx;
   try {
-    wx.updateAppMessageShareData({
-      title: data.title,
-      desc: data.desc,
-      link: data.link,
-      imgUrl: data.imgUrl,
-      success: () => log("appMessage share data set"),
-      fail: (err: unknown) => warn("appMessage share fail", err),
-    });
-    wx.updateTimelineShareData({
-      title: data.title,
-      link: data.link,
-      imgUrl: data.imgUrl,
-      success: () => log("timeline share data set"),
-      fail: (err: unknown) => warn("timeline share fail", err),
-    });
-    log("share data applied", { title: data.title });
+    // === 新API（微信7.0.12+） ===
+    if (wx.updateAppMessageShareData) {
+      wx.updateAppMessageShareData({
+        title: data.title,
+        desc: data.desc,
+        link: data.link,
+        imgUrl: data.imgUrl,
+        success: () => log("updateAppMsg ok"),
+        fail: (err: unknown) => warn("updateAppMsg fail", err),
+      });
+    }
+    if (wx.updateTimelineShareData) {
+      wx.updateTimelineShareData({
+        title: data.title,
+        link: data.link,
+        imgUrl: data.imgUrl,
+        success: () => log("updateTimeline ok"),
+        fail: (err: unknown) => warn("updateTimeline fail", err),
+      });
+    }
+
+    // === 老API（兼容微信6.x-7.0.11，很多用户还在用） ===
+    if (wx.onMenuShareAppMessage) {
+      wx.onMenuShareAppMessage({
+        title: data.title,
+        desc: data.desc,
+        link: data.link,
+        imgUrl: data.imgUrl,
+        success: () => log("onMenuShareAppMessage ok"),
+        cancel: () => log("onMenuShareAppMessage cancel"),
+      });
+    }
+    if (wx.onMenuShareTimeline) {
+      wx.onMenuShareTimeline({
+        title: data.title,
+        link: data.link,
+        imgUrl: data.imgUrl,
+        success: () => log("onMenuShareTimeline ok"),
+        cancel: () => log("onMenuShareTimeline cancel"),
+      });
+    }
+
+    log("share data applied (new+old API)", { title: data.title });
   } catch (e) {
     warn("apply share data failed", (e as Error).message);
   }
