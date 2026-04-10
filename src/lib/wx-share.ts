@@ -15,8 +15,8 @@ export interface ShareData {
 }
 
 const DEFAULT_SHARE: ShareData = {
-  title: "外卖老板7天经营挑战，1万本金你能赚多少？",
-  desc: "100道真实经营决策，曝光、转化、差评全实时变化。来试试你的经营能力",
+  title: "外卖模拟器：1万本金经营7天，你能赚多少？来比试一下真功夫",
+  desc: "100道真实经营决策，曝光、转化、差评全实时变化",
   link: "",
   imgUrl: SHARE_IMG,
 };
