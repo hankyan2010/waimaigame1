@@ -97,14 +97,24 @@ export type EndingType =
   | "survive"    // 勉强存活
   | "thrive";    // 爆赚
 
-/** 玩家标签 */
+/** 玩家标签（16种人格） */
 export type PlayerTag =
-  | "price_killer"     // 价格屠夫
-  | "traffic_gambler"  // 流量赌徒
-  | "profit_harvester" // 利润收割
-  | "reputation_guard" // 口碑守护
-  | "rookie_dead"      // 外卖小白（已倒闭）
-  | "balanced_master"; // 均衡派
+  | "price_killer"       // 价格屠夫
+  | "traffic_gambler"    // 流量赌徒
+  | "profit_harvester"   // 利润收割机
+  | "reputation_guard"   // 口碑圣母
+  | "balanced_master"    // 六边形战士
+  | "rookie_dead"        // 韭菜本菜
+  | "coupon_addict"      // 满减上瘾症
+  | "data_nerd"          // 数据强迫症
+  | "cost_miser"         // 铁公鸡
+  | "yolo_boss"          // 梭哈型老板
+  | "survivor_king"      // 苟活大师
+  | "speed_demon"        // 闪电出餐王
+  | "review_beggar"      // 好评乞丐
+  | "menu_artist"        // 菜单艺术家
+  | "lucky_dog"          // 欧皇附体
+  | "disaster_magnet";   // 灾难吸铁石
 
 export interface TagInfo {
   id: PlayerTag;

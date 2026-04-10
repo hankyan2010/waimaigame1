@@ -188,12 +188,22 @@ export const ENDING_INFO: Record<EndingType, EndingInfo> = {
 // === 玩家标签 ===
 
 export const TAG_INFO: Record<PlayerTag, TagInfo> = {
-  price_killer: { id: "price_killer", label: "价格屠夫型", emoji: "🗡️", desc: "靠降价换订单，利润薄如刀" },
-  traffic_gambler: { id: "traffic_gambler", label: "流量赌徒型", emoji: "🎰", desc: "all in 推广，赢了通吃输了破产" },
-  profit_harvester: { id: "profit_harvester", label: "利润收割型", emoji: "💰", desc: "死守毛利，闷声发财的真老板" },
-  reputation_guard: { id: "reputation_guard", label: "口碑守护型", emoji: "⭐", desc: "质量至上，靠回头客吃饭" },
-  balanced_master: { id: "balanced_master", label: "均衡派", emoji: "⚖️", desc: "每一步都稳，没有短板" },
-  rookie_dead: { id: "rookie_dead", label: "外卖小白", emoji: "😵", desc: "还没搞清楚外卖怎么玩就倒了" },
+  price_killer:     { id: "price_killer",     label: "价格屠夫",     emoji: "🗡️", desc: "别人还在算成本，你已经把底裤都降没了。客单价跌成白菜价，薄利多销的'薄'字被你玩明白了——薄到透明。" },
+  traffic_gambler:  { id: "traffic_gambler",  label: "流量赌狗",     emoji: "🎰", desc: "推广预算比房租还高，你不是在做外卖，你是在给美团打工。别人开店赚钱，你开店赚了个寂寞。" },
+  profit_harvester: { id: "profit_harvester", label: "利润貔貅",     emoji: "🤑", desc: "你的钱只进不出，堪称外卖界貔貅。闷声发大财，同行还在卷价格，你已经在数钱了。" },
+  reputation_guard: { id: "reputation_guard", label: "好评舔狗",     emoji: "⭐", desc: "为了五星好评可以上刀山下油锅。顾客虐你千百遍，你待顾客如初恋。差评率比你的体脂率还低。" },
+  balanced_master:  { id: "balanced_master",  label: "六边形战士",   emoji: "💎", desc: "流量、转化、口碑、成本、利润，没有短板。你不是最秀的，但你是最稳的——活到最后的都是你这种人。" },
+  rookie_dead:      { id: "rookie_dead",      label: "韭菜本菜",     emoji: "🥬", desc: "平台割完房东割，房东割完员工割。你以为你是老板，其实你是移动ATM。钱花了，人累了，店没了。" },
+  coupon_addict:    { id: "coupon_addict",    label: "满减上瘾症",   emoji: "🏷️", desc: "满减一开流量哗哗来，满减一关店里冷清清。你不是在经营餐饮，你是在经营一家补贴发放站。" },
+  data_nerd:        { id: "data_nerd",        label: "数据偏执狂",   emoji: "🤓", desc: "入店率精确到小数点后三位，转化率倒背如流。你可能不太会炒菜，但你绝对会看后台——外卖圈最强分析师。" },
+  cost_miser:       { id: "cost_miser",       label: "铁公鸡",       emoji: "🐔", desc: "推广？不投。赠品？没有。满减？想都别想。省下来的每一分钱都在你口袋里，但顾客也都在别人店里。" },
+  yolo_boss:        { id: "yolo_boss",        label: "梭哈型老板",   emoji: "🃏", desc: "要么暴赚要么暴亏，不存在中间状态。你的经营风格就像你打德州——全押，不留后路。心脏得够大才能当你的合伙人。" },
+  survivor_king:    { id: "survivor_king",    label: "苟活大师",     emoji: "🐢", desc: "利润就像你的头发——稀少但顽强。不赚大钱但绝不倒闭，你是外卖圈的打不死的小强。房东最怕你这种——死都不搬。" },
+  speed_demon:      { id: "speed_demon",      label: "闪电出餐怪",   emoji: "⚡", desc: "差评率低到离谱，出餐速度堪比外卖界博尔特。你家骑手从来不用等餐，甚至骑手还没到你已经在门口举着了。" },
+  review_beggar:    { id: "review_beggar",    label: "好评乞讨师",   emoji: "🙏", desc: "赠品比正餐还多，外卖袋里塞的小卡片快比菜单厚了。顾客打开外卖发现：一份饭，八份赠品，三张好评卡。" },
+  menu_artist:      { id: "menu_artist",      label: "菜单艺术家",   emoji: "🎨", desc: "你的菜单排版比《时尚芭莎》还精致，封面图能拿去参加摄影展。别人卖的是饭，你卖的是视觉艺术——下单率高得离谱。" },
+  lucky_dog:        { id: "lucky_dog",        label: "欧皇附体",     emoji: "🍀", desc: "竞品关门、网红自来、平台扶持全让你赶上了。你的经营能力一般，但你的运气能去买彩票。老天爷追着喂你饭吃。" },
+  disaster_magnet:  { id: "disaster_magnet",  label: "灾难吸铁石",   emoji: "🧲", desc: "暴雨、差评、骑手跑路、食材涨价，全让你一个人赶上了。你不是在经营外卖，你是在渡劫。建议下辈子投胎选个好商圈。" },
 };
 
 export function determinePlayerTag(
@@ -202,12 +212,53 @@ export function determinePlayerTag(
   avgPriceChange: number,
   totalAdSpend: number
 ): PlayerTag {
-  if (ending === "bankrupt") return "rookie_dead";
-  if (avgPriceChange <= -4) return "price_killer";
-  if (totalAdSpend >= 1500) return "traffic_gambler";
-  if (finalState.badReviewRate <= 0.03 && finalState.orderConversion >= 0.18) return "reputation_guard";
-  if (finalState.cash >= GAME_CONFIG.initialCash * 1.4) return "profit_harvester";
-  return "balanced_master";
+  const profit = finalState.cash - GAME_CONFIG.initialCash;
+  const profitRate = profit / GAME_CONFIG.initialCash;
+
+  // === 倒闭类（3种） ===
+  if (ending === "bankrupt") {
+    if (totalAdSpend >= 2000) return "traffic_gambler";  // 砸推广砸死的
+    if (avgPriceChange <= -5) return "price_killer";     // 降价降死的
+    return "rookie_dead";                                 // 其他原因倒闭
+  }
+
+  // === 爆赚类（5种） ===
+  if (ending === "thrive") {
+    if (finalState.badReviewRate <= 0.02 && finalState.orderConversion >= 0.20)
+      return "speed_demon";                               // 差评超低+下单率超高
+    if (profitRate >= 0.6) return "profit_harvester";     // 暴利
+    if (finalState.enterConversion >= 0.12 && finalState.orderConversion >= 0.18)
+      return "menu_artist";                               // 双转化率都高=菜单牛逼
+    if (totalAdSpend <= 300 && profit > 0)
+      return "cost_miser";                                // 几乎不花钱还赚了
+    return "balanced_master";                             // 其他爆赚
+  }
+
+  // === 存活类（8种）——大部分人在这里，要足够丰富 ===
+
+  // 先判断极端特征
+  if (avgPriceChange <= -4) return "price_killer";        // 疯狂降价
+  if (totalAdSpend >= 1500) return "coupon_addict";       // 满减/推广上瘾
+
+  // 口碑相关
+  if (finalState.badReviewRate <= 0.02) return "reputation_guard"; // 差评极低
+  if (finalState.badReviewRate >= 0.10) return "disaster_magnet";  // 差评爆炸
+
+  // 数据相关
+  if (finalState.enterConversion >= 0.11 && finalState.orderConversion >= 0.18)
+    return "data_nerd";                                   // 双转化高=懂数据
+
+  // 利润相关
+  if (profitRate >= 0.15) return "yolo_boss";             // 中等盈利，敢搏
+  if (profitRate > 0 && profitRate < 0.05) return "survivor_king"; // 勉强赚了一点
+
+  // 随机事件运气（看最终曝光变化）
+  if (finalState.exposure >= 2200) return "lucky_dog";    // 曝光特别高=运气好
+  if (finalState.exposure <= 800) return "disaster_magnet"; // 曝光特别低=运气差
+
+  // 兜底：随机给一个有趣的
+  const fallbacks: PlayerTag[] = ["review_beggar", "survivor_king", "data_nerd", "yolo_boss"];
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
 // === 每日点评模板 ===
