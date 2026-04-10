@@ -31,7 +31,7 @@ export function CoinRain({ count = 36 }: Props) {
         // 总时长 1.6-2.4s
         duration: 1600 + Math.random() * 800,
         size: isBig ? 36 + Math.random() * 12 : 24 + Math.random() * 12,
-        emoji: isBig ? "💰" : "🪙",
+        emoji: isBig ? "🪙" : "🪙",
         variant,
       };
     });

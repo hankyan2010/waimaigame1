@@ -180,29 +180,11 @@ export const useGameStore = create<GameStore>()(
       },
 
       canPlay: () => {
-        const s = get();
-        const today = todayStr();
-        // 跨天 → 今天的免费次数和自分享次数都重置，邀请扫码额度跨天保留
-        if (s.lastPlayDate !== today) return true;
-        const dailyTotal = s.freePlaysPerDay + s.sharedPlaysToday;
-        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-        return s.playsToday < dailyTotal || inviteAvailable > 0;
+        return true;
       },
 
       remainingFreePlays: () => {
-        const s = get();
-        const today = todayStr();
-        if (s.lastPlayDate !== today) {
-          // 新的一天：免费次数 + 历史邀请未消费的额度
-          const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-          return s.freePlaysPerDay + inviteAvailable;
-        }
-        const dailyRemaining = Math.max(
-          0,
-          s.freePlaysPerDay + s.sharedPlaysToday - s.playsToday
-        );
-        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-        return dailyRemaining + inviteAvailable;
+        return 999;
       },
 
       todaysRevenue: () => {
@@ -219,21 +201,6 @@ export const useGameStore = create<GameStore>()(
 
       startNewGame: () => {
         const s = get();
-        const today = todayStr();
-        const isNewDay = s.lastPlayDate !== today;
-        const playsToday = isNewDay ? 1 : s.playsToday + 1;
-        const sharedPlaysToday = isNewDay ? 0 : s.sharedPlaysToday;
-
-        // 决定这局消耗的是哪一种次数：
-        // 优先消耗当日免费 + 自分享次数；用完了才消耗邀请额度
-        const dailyTotal = s.freePlaysPerDay + sharedPlaysToday;
-        let inviteCreditsConsumed = isNewDay ? 0 : s.inviteCreditsConsumed;
-        // 跨天：邀请已消费数清零，因为 inviteCredits 是累计的、跨天保留
-        // 当天里：如果已经把 daily 用完了，这局要消耗一个邀请额度
-        if (!isNewDay && playsToday > dailyTotal) {
-          inviteCreditsConsumed = inviteCreditsConsumed + 1;
-        }
-
         set({
           phase: "day-intro",
           state: { ...INITIAL_STATE },
@@ -250,13 +217,11 @@ export const useGameStore = create<GameStore>()(
           playerTag: null,
           diagnosisReport: null,
           totalPlays: s.totalPlays + 1,
-          lastPlayDate: today,
-          playsToday,
-          sharedPlaysToday,
-          inviteCreditsConsumed,
+          lastPlayDate: todayStr(),
+          playsToday: 0,
+          sharedPlaysToday: 0,
+          inviteCreditsConsumed: 0,
         });
-
-        // 直接进入第一天
         get().startDay();
       },
 
@@ -264,6 +229,11 @@ export const useGameStore = create<GameStore>()(
         const s = get();
         const excludeIds = s.choices.map((c) => c.questionId);
         const qs = pickQuestionsForDay(s.state.day, excludeIds);
+        // 打乱每道题的选项顺序，避免正确答案永远是第一个
+        const shuffledQs = qs.map((q) => ({
+          ...q,
+          options: [...q.options].sort(() => Math.random() - 0.5),
+        }));
         const event = pickRandomEvent(s.state.day);
 
         let newState = s.state;
@@ -274,7 +244,7 @@ export const useGameStore = create<GameStore>()(
         set({
           phase: "day-intro",
           state: newState,
-          dayQuestions: qs,
+          dayQuestions: shuffledQs,
           dayQuestionIndex: 0,
           dayEvent: event,
           dayCashBefore: newState.cash,

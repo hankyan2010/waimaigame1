@@ -7,7 +7,6 @@ import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
 import { getLeaderboard } from "@/lib/leaderboard";
 import { setupWxShare } from "@/lib/wx-share";
-import { PosterModal } from "@/components/PosterModal";
 import { CoinRain } from "@/components/CoinRain";
 import { playCoinSound } from "@/lib/sound";
 
@@ -15,8 +14,6 @@ export default function HomePage() {
   const router = useRouter();
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
-  const [showShareGate, setShowShareGate] = useState(false);
-  const [showPoster, setShowPoster] = useState(false);
   const [inviteToast, setInviteToast] = useState<string>("");
   // 金币雨测试用
   const [coinKey, setCoinKey] = useState(0);
@@ -106,34 +103,14 @@ export default function HomePage() {
     return () => clearTimeout(t);
   }, [inviteToast]);
 
-  const canPlay = hydrated ? store.canPlay() : true;
-  const remainingPlays = hydrated ? store.remainingFreePlays() : 1;
   const totalPlays = hydrated ? store.totalPlays : 0;
   const bestCash = hydrated ? store.bestFinalCash : 0;
   const bestDays = hydrated ? store.bestDaysSurvived : 0;
-  const inviteScannerCount = hydrated ? store.inviteScannerCount : 0;
-  const inviteCredits = hydrated ? store.inviteCredits : 0;
-  // 调试用：把次数模型的所有维度直接显示在 footer，方便用户/我快速排错
-  const playsToday = hydrated ? store.playsToday : 0;
-  const sharedPlaysToday = hydrated ? store.sharedPlaysToday : 0;
-  const maxShared = hydrated ? store.maxSharedPlays : 5;
-  const inviteConsumed = hydrated ? store.inviteCreditsConsumed : 0;
 
   const handleStart = () => {
-    if (canPlay) {
-      store.reset();
-      router.push("/play");
-      track("start_click");
-    } else {
-      setShowShareGate(true);
-      track("share_gate_shown");
-    }
-  };
-
-  const handleOpenPoster = () => {
-    setShowShareGate(false);
-    setShowPoster(true);
-    track("poster_open");
+    store.reset();
+    router.push("/play");
+    track("start_click");
   };
 
   return (
@@ -177,30 +154,6 @@ export default function HomePage() {
             </div>
           </div>
         )}
-
-        {/* Today plays */}
-        <div className="bg-card rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-title">今日挑战次数</p>
-              <p className="text-xs text-secondary">
-                每天免费 1 次 · 分享海报 +1 次 · 朋友扫码每人 +1 次
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-black text-title">{remainingPlays}</div>
-              <div className="text-[10px] text-secondary">剩余</div>
-            </div>
-          </div>
-          {hydrated && inviteScannerCount > 0 && (
-            <div className="mt-2 pt-2 border-t border-black/5 flex items-center justify-between text-[11px]">
-              <span className="text-secondary">
-                🎯 已有 <span className="font-bold text-title">{inviteScannerCount}</span> 位朋友扫了你的码
-              </span>
-              <span className="text-brand-dark font-bold">+{inviteCredits} 次</span>
-            </div>
-          )}
-        </div>
 
         {/* How it works */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
@@ -246,8 +199,6 @@ export default function HomePage() {
         <button onClick={handleStart} className="btn-raised text-base">
           {!hydrated
             ? "开始挑战"
-            : !canPlay
-            ? "分享解锁挑战"
             : totalPlays === 0
             ? "开始首次挑战"
             : "再来一局"}
@@ -259,51 +210,6 @@ export default function HomePage() {
           🏆 英雄榜{hydrated && boardCount > 0 ? `（${boardCount}人在榜${topName ? "·榜首 " + topName : ""}）` : ""}
         </button>
       </div>
-
-      {/* Share gate modal */}
-      {showShareGate && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-card rounded-2xl p-5 max-w-sm w-full">
-            <div className="text-center mb-4">
-              <div className="text-4xl mb-2">🔥</div>
-              <h3 className="text-lg font-black text-title mb-1">
-                今日挑战次数已用完
-              </h3>
-              <p className="text-sm text-secondary">
-                {sharedPlaysToday >= maxShared ? (
-                  <>
-                    今日自分享次数已用完（{sharedPlaysToday}/{maxShared}）
-                    <br />
-                    等朋友扫你的码 +1 次，或明天再来
-                  </>
-                ) : (
-                  <>
-                    生成你的专属挑战海报
-                    <br />
-                    保存或转发，立刻 +1 次挑战机会
-                    <br />
-                    每个朋友扫码再帮你 +1 次（最多 +{store.inviteCap || 5} 次）
-                  </>
-                )}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              {sharedPlaysToday < maxShared && (
-                <button onClick={handleOpenPoster} className="btn-raised text-sm">
-                  生成专属海报
-                </button>
-              )}
-              <button onClick={() => setShowShareGate(false)} className="btn-raised-ghost text-sm">
-                {sharedPlaysToday >= maxShared ? "知道了" : "明天再玩"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Poster modal */}
-      <PosterModal open={showPoster} onClose={() => setShowPoster(false)} />
 
       {/* Invite scan toast */}
       {inviteToast && (
@@ -322,7 +228,7 @@ export default function HomePage() {
         </button>
       </div>
       <p className="text-center text-[10px] text-secondary/40 pb-1">
-        v3.4.0-fountain · 免费 {playsToday}/{store.freePlaysPerDay} · 分享 {sharedPlaysToday}/{maxShared} · 邀请 {inviteConsumed}/{inviteCredits}
+        v3.5.0
       </p>
 
       {/* 金币雨层（被测试按钮触发） */}

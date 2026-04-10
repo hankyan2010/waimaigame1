@@ -87,7 +87,7 @@ export default function PlayPage() {
     return (
       <div className="min-h-screen bg-bg flex flex-col">
         <div className="bg-brand pt-6 pb-10 px-6 rounded-b-[2rem]">
-          <p className="text-center text-sm text-title/70">Day {summary.day} 结算</p>
+          <p className="text-center text-sm text-title/70">第{summary.day}天 结算</p>
           <div className={`text-center text-[44px] font-black leading-tight ${
             summary.profit >= 0 ? "text-title" : "text-red-700"
           }`}>
@@ -221,7 +221,7 @@ export default function PlayPage() {
               ? "查看结局"
               : isLastDay
               ? "查看7天战绩"
-              : `进入 Day ${s.day + 1}`}
+              : `进入第${s.day + 1}天`}
           </button>
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function PlayPage() {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center px-6">
         <div className="text-center max-w-sm w-full">
-          <p className="text-sm text-secondary mb-1">Day {s.day} / {GAME_CONFIG.maxDay}</p>
+          <p className="text-sm text-secondary mb-1">第{s.day}天 / 共{GAME_CONFIG.maxDay}天</p>
           <div className="text-4xl mb-2">{story?.emoji || "📋"}</div>
           <h2 className="text-2xl font-black text-title mb-2">
             {story?.title || `第 ${s.day} 天`}
@@ -298,7 +298,7 @@ export default function PlayPage() {
       <div className="bg-brand px-4 pt-4 pb-5 rounded-b-[1.5rem]">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-title">
-            Day {s.day} / {GAME_CONFIG.maxDay}
+            第{s.day}天 / 共{GAME_CONFIG.maxDay}天
           </span>
           <span className="text-xs text-title/70">
             题目 {store.dayQuestionIndex + 1} / {store.dayQuestions.length}

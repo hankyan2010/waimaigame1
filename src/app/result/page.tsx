@@ -116,14 +116,14 @@ export default function ResultPage() {
         <div className="relative z-10 text-center">
           <div className="text-5xl mb-2">{ending.emoji}</div>
           <p className="text-xs text-title/60 uppercase tracking-wider mb-1">
-            7天经营结束
+            七天经营结束
           </p>
           <h1 className="text-2xl font-black text-title mb-2">{ending.title}</h1>
           <div className="text-[44px] font-black text-title leading-none">
             {profit >= 0 ? "+" : ""}¥{profit}
           </div>
           <p className="text-xs text-title/60 mt-1">
-            存活 {daysSurvived} 天 · 最终现金 ¥{finalCash}
+            存活{daysSurvived}天 · 最终现金 ¥{finalCash}
           </p>
         </div>
       </div>
@@ -193,7 +193,7 @@ export default function ResultPage() {
                 className="border-b border-border last:border-0 pb-3 last:pb-0"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-black text-title">Day {d.day}</span>
+                  <span className="text-xs font-black text-title">第{d.day}天</span>
                   <span
                     className={`text-sm font-black ${
                       d.profit >= 0 ? "text-green-600" : "text-red-500"

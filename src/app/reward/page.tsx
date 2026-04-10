@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import { track } from "@/lib/track";
-import { PosterModal } from "@/components/PosterModal";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
 
@@ -13,8 +12,6 @@ export default function RewardPage() {
   const router = useRouter();
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
-  const [showPoster, setShowPoster] = useState(false);
-
   useEffect(() => {
     setHydrated(true);
     if (store.endingType) {
@@ -44,17 +41,10 @@ export default function RewardPage() {
   const profit = finalCash - GAME_CONFIG.initialCash;
   const isBankrupt = store.endingType === "bankrupt";
 
-  const canPlay = store.canPlay();
-
   const handleReplay = () => {
-    if (canPlay) {
-      store.reset();
-      router.push("/");
-      track("reward_replay");
-    } else {
-      setShowPoster(true);
-      track("reward_share_gate");
-    }
+    store.reset();
+    router.push("/");
+    track("reward_replay");
   };
 
   return (
@@ -95,22 +85,21 @@ export default function RewardPage() {
             </p>
           </div>
           <div className="bg-card rounded-2xl p-3 shadow-sm flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="text-sm">📊</span>
-              <p className="text-xs font-bold text-title">
-                {isBankrupt ? "高手避坑清单" : "实战资料包"}
-              </p>
-            </div>
+            <p className="text-xs font-bold text-title mb-1.5">
+              📦 外卖老板实战资料包（价值¥299）
+            </p>
             <div className="space-y-1">
               {[
-                "外卖经营核心指标清单",
-                "菜单优化实操手册",
-                "评价运营 SOP",
-                "流量投放 ROI 表",
+                "《外卖菜单定价公式表》— 一键算出每个菜该卖多少钱",
+                "《美团/饿了么推广ROI计算器》— 知道每块钱花得值不值",
+                "《差评处理话术模板30条》— 照着念就能挽回客户",
+                "《新店7天冷启动SOP》— 从0到日均50单的操作手册",
+                "《外卖包装成本优化清单》— 省出来的都是纯利润",
+                "《高峰期出餐效率自查表》— 3分钟找到你的瓶颈",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-1">
-                  <span className="text-success text-[10px]">✓</span>
-                  <span className="text-[11px] text-body">{item}</span>
+                <div key={item} className="flex items-start gap-1">
+                  <span className="text-success text-[10px] mt-0.5">✅</span>
+                  <span className="text-[11px] text-body leading-snug">{item}</span>
                 </div>
               ))}
             </div>
@@ -151,30 +140,18 @@ export default function RewardPage() {
           </div>
         )}
 
-        {/* Urgency */}
-        <div className="bg-card/60 rounded-xl px-3 py-2 flex items-center gap-2">
-          <span className="text-warning text-xs">⏰</span>
-          <p className="text-[11px] text-body">福利名额有限，尽快领取</p>
-        </div>
       </div>
 
       {/* Bottom */}
       <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent space-y-2">
         <button
           onClick={handleReplay}
-          className={canPlay ? "btn-raised-ghost text-base" : "btn-raised text-base"}
+          className="btn-raised-ghost text-base"
         >
-          {canPlay ? "再来一局" : "分享海报解锁挑战"}
+          再来一局
         </button>
-        {!canPlay && (
-          <p className="text-center text-[10px] text-secondary">
-            今日次数已用完 · 分享海报 +1 次 · 朋友扫码每人 +1 次
-          </p>
-        )}
       </div>
 
-      {/* Poster modal */}
-      <PosterModal open={showPoster} onClose={() => setShowPoster(false)} />
     </div>
   );
 }
