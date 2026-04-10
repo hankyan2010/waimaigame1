@@ -18,20 +18,22 @@ interface Props {
 
 export function CoinRain({ count = 36 }: Props) {
   const coins = useMemo(() => {
+    // 多种"钱"的emoji，让人一眼看出是钱在飞
+    const MONEY_EMOJIS = ["💰", "💵", "💴", "🤑", "💰", "💵", "💰", "💴"];
+    const BIG_EMOJIS = ["💰", "🤑", "💵"];
+
     return Array.from({ length: count }, (_, i) => {
       const isBig = Math.random() < 0.25;
-      // 均匀分配方向，不让某个方向扎堆
       const variant = VARIANTS[i % VARIANTS.length];
       return {
         id: i,
-        // 起始位置在屏幕中心 ±6vw 抖动一下，模拟"从一个区域喷出"
         startX: 50 + (Math.random() - 0.5) * 12,
-        // 时间错位 0-700ms，造成"爆发感"（前段更密集）
         delay: Math.pow(Math.random(), 1.6) * 700,
-        // 总时长 1.6-2.4s
         duration: 1600 + Math.random() * 800,
         size: isBig ? 36 + Math.random() * 12 : 24 + Math.random() * 12,
-        emoji: isBig ? "🪙" : "🪙",
+        emoji: isBig
+          ? BIG_EMOJIS[Math.floor(Math.random() * BIG_EMOJIS.length)]
+          : MONEY_EMOJIS[Math.floor(Math.random() * MONEY_EMOJIS.length)],
         variant,
       };
     });
