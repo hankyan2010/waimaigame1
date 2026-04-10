@@ -52,6 +52,11 @@ export default function PlayPage() {
   useEffect(() => {
     setHydrated(true);
     if (store.phase === "home" || store.dayQuestions.length === 0) {
+      // 次数用完了不要自动开始，跳回首页让用户看到分享蒙版
+      if (!store.canPlay()) {
+        router.push("/");
+        return;
+      }
       store.startNewGame();
       track("start_game");
     }

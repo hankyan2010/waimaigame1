@@ -90,7 +90,7 @@ export default function ResultPage() {
   const handlePlayAgain = () => {
     track("replay_from_result");
     store.reset();
-    router.push("/play");
+    router.push("/");
   };
 
   const handleGoReward = () => {
