@@ -6,7 +6,7 @@ import { useGameStore } from "@/lib/store";
 import { track } from "@/lib/track";
 import { GAME_CONFIG } from "@/lib/config";
 import { getLeaderboard } from "@/lib/leaderboard";
-import { setupWxShare } from "@/lib/wx-share";
+import { setupWxShare, setSharePlayerId } from "@/lib/wx-share";
 import { CoinRain } from "@/components/CoinRain";
 import { playCoinSound } from "@/lib/sound";
 
@@ -15,6 +15,8 @@ export default function HomePage() {
   const store = useGameStore();
   const [hydrated, setHydrated] = useState(false);
   const [inviteToast, setInviteToast] = useState<string>("");
+  const [showShareGate, setShowShareGate] = useState(false);
+  const [showShareTip, setShowShareTip] = useState(false);
   // 金币雨测试用
   const [coinKey, setCoinKey] = useState(0);
   const [showCoin, setShowCoin] = useState(false);
@@ -49,11 +51,19 @@ export default function HomePage() {
     setTopName(board[0]?.displayName ?? null);
 
     // 确保有玩家 ID + 拉取邀请额度
-    useGameStore.getState().ensurePlayerId();
+    const pid = useGameStore.getState().ensurePlayerId();
+    setSharePlayerId(pid);
     useGameStore.getState().refreshInviteCredits();
 
-    // 检测 ?invite= 参数：如果是从别人海报扫码进来，记录扫码事件
+    // 检测 ?ref= 或 ?invite= 参数：如果是从别人分享链接进来，记录扫码事件
     const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      useGameStore.getState().recordInviteScan(ref);
+      const cleanRefUrl = new URL(window.location.href);
+      cleanRefUrl.searchParams.delete("ref");
+      window.history.replaceState({}, "", cleanRefUrl.toString());
+    }
     const inviter = params.get("invite");
     if (inviter) {
       const myId = useGameStore.getState().playerId;
@@ -102,6 +112,11 @@ export default function HomePage() {
   const bestDays = hydrated ? store.bestDaysSurvived : 0;
 
   const handleStart = () => {
+    if (!store.canPlay()) {
+      setShowShareGate(true);
+      track("share_gate_shown");
+      return;
+    }
     store.reset();
     router.push("/play");
     track("start_click");
@@ -190,6 +205,11 @@ export default function HomePage() {
 
       {/* Bottom CTA */}
       <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
+        {hydrated && (
+          <p className="text-center text-sm text-secondary mb-2">
+            今日剩余 {store.remainingFreePlays()} 次
+          </p>
+        )}
         <button onClick={handleStart} className="btn-raised text-base">
           {!hydrated
             ? "开始挑战"
@@ -227,6 +247,58 @@ export default function HomePage() {
 
       {/* 金币雨层（被测试按钮触发） */}
       {showCoin && <CoinRain key={coinKey} />}
+
+      {/* 次数用完蒙版 */}
+      {showShareGate && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-card rounded-2xl p-6 max-w-sm w-full animate-slide-up">
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🎮</div>
+              <h3 className="text-lg font-black text-title mb-2">今日免费次数已用完</h3>
+              <p className="text-sm text-secondary leading-relaxed">
+                把游戏转发到朋友圈，每个朋友点一次你的链接，你就多一次挑战机会！
+              </p>
+            </div>
+
+            <div className="bg-brand/10 rounded-xl p-3 mb-4 text-center">
+              <p className="text-xs text-secondary mb-1">已有 {store.inviteScannerCount} 位朋友帮你助力</p>
+              <p className="text-lg font-black text-title">额外获得 {store.inviteCredits} 次机会</p>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setShowShareTip(true);
+                }}
+                className="btn-raised text-sm"
+              >
+                转发到朋友圈，获得更多次数
+              </button>
+              <button
+                onClick={() => setShowShareGate(false)}
+                className="btn-raised-ghost text-sm"
+              >
+                算了，明天再来
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 分享引导提示 */}
+      {showShareTip && (
+        <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
+             onClick={() => setShowShareTip(false)}>
+          <div className="text-right mt-0">
+            <div className="text-6xl animate-bounce">👆</div>
+            <div className="bg-white rounded-2xl p-4 mt-2 max-w-[260px]">
+              <p className="text-sm font-bold text-title mb-1">点击右上角「...」</p>
+              <p className="text-xs text-secondary">选择「转发给朋友」或「分享到朋友圈」</p>
+              <p className="text-xs text-secondary mt-2">每个朋友打开你的链接，你就多一次机会</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

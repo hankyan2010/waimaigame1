@@ -159,7 +159,7 @@ export const useGameStore = create<GameStore>()(
       bestFinalCash: 0,
       bestDaysSurvived: 0,
 
-      freePlaysPerDay: 1,           // 每天免费 1 次
+      freePlaysPerDay: 3,           // 每天免费 3 次
       playsToday: 0,
       lastPlayDate: "",
       sharedPlaysToday: 0,
@@ -180,11 +180,24 @@ export const useGameStore = create<GameStore>()(
       },
 
       canPlay: () => {
-        return true;
+        const s = get();
+        const today = todayStr();
+        if (s.lastPlayDate !== today) return true; // 新的一天
+        const dailyTotal = s.freePlaysPerDay;
+        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+        return s.playsToday < dailyTotal + inviteAvailable;
       },
 
       remainingFreePlays: () => {
-        return 999;
+        const s = get();
+        const today = todayStr();
+        if (s.lastPlayDate !== today) {
+          const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+          return s.freePlaysPerDay + inviteAvailable;
+        }
+        const dailyRemaining = Math.max(0, s.freePlaysPerDay - s.playsToday);
+        const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
+        return dailyRemaining + inviteAvailable;
       },
 
       todaysRevenue: () => {
@@ -201,6 +214,16 @@ export const useGameStore = create<GameStore>()(
 
       startNewGame: () => {
         const s = get();
+        const today = todayStr();
+        const isNewDay = s.lastPlayDate !== today;
+        const playsToday = isNewDay ? 1 : s.playsToday + 1;
+
+        // 如果超过每日免费次数，消耗邀请额度
+        let inviteCreditsConsumed = isNewDay ? 0 : s.inviteCreditsConsumed;
+        if (!isNewDay && playsToday > s.freePlaysPerDay) {
+          inviteCreditsConsumed = inviteCreditsConsumed + 1;
+        }
+
         set({
           phase: "day-intro",
           state: { ...INITIAL_STATE },
@@ -217,10 +240,10 @@ export const useGameStore = create<GameStore>()(
           playerTag: null,
           diagnosisReport: null,
           totalPlays: s.totalPlays + 1,
-          lastPlayDate: todayStr(),
-          playsToday: 0,
+          lastPlayDate: today,
+          playsToday,
           sharedPlaysToday: 0,
-          inviteCreditsConsumed: 0,
+          inviteCreditsConsumed,
         });
         get().startDay();
       },

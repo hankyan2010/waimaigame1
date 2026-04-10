@@ -23,6 +23,9 @@ const DEFAULT_SHARE: ShareData = {
 
 let configuredUrl: string | null = null;
 
+let _playerId = "";
+export function setSharePlayerId(id: string) { _playerId = id; }
+
 export function resetWxConfig() {
   configuredUrl = null;
 }
@@ -82,6 +85,10 @@ function cleanShareLink(): string {
   // 分享出去的链接去掉 wxdebug，保持干净
   const url = new URL(window.location.href);
   url.searchParams.delete("wxdebug");
+  url.searchParams.delete("ref"); // 清掉可能已有的ref
+  if (_playerId) {
+    url.searchParams.set("ref", _playerId);
+  }
   url.hash = "";
   return url.toString();
 }
