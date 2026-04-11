@@ -229,8 +229,16 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-2">
-              <button onClick={() => setShowShareTip(true)} className="btn-raised text-base">
-                发给朋友来挑战
+              <button
+                onClick={() => {
+                  // 点击分享按钮立刻 +1 次机会
+                  store.markSharedForExtraPlay();
+                  setShowShareGate(false);
+                  setShowShareTip(true);
+                }}
+                className="btn-raised text-base"
+              >
+                分享解锁 +1 次机会
               </button>
               <button onClick={() => setShowShareGate(false)} className="text-sm text-secondary/50 text-center w-full py-2">
                 关闭
@@ -247,8 +255,10 @@ export default function HomePage() {
           <div className="text-right mt-0">
             <div className="text-6xl animate-bounce">👆</div>
             <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
-              <p className="text-base font-bold text-title mb-1">点击右上角「...」</p>
-              <p className="text-sm text-secondary">选择「转发给朋友」或「分享到朋友圈」</p>
+              <p className="text-lg font-black text-green-600 mb-1">✅ 已获得 +1 次机会！</p>
+              <p className="text-base font-bold text-title mb-1">顺便分享给朋友</p>
+              <p className="text-sm text-secondary">点右上角「...」发给朋友，每人参与你再 +1 次</p>
+              <p className="text-sm text-brand-dark font-bold mt-2">点任意处关闭，返回开始游戏</p>
             </div>
           </div>
         </div>

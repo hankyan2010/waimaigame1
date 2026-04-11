@@ -183,9 +183,10 @@ export const useGameStore = create<GameStore>()(
         const s = get();
         const today = todayStr();
         if (s.lastPlayDate !== today) return true;
-        const dailyTotal = s.freePlaysPerDay;
+        // 总可用 = 免费次数 + 分享解锁次数 + 邀请额度
         const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-        return s.playsToday < dailyTotal + inviteAvailable;
+        const totalAvailable = s.freePlaysPerDay + s.sharedPlaysToday + inviteAvailable;
+        return s.playsToday < totalAvailable;
       },
 
       remainingFreePlays: () => {
@@ -195,9 +196,9 @@ export const useGameStore = create<GameStore>()(
           const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
           return s.freePlaysPerDay + inviteAvailable;
         }
-        const dailyRemaining = Math.max(0, s.freePlaysPerDay - s.playsToday);
         const inviteAvailable = Math.max(0, s.inviteCredits - s.inviteCreditsConsumed);
-        return dailyRemaining + inviteAvailable;
+        const totalAvailable = s.freePlaysPerDay + s.sharedPlaysToday + inviteAvailable;
+        return Math.max(0, totalAvailable - s.playsToday);
       },
 
       todaysRevenue: () => {
