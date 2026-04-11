@@ -226,6 +226,12 @@ export const TAG_INFO: Record<PlayerTag, TagInfo> = {
   disaster_magnet:  { id: "disaster_magnet",  label: "灾难吸铁石",   emoji: "🧲", desc: "暴雨、差评、骑手跑路、食材涨价，全让你一个人赶上了。你不是在经营外卖，你是在渡劫。建议下辈子投胎选个好商圈。" },
 };
 
+/**
+ * v4.4 加权随机标签系统
+ * 不再用 if-else 瀑布（导致排行榜全是同一人格），
+ * 而是根据经营数据给每个标签算匹配分数，按权重随机抽取。
+ * 这样同样的好玩家也能获得不同的标签。
+ */
 export function determinePlayerTag(
   ending: EndingType,
   finalState: GameState,
@@ -234,51 +240,98 @@ export function determinePlayerTag(
 ): PlayerTag {
   const profit = finalState.cash - GAME_CONFIG.initialCash;
   const profitRate = profit / GAME_CONFIG.initialCash;
+  const weights: Partial<Record<PlayerTag, number>> = {};
 
-  // === 倒闭类（3种） ===
+  // === 倒闭类 ===
   if (ending === "bankrupt") {
-    if (totalAdSpend >= 6000) return "traffic_gambler";   // 砸推广砸死的
-    if (avgPriceChange <= -12) return "price_killer";     // 降价降死的
-    return "rookie_dead";                                  // 其他原因倒闭
+    weights.rookie_dead = 3; // 基础权重
+    if (totalAdSpend >= 4000) weights.traffic_gambler = 5;
+    else if (totalAdSpend >= 2000) weights.traffic_gambler = 2;
+    if (avgPriceChange <= -8) weights.price_killer = 5;
+    else if (avgPriceChange <= -4) weights.price_killer = 2;
+    if (finalState.badReviewRate >= 0.12) weights.disaster_magnet = 4;
+    if (finalState.exposure <= 600) weights.disaster_magnet = (weights.disaster_magnet ?? 0) + 2;
+    return weightedRandom(weights, "rookie_dead");
   }
 
-  // === 爆赚类（5种） ===
+  // === 爆赚类 ===
   if (ending === "thrive") {
-    if (finalState.badReviewRate <= 0.02 && finalState.orderConversion >= 0.30)
-      return "speed_demon";                               // 差评超低+下单率超高
-    if (profitRate >= 2.0) return "profit_harvester";     // 暴利（赚了2倍以上）
-    if (finalState.enterConversion >= 0.18 && finalState.orderConversion >= 0.25)
-      return "menu_artist";                               // 双转化率都高=菜单牛逼
-    if (totalAdSpend <= 1000 && profit > 0)
-      return "cost_miser";                                // 几乎不花钱还赚了
-    return "balanced_master";                             // 其他爆赚
+    weights.balanced_master = 2; // 基础权重，保底多样性
+
+    // 闪电出餐：差评低+下单高
+    if (finalState.badReviewRate <= 0.02) weights.speed_demon = (weights.speed_demon ?? 0) + 3;
+    if (finalState.orderConversion >= 0.28) weights.speed_demon = (weights.speed_demon ?? 0) + 2;
+
+    // 利润貔貅：暴利
+    if (profitRate >= 3.0) weights.profit_harvester = 5;
+    else if (profitRate >= 1.5) weights.profit_harvester = 3;
+
+    // 菜单艺术家：双转化高
+    if (finalState.enterConversion >= 0.15) weights.menu_artist = (weights.menu_artist ?? 0) + 2;
+    if (finalState.orderConversion >= 0.22) weights.menu_artist = (weights.menu_artist ?? 0) + 2;
+
+    // 铁公鸡：不花钱还赚了
+    if (totalAdSpend <= 1500) weights.cost_miser = 3;
+    else if (totalAdSpend <= 3000) weights.cost_miser = 1;
+
+    // 好评舔狗：差评极低
+    if (finalState.badReviewRate <= 0.01) weights.reputation_guard = 3;
+
+    // 数据偏执狂：双转化都不错
+    if (finalState.enterConversion >= 0.12 && finalState.orderConversion >= 0.20)
+      weights.data_nerd = 3;
+
+    // 欧皇附体：曝光特别高（运气好）
+    if (finalState.exposure >= 4000) weights.lucky_dog = 3;
+
+    // 梭哈型老板：利润高+波动大
+    if (profitRate >= 1.0) weights.yolo_boss = 2;
+
+    return weightedRandom(weights, "balanced_master");
   }
 
-  // === 存活类（8种）——大部分人在这里，要足够丰富 ===
+  // === 存活类 ===
+  weights.survivor_king = 2; // 基础权重
 
-  // 先判断极端特征
-  if (avgPriceChange <= -10) return "price_killer";       // 疯狂降价
-  if (totalAdSpend >= 5000) return "coupon_addict";       // 满减/推广上瘾
+  if (avgPriceChange <= -8) weights.price_killer = 4;
+  else if (avgPriceChange <= -4) weights.price_killer = 2;
 
-  // 口碑相关
-  if (finalState.badReviewRate <= 0.02) return "reputation_guard"; // 差评极低
-  if (finalState.badReviewRate >= 0.15) return "disaster_magnet";  // 差评爆炸
+  if (totalAdSpend >= 4000) weights.coupon_addict = 4;
+  else if (totalAdSpend >= 2000) weights.coupon_addict = 2;
 
-  // 数据相关
-  if (finalState.enterConversion >= 0.16 && finalState.orderConversion >= 0.25)
-    return "data_nerd";                                   // 双转化高=懂数据
+  if (finalState.badReviewRate <= 0.02) weights.reputation_guard = 4;
+  if (finalState.badReviewRate >= 0.12) weights.disaster_magnet = 4;
 
-  // 利润相关
-  if (profitRate >= 0.5) return "yolo_boss";              // 中等盈利，敢搏
-  if (profitRate > 0 && profitRate < 0.1) return "survivor_king"; // 勉强赚了一点
+  if (finalState.enterConversion >= 0.14 && finalState.orderConversion >= 0.22)
+    weights.data_nerd = 3;
 
-  // 随机事件运气（看最终曝光变化）
-  if (finalState.exposure >= 4000) return "lucky_dog";    // 曝光特别高=运气好
-  if (finalState.exposure <= 500) return "disaster_magnet"; // 曝光特别低=运气差
+  if (profitRate >= 0.3) weights.yolo_boss = 3;
+  if (profitRate > 0 && profitRate < 0.15) weights.survivor_king = (weights.survivor_king ?? 0) + 3;
 
-  // 兜底：随机给一个有趣的
-  const fallbacks: PlayerTag[] = ["review_beggar", "survivor_king", "data_nerd", "yolo_boss"];
-  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+  if (finalState.exposure >= 3500) weights.lucky_dog = 3;
+  if (finalState.exposure <= 600) weights.disaster_magnet = (weights.disaster_magnet ?? 0) + 2;
+
+  // 兜底多样性
+  weights.review_beggar = 1;
+  weights.menu_artist = 1;
+
+  return weightedRandom(weights, "survivor_king");
+}
+
+/** 按权重随机选一个标签 */
+function weightedRandom(
+  weights: Partial<Record<PlayerTag, number>>,
+  fallback: PlayerTag
+): PlayerTag {
+  const entries = Object.entries(weights).filter(([, w]) => w > 0) as [PlayerTag, number][];
+  if (entries.length === 0) return fallback;
+  const total = entries.reduce((sum, [, w]) => sum + w, 0);
+  let roll = Math.random() * total;
+  for (const [tag, w] of entries) {
+    roll -= w;
+    if (roll <= 0) return tag;
+  }
+  return entries[entries.length - 1][0];
 }
 
 // === 每日点评模板 ===
