@@ -231,14 +231,16 @@ export default function HomePage() {
             <div className="space-y-2">
               <button
                 onClick={() => {
-                  // 点击分享按钮立刻 +1 次机会
+                  // 点击分享 → 立刻+1次 → 直接开始游戏，不要再让用户多点一步
                   store.markSharedForExtraPlay();
                   setShowShareGate(false);
-                  setShowShareTip(true);
+                  store.startNewGame();
+                  router.push("/play");
+                  track("start_click");
                 }}
                 className="btn-raised text-lg"
               >
-                分享解锁 +1 次机会
+                🔓 解锁并开始游戏
               </button>
               <button onClick={() => setShowShareGate(false)} className="text-base text-secondary/50 text-center w-full py-2">
                 关闭
