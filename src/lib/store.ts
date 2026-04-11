@@ -243,7 +243,7 @@ export const useGameStore = create<GameStore>()(
           totalPlays: s.totalPlays + 1,
           lastPlayDate: today,
           playsToday,
-          sharedPlaysToday: 0,
+          sharedPlaysToday: isNewDay ? 0 : s.sharedPlaysToday, // 不要重置当天的分享次数！
           inviteCreditsConsumed,
         });
         get().startDay();

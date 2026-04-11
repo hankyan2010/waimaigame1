@@ -231,16 +231,15 @@ export default function HomePage() {
             <div className="space-y-2">
               <button
                 onClick={() => {
-                  // 点击分享 → 立刻+1次 → 直接开始游戏，不要再让用户多点一步
+                  // 1. 立刻+1次机会
                   store.markSharedForExtraPlay();
+                  // 2. 关闭分享蒙版，弹出分享引导蒙版
                   setShowShareGate(false);
-                  store.startNewGame();
-                  router.push("/play");
-                  track("start_click");
+                  setShowShareTip(true);
                 }}
                 className="btn-raised text-lg"
               >
-                🔓 解锁并开始游戏
+                🔓 分享解锁 +1 次机会
               </button>
               <button onClick={() => setShowShareGate(false)} className="text-base text-secondary/50 text-center w-full py-2">
                 关闭
@@ -253,14 +252,22 @@ export default function HomePage() {
       {/* 分享引导 */}
       {showShareTip && (
         <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
-             onClick={() => setShowShareTip(false)}>
+             onClick={() => {
+               setShowShareTip(false);
+               // 关闭分享引导后直接开始游戏
+               if (store.canPlay()) {
+                 store.startNewGame();
+                 router.push("/play");
+                 track("start_click");
+               }
+             }}>
           <div className="text-right mt-0">
             <div className="text-6xl animate-bounce">👆</div>
             <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
               <p className="text-xl font-black text-green-600 mb-1">✅ 已获得 +1 次机会！</p>
               <p className="text-lg font-bold text-title mb-1">顺便分享给朋友</p>
               <p className="text-base text-secondary">点右上角「...」发给朋友，每人参与你再 +1 次</p>
-              <p className="text-base text-brand-dark font-bold mt-2">点任意处关闭，返回开始游戏</p>
+              <p className="text-base text-brand-dark font-bold mt-2">👇 点任意处开始游戏</p>
             </div>
           </div>
         </div>
