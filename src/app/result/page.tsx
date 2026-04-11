@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
-import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
+import { ENDING_INFO, TAG_INFO, GAME_CONFIG, determinePlayerTag, generateDiagnosisReport } from "@/lib/config";
 import { track } from "@/lib/track";
 import {
   canEnterLeaderboard,
@@ -61,15 +61,14 @@ export default function ResultPage() {
     const params = new URLSearchParams(window.location.search);
     const testMode = params.get("test");
     if (testMode && ["thrive", "bankrupt", "survive"].includes(testMode)) {
-      const { determinePlayerTag, generateDiagnosisReport } = require("@/lib/config");
       const fakeCash = testMode === "thrive" ? 35000 : testMode === "bankrupt" ? -500 : 11500;
       const fakeDay = testMode === "bankrupt" ? 3 : 5;
       useGameStore.setState({
         phase: "result",
         state: { ...store.state, cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 },
         endingType: testMode as "thrive" | "bankrupt" | "survive",
-        playerTag: determinePlayerTag(testMode, { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, 5, 2000),
-        diagnosisReport: generateDiagnosisReport(testMode, { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, [], 2000, 5),
+        playerTag: determinePlayerTag(testMode as "thrive" | "bankrupt" | "survive", { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, 5, 2000),
+        diagnosisReport: generateDiagnosisReport(testMode as "thrive" | "bankrupt" | "survive", { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, [], 2000, 5),
         dailySummaries: [],
       });
     }
