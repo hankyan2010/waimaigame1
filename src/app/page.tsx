@@ -16,7 +16,6 @@ export default function HomePage() {
   const [hydrated, setHydrated] = useState(false);
   const [inviteToast, setInviteToast] = useState<string>("");
   const [showShareGate, setShowShareGate] = useState(false);
-  const [showShareTip, setShowShareTip] = useState(false);
   const [coinKey, setCoinKey] = useState(0);
   const [showCoin, setShowCoin] = useState(false);
 
@@ -211,63 +210,46 @@ export default function HomePage() {
 
       {showCoin && <CoinRain key={coinKey} />}
 
-      {/* 次数用完蒙版 */}
+      {/* 次数用完 → 一个蒙版搞定：分享引导 + 解锁按钮 */}
       {showShareGate && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-card rounded-2xl p-6 max-w-sm w-full animate-slide-up">
-            <div className="text-center mb-4">
-              <div className="text-4xl mb-2">🏆</div>
-              <h3 className="text-2xl font-black text-title mb-2">
-                {hydrated && store.bestFinalCash > 0
-                  ? `最高纪录：¥${store.bestFinalCash - GAME_CONFIG.initialCash > 0 ? "+" : ""}${store.bestFinalCash - GAME_CONFIG.initialCash}`
-                  : "今日免费次数已用完"}
-              </h3>
-              <p className="text-lg text-secondary leading-relaxed">
-                发给朋友来挑战，看谁经营得更好！<br/>
-                每个朋友参与，你还能额外获得1次机会
-              </p>
+        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col">
+          {/* 上半部分：分享引导指向右上角 */}
+          <div className="flex justify-end p-4 pt-2">
+            <div className="text-right">
+              <div className="text-6xl animate-bounce">👆</div>
+              <div className="bg-white rounded-2xl p-4 mt-2 max-w-[260px]">
+                <p className="text-lg font-bold text-title mb-1">点右上角「...」</p>
+                <p className="text-base text-secondary">转发给朋友，每人参与你再 +1 次</p>
+              </div>
             </div>
+          </div>
 
-            <div className="space-y-2">
+          {/* 下半部分：解锁按钮 */}
+          <div className="flex-1" />
+          <div className="px-6 pb-8">
+            <div className="bg-white rounded-2xl p-5 max-w-sm mx-auto">
+              <p className="text-center text-lg font-black text-title mb-3">
+                今日免费次数已用完
+              </p>
               <button
                 onClick={() => {
-                  // 1. 立刻+1次机会
+                  // 加次数 + 直接开始游戏，不检查canPlay，因为我们刚加了
                   store.markSharedForExtraPlay();
-                  // 2. 关闭分享蒙版，弹出分享引导蒙版
                   setShowShareGate(false);
-                  setShowShareTip(true);
+                  store.startNewGame();
+                  router.push("/play");
+                  track("start_click");
                 }}
                 className="btn-raised text-lg"
               >
-                🔓 分享解锁 +1 次机会
+                🔓 分享解锁，继续挑战
               </button>
-              <button onClick={() => setShowShareGate(false)} className="text-base text-secondary/50 text-center w-full py-2">
+              <button
+                onClick={() => setShowShareGate(false)}
+                className="text-base text-secondary/50 text-center w-full py-2 mt-2"
+              >
                 关闭
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 分享引导 */}
-      {showShareTip && (
-        <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
-             onClick={() => {
-               setShowShareTip(false);
-               // 关闭分享引导后直接开始游戏
-               if (store.canPlay()) {
-                 store.startNewGame();
-                 router.push("/play");
-                 track("start_click");
-               }
-             }}>
-          <div className="text-right mt-0">
-            <div className="text-6xl animate-bounce">👆</div>
-            <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
-              <p className="text-xl font-black text-green-600 mb-1">✅ 已获得 +1 次机会！</p>
-              <p className="text-lg font-bold text-title mb-1">顺便分享给朋友</p>
-              <p className="text-base text-secondary">点右上角「...」发给朋友，每人参与你再 +1 次</p>
-              <p className="text-base text-brand-dark font-bold mt-2">👇 点任意处开始游戏</p>
             </div>
           </div>
         </div>

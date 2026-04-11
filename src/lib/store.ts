@@ -219,12 +219,6 @@ export const useGameStore = create<GameStore>()(
         const isNewDay = s.lastPlayDate !== today;
         const playsToday = isNewDay ? 1 : s.playsToday + 1;
 
-        // 如果超过每日免费次数，消耗邀请额度
-        let inviteCreditsConsumed = isNewDay ? 0 : s.inviteCreditsConsumed;
-        if (!isNewDay && playsToday > s.freePlaysPerDay) {
-          inviteCreditsConsumed = inviteCreditsConsumed + 1;
-        }
-
         set({
           phase: "day-intro",
           state: { ...INITIAL_STATE },
@@ -243,8 +237,9 @@ export const useGameStore = create<GameStore>()(
           totalPlays: s.totalPlays + 1,
           lastPlayDate: today,
           playsToday,
-          sharedPlaysToday: isNewDay ? 0 : s.sharedPlaysToday, // 不要重置当天的分享次数！
-          inviteCreditsConsumed,
+          // 跨天重置分享次数和邀请消耗，当天保留
+          sharedPlaysToday: isNewDay ? 0 : s.sharedPlaysToday,
+          inviteCreditsConsumed: isNewDay ? 0 : s.inviteCreditsConsumed,
         });
         get().startDay();
       },
