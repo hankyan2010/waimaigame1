@@ -26,7 +26,7 @@ export const GAME_CONFIG = {
   initialEnterConversion: 0.08,  // 入店转化 8%
   initialOrderConversion: 0.15,  // 下单转化 15%
   initialAvgPrice: 25,           // 客单 ¥25
-  initialBadReviewRate: 0.03,    // 开局差评 3%（降低给好玩家更高天花板）
+  initialBadReviewRate: 0.05,    // 开局差评 5%（给涨跌更多空间）
   dailyRent: 450,
   dailyStaff: 350,
 };
@@ -102,7 +102,7 @@ export function applyEffect(state: GameState, effect: OptionEffect): GameState {
     enterConversion: clamp(state.enterConversion + (effect.enterConversion ?? 0), 0, 1),
     orderConversion: clamp(state.orderConversion + (effect.orderConversion ?? 0), 0, 1),
     avgPrice: Math.max(0, state.avgPrice + (effect.avgPrice ?? 0)),
-    badReviewRate: clamp(state.badReviewRate + (effect.badReviewRate ?? 0), 0, 1),
+    badReviewRate: clamp(state.badReviewRate + (effect.badReviewRate ?? 0), 0.02, 1), // 最低2%，不会清零
   };
 }
 
@@ -143,12 +143,12 @@ export const RANDOM_EVENTS: RandomEvent[] = [
   { id: "e12", title: "抖音自然爆单", desc: "顾客发的短视频突然火了，50万播放", effect: { exposure: 2000, enterConversion: 0.05, orderConversion: 0.03 }, emoji: "📱" },
 
   // === 暴死事件 ===
-  { id: "e3", title: "食品安全事故", desc: "顾客吃出异物，12315投诉+差评轰炸", effect: { cash: -5000, badReviewRate: 0.08, orderConversion: -0.04 }, emoji: "☠️" },
+  { id: "e3", title: "食品安全事故", desc: "顾客吃出异物，12315投诉+差评轰炸", effect: { cash: -5000, badReviewRate: 0.03, orderConversion: -0.04 }, emoji: "☠️" },
   { id: "e4", title: "平台封店3天", desc: "被举报违规操作，平台暂停营业3天", effect: { cash: -3000, exposure: -1000 }, emoji: "🚫" },
-  { id: "e6", title: "骑手集体罢工", desc: "配送站骑手集体请假，今天几乎0配送", effect: { cash: -2000, badReviewRate: 0.06 }, emoji: "🏃" },
-  { id: "e9", title: "后厨集体辞职", desc: "主厨带走两个帮工，今天出餐崩了", effect: { cash: -2500, badReviewRate: 0.06, orderConversion: -0.03 }, emoji: "😱" },
-  { id: "e11", title: "食材全部变质", desc: "冷柜半夜断电，今天的食材全废了", effect: { cash: -3000, badReviewRate: 0.04 }, emoji: "🤮" },
-  { id: "e13", title: "恶意差评轰炸", desc: "竞品雇水军刷了20条1星差评", effect: { badReviewRate: 0.10, enterConversion: -0.03, orderConversion: -0.04 }, emoji: "💢" },
+  { id: "e6", title: "骑手集体罢工", desc: "配送站骑手集体请假，今天几乎0配送", effect: { cash: -2000, badReviewRate: 0.02 }, emoji: "🏃" },
+  { id: "e9", title: "后厨集体辞职", desc: "主厨带走两个帮工，今天出餐崩了", effect: { cash: -2500, badReviewRate: 0.02, orderConversion: -0.03 }, emoji: "😱" },
+  { id: "e11", title: "食材全部变质", desc: "冷柜半夜断电，今天的食材全废了", effect: { cash: -3000, badReviewRate: 0.015 }, emoji: "🤮" },
+  { id: "e13", title: "恶意差评轰炸", desc: "竞品雇水军刷了20条1星差评", effect: { badReviewRate: 0.03, enterConversion: -0.03, orderConversion: -0.04 }, emoji: "💢" },
 
   // === 中等事件 ===
   { id: "e5", title: "网红探店", desc: "一位小网红主动来探店发帖", effect: { exposure: 800, enterConversion: 0.03 }, emoji: "📸" },
