@@ -91,68 +91,104 @@ export default function ResultPage() {
     }
   };
 
-  const handleGoReward = () => {
-    track("go_reward");
-    router.push("/reward");
-  };
+  const qrSrc = `${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/qrcode.png`;
+
+  // Poster card gradient based on ending type
+  const posterBg =
+    store.endingType === "thrive"
+      ? "linear-gradient(145deg, #FFF7E0 0%, #FFE8A0 50%, #FFD54F 100%)"
+      : store.endingType === "bankrupt"
+      ? "linear-gradient(145deg, #F0F0F5 0%, #D8D8E0 50%, #B0B0C0 100%)"
+      : "linear-gradient(145deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%)";
+
+  const posterBorder =
+    store.endingType === "thrive"
+      ? "2px solid rgba(255, 183, 0, 0.3)"
+      : store.endingType === "bankrupt"
+      ? "2px solid rgba(120, 120, 140, 0.3)"
+      : "2px solid rgba(76, 175, 80, 0.3)";
+
+  // Result-specific CTA
+  const ctaConfig = isBankrupt
+    ? { emoji: "💀", text: "你踩了不少坑，扫码领避坑指南" }
+    : store.endingType === "thrive"
+    ? { emoji: "🚀", text: "经营高手！扫码领高手专属资料" }
+    : { emoji: "😐", text: "还有提升空间，扫码领经营秘籍" };
 
   return (
     <div className="min-h-screen bg-neutral-100 flex flex-col">
-      {/* ===== 第一视觉区：利润 + 人格（截图友好）===== */}
-      <div
-        className="pt-10 pb-16 px-6 rounded-b-[2rem] relative overflow-hidden"
-        style={{
-          background:
-            store.endingType === "thrive"
-              ? "linear-gradient(135deg, #FFD100 0%, #FFA500 100%)"
-              : store.endingType === "bankrupt"
-              ? "linear-gradient(135deg, #6B7280 0%, #374151 100%)"
-              : "#FFD100",
-        }}
-      >
-        <div className="relative z-10 text-center">
-          <div className="text-6xl mb-3 animate-bounce-in">{ending.emoji}</div>
-          <p className={`text-base uppercase tracking-wider mb-1 ${isBankrupt ? "text-white/60" : "text-title/60"}`}>
-            五天经营结束
-          </p>
-          <h1 className={`text-4xl font-black mb-3 ${isBankrupt ? "text-white" : "text-title"}`}>
-            {ending.title}
-          </h1>
-          <div className={`text-[56px] font-black leading-none animate-number-pop ${isBankrupt ? "text-white" : "text-title"}`}>
+      {/* Content */}
+      <div className="flex-1 px-4 pt-8 space-y-4 relative z-10">
+
+        {/* Screenshot hint */}
+        <p className="text-center text-base text-secondary">
+          👇 长按截图，发给朋友看看你的经营人格
+        </p>
+
+        {/* ===== Shareable Poster Card ===== */}
+        <div
+          className="rounded-3xl p-6 text-center"
+          style={{
+            background: posterBg,
+            border: posterBorder,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+          }}
+        >
+          {/* Profit number */}
+          <p className="text-sm text-gray-500 mb-1">五天经营利润</p>
+          <div className="text-[52px] font-black leading-none mb-2" style={{ color: isBankrupt ? "#555" : "#222" }}>
             {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
           </div>
-          <p className={`text-base mt-2 ${isBankrupt ? "text-white/60" : "text-title/60"}`}>
-            存活{daysSurvived}天 · 最终现金 ¥{finalCash.toLocaleString()}
+          <p className="text-sm text-gray-400 mb-4">
+            存活{daysSurvived}天 · 打败了{beatPercent}%的老板
           </p>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 px-4 -mt-8 space-y-4 relative z-10">
-        {/* 分享引导（暴赚才显示）*/}
-        {store.endingType === "thrive" && (
-          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
-            <p className="text-lg font-black text-green-700 mb-1">🎉 你赚翻了！晒一下？</p>
-            <p className="text-base text-secondary">点右上角「...」分享给朋友</p>
+          {/* Personality emoji + label */}
+          <div className="text-6xl mb-2">{tag.emoji}</div>
+          <h3 className="text-3xl font-black mb-2" style={{ color: "#222" }}>{tag.label}</h3>
+
+          {/* Roast description */}
+          <p className="text-base leading-relaxed mb-5 px-2" style={{ color: "#555" }}>
+            {tag.desc}
+          </p>
+
+          {/* Divider */}
+          <div className="border-t border-black/10 mx-4 mb-5" />
+
+          {/* QR + invite text */}
+          <div className="flex flex-col items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrSrc}
+              alt="扫码挑战"
+              className="w-20 h-20 rounded-lg"
+            />
+            <p className="text-sm font-bold" style={{ color: "#444" }}>扫码挑战，看你是什么人格</p>
+            <p className="text-xs" style={{ color: "#999" }}>外卖老板5天生存挑战 waimaiketang.com/oldgame</p>
           </div>
-        )}
-
-        {/* 经营人格大卡片 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
-          <div className="text-4xl mb-2">{tag.emoji}</div>
-          <p className="text-base text-secondary mb-1">你的经营人格</p>
-          <h3 className="text-3xl font-black text-title mb-2">{tag.label}</h3>
-          <p className="text-base text-secondary leading-relaxed">{tag.desc}</p>
         </div>
 
-        {/* 战胜百分比 */}
-        <div className="bg-brand/10 rounded-2xl p-5 text-center">
-          <p className="text-base text-secondary mb-1">你已经打败了</p>
-          <div className="text-4xl font-black text-title">{beatPercent}%</div>
-          <p className="text-base text-secondary">的外卖老板</p>
+        {/* Result-specific CTA */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex gap-3 items-center">
+            <div className="shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={qrSrc}
+                alt="扫码领取"
+                className="w-16 h-16 rounded-lg"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-black text-title">
+                {ctaConfig.emoji} {ctaConfig.text}
+              </p>
+              <p className="text-sm text-secondary mt-0.5">加微信回复「资料包」免费领</p>
+            </div>
+          </div>
         </div>
 
-        {/* ===== 第二视觉区：诊断（默认折叠）===== */}
+        {/* ===== Diagnosis (folded) ===== */}
         {store.diagnosisReport && (
           <>
             <button
@@ -210,7 +246,7 @@ export default function ResultPage() {
                     )}
                   </div>
                 ))}
-                {/* 总结 */}
+                {/* Summary */}
                 <div className="pt-3 border-t border-border">
                   <div className="flex items-start gap-2">
                     <span className="text-2xl flex-shrink-0">💡</span>
@@ -222,7 +258,7 @@ export default function ResultPage() {
           </>
         )}
 
-        {/* 5天账本（折叠）*/}
+        {/* 5-day ledger (folded) */}
         <button
           onClick={() => setShowLedger(!showLedger)}
           className="bg-white rounded-2xl p-4 shadow-sm w-full text-left"
@@ -255,29 +291,6 @@ export default function ResultPage() {
             ))}
           </div>
         )}
-
-        {/* QR码领资料 — 放最底部 */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <div className="flex gap-4 items-start">
-            <div className="shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/qrcode.png`}
-                alt="扫码领取"
-                className="w-24 h-24 rounded-lg"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-lg font-black text-title mb-1">
-                📦 免费领：定价公式+差评话术
-              </p>
-              <p className="text-2xl font-black text-red-600 mb-1">全部免费</p>
-              <p className="text-base text-secondary leading-relaxed">
-                扫码加微信，回复「资料包」30秒发你
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom CTA */}
@@ -288,9 +301,6 @@ export default function ResultPage() {
               🎉 已上榜 第 {submittedRank} 名
             </div>
           )}
-          <button onClick={handleGoReward} className="btn-raised text-xl">
-            {isBankrupt ? "📦 免费领避坑指南" : "📦 免费领全套资料包"}
-          </button>
           <div className="grid grid-cols-2 gap-2">
             <button onClick={() => router.push("/leaderboard")} className="btn-raised-ghost text-base">
               🏆 英雄榜
@@ -339,7 +349,7 @@ export default function ResultPage() {
         </div>
       )}
 
-      {/* 分享引导 */}
+      {/* Share tip overlay */}
       {showShareTip && (
         <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
              onClick={() => setShowShareTip(false)}>

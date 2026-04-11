@@ -208,22 +208,22 @@ export const ENDING_INFO: Record<EndingType, EndingInfo> = {
 // === 玩家标签 ===
 
 export const TAG_INFO: Record<PlayerTag, TagInfo> = {
-  price_killer:     { id: "price_killer",     label: "价格屠夫",     emoji: "🗡️", desc: "别人还在算成本，你已经把底裤都降没了。客单价跌成白菜价，薄利多销的'薄'字被你玩明白了——薄到透明。" },
-  traffic_gambler:  { id: "traffic_gambler",  label: "流量赌狗",     emoji: "🎰", desc: "推广预算比房租还高，你不是在做外卖，你是在给美团打工。别人开店赚钱，你开店赚了个寂寞。" },
-  profit_harvester: { id: "profit_harvester", label: "利润貔貅",     emoji: "🤑", desc: "你的钱只进不出，堪称外卖界貔貅。闷声发大财，同行还在卷价格，你已经在数钱了。" },
-  reputation_guard: { id: "reputation_guard", label: "好评舔狗",     emoji: "⭐", desc: "为了五星好评可以上刀山下油锅。顾客虐你千百遍，你待顾客如初恋。差评率比你的体脂率还低。" },
-  balanced_master:  { id: "balanced_master",  label: "六边形战士",   emoji: "💎", desc: "流量、转化、口碑、成本、利润，没有短板。你不是最秀的，但你是最稳的——活到最后的都是你这种人。" },
-  rookie_dead:      { id: "rookie_dead",      label: "韭菜本菜",     emoji: "🥬", desc: "平台割完房东割，房东割完员工割。你以为你是老板，其实你是移动ATM。钱花了，人累了，店没了。" },
-  coupon_addict:    { id: "coupon_addict",    label: "满减上瘾症",   emoji: "🏷️", desc: "满减一开流量哗哗来，满减一关店里冷清清。你不是在经营餐饮，你是在经营一家补贴发放站。" },
-  data_nerd:        { id: "data_nerd",        label: "数据偏执狂",   emoji: "🤓", desc: "入店率精确到小数点后三位，转化率倒背如流。你可能不太会炒菜，但你绝对会看后台——外卖圈最强分析师。" },
-  cost_miser:       { id: "cost_miser",       label: "铁公鸡",       emoji: "🐔", desc: "推广？不投。赠品？没有。满减？想都别想。省下来的每一分钱都在你口袋里，但顾客也都在别人店里。" },
-  yolo_boss:        { id: "yolo_boss",        label: "梭哈型老板",   emoji: "🃏", desc: "要么暴赚要么暴亏，不存在中间状态。你的经营风格就像你打德州——全押，不留后路。心脏得够大才能当你的合伙人。" },
-  survivor_king:    { id: "survivor_king",    label: "苟活大师",     emoji: "🐢", desc: "利润就像你的头发——稀少但顽强。不赚大钱但绝不倒闭，你是外卖圈的打不死的小强。房东最怕你这种——死都不搬。" },
-  speed_demon:      { id: "speed_demon",      label: "闪电出餐怪",   emoji: "⚡", desc: "差评率低到离谱，出餐速度堪比外卖界博尔特。你家骑手从来不用等餐，甚至骑手还没到你已经在门口举着了。" },
-  review_beggar:    { id: "review_beggar",    label: "好评乞讨师",   emoji: "🙏", desc: "赠品比正餐还多，外卖袋里塞的小卡片快比菜单厚了。顾客打开外卖发现：一份饭，八份赠品，三张好评卡。" },
-  menu_artist:      { id: "menu_artist",      label: "菜单艺术家",   emoji: "🎨", desc: "你的菜单排版比《时尚芭莎》还精致，封面图能拿去参加摄影展。别人卖的是饭，你卖的是视觉艺术——下单率高得离谱。" },
-  lucky_dog:        { id: "lucky_dog",        label: "欧皇附体",     emoji: "🍀", desc: "竞品关门、网红自来、平台扶持全让你赶上了。你的经营能力一般，但你的运气能去买彩票。老天爷追着喂你饭吃。" },
-  disaster_magnet:  { id: "disaster_magnet",  label: "灾难吸铁石",   emoji: "🧲", desc: "暴雨、差评、骑手跑路、食材涨价，全让你一个人赶上了。你不是在经营外卖，你是在渡劫。建议下辈子投胎选个好商圈。" },
+  price_killer:     { id: "price_killer",     label: "价格屠夫",     emoji: "🗡️", desc: "你砍价砍到美团系统都想报警。虽然利润薄得能透光，但说实话，能把价格打到这份上还活着的，整条街就你一个狠人。" },
+  traffic_gambler:  { id: "traffic_gambler",  label: "流量赌狗",     emoji: "🎰", desc: "烧钱投流的时候眼都不眨，给自己买杯奶茶要纠结半天。但不得不说，敢拿真金白银砸流量的人，骨子里都有赌神的命。" },
+  profit_harvester: { id: "profit_harvester", label: "利润貔貅",     emoji: "🤑", desc: "同行还在为3%利润率发愁，你已经闷声把钱赚完了。表面波澜不惊，背地里利润率高到让人想举报你。天生的印钞机体质。" },
+  reputation_guard: { id: "reputation_guard", label: "好评舔狗",     emoji: "⭐", desc: "为了4.9分可以给顾客跪下来唱征服。虽然姿态低到离谱，但你的差评率也低到离谱——论口碑管理，你就是外卖界海底捞。" },
+  balanced_master:  { id: "balanced_master",  label: "六边形战士",   emoji: "💎", desc: "没有一项数据是最炸的，但也没有任何一项拉胯。你就是外卖圈的水桶机——看着平平无奇，实际上能赢你的人真不多。" },
+  rookie_dead:      { id: "rookie_dead",      label: "韭菜本菜",     emoji: "🥬", desc: "你被平台、房东、员工轮番收割，堪称行走的慈善机构。但换个角度想，能同时给这么多人送钱的，那也是一种大格局。" },
+  coupon_addict:    { id: "coupon_addict",    label: "满减上瘾症",   emoji: "🏷️", desc: "满25减24那种事你干得出来。顾客薅你羊毛薅到手软，但你的单量确实炸裂——论拉新获客，你是当之无愧的卷王。" },
+  data_nerd:        { id: "data_nerd",        label: "数据偏执狂",   emoji: "🤓", desc: "转化率小数点后四位都要盯着看，后台数据刷新比你刷朋友圈还勤。虽然有点变态，但这种人往往最后都赢麻了。" },
+  cost_miser:       { id: "cost_miser",       label: "铁公鸡",       emoji: "🐔", desc: "一分钱推广费都不舍得花，抠到骑手都嫌弃你。但事实证明，当别人烧钱烧到倒闭的时候，你的本金还安安静静躺在账上。" },
+  yolo_boss:        { id: "yolo_boss",        label: "梭哈型老板",   emoji: "🃏", desc: "你的经营策略只有两种：全押和不玩。心脏大到能当停车场，普通人看你的操作能吓出心脏病。但梭哈赢了的人，都是传奇。" },
+  survivor_king:    { id: "survivor_king",    label: "苟活大师",     emoji: "🐢", desc: "利润少得可怜，但你就是死不了。同行一个个倒下，你还在那苟着，像极了恐怖片里活到最后的那个人——不靠实力，靠命硬。" },
+  speed_demon:      { id: "speed_demon",      label: "闪电出餐怪",   emoji: "⚡", desc: "骑手还没到你已经在门口举着餐等了，快到系统以为你在作弊。差评率低得像bug，你不是在做外卖，你是在表演速度与激情。" },
+  review_beggar:    { id: "review_beggar",    label: "好评乞讨师",   emoji: "🙏", desc: "外卖袋里塞的小卡片比饭还多，赠品多到顾客以为在拆盲盒。虽然方法土到掉渣，但你的好评率确实遥遥领先，土方法真管用。" },
+  menu_artist:      { id: "menu_artist",      label: "菜单艺术家",   emoji: "🎨", desc: "你的菜单精致到顾客以为点开了米其林，图片好看到违反广告法。别人靠口味留客，你靠视觉把人骗进来——然后发现味道也不赖。" },
+  lucky_dog:        { id: "lucky_dog",        label: "欧皇附体",     emoji: "🍀", desc: "竞品倒闭、博主白嫖推荐、平台送流量，好事全砸你头上了。经营能力可能一般，但运气这东西，本身就是最强的实力。" },
+  disaster_magnet:  { id: "disaster_magnet",  label: "灾难吸铁石",   emoji: "🧲", desc: "差评、暴雨、骑手跑路、食材爆炸，你一个人扛了别人十辈子的灾。但能在这种地狱难度下还打完全程的，也是一种狠人。" },
 };
 
 /**
