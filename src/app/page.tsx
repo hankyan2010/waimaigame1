@@ -106,16 +106,16 @@ export default function HomePage() {
 
         <div className="relative z-10 text-center">
           <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1.5 rounded-full mb-3">
-            <span className="text-sm font-bold text-title">经营模拟游戏</span>
+            <span className="text-base font-bold text-title">经营模拟游戏</span>
           </div>
 
-          <h1 className="text-3xl font-black text-title leading-tight mb-2">
+          <h1 className="text-4xl font-black text-title leading-tight mb-2">
             外卖老板
             <br />
             <span className="text-4xl">5天生存挑战</span>
           </h1>
 
-          <p className="text-base text-title/70 leading-snug max-w-[280px] mx-auto">
+          <p className="text-lg text-title/70 leading-snug max-w-[280px] mx-auto">
             1万本金起步，5天经营
             <br />
             看看你能赚多少 or 亏多少
@@ -128,19 +128,19 @@ export default function HomePage() {
         {/* 老用户：最佳战绩 */}
         {hydrated && !isNewUser && (
           <div className="bg-card rounded-2xl p-5 shadow-sm">
-            <p className="text-sm text-secondary mb-3 font-bold">🏅 我的最佳战绩</p>
+            <p className="text-base text-secondary mb-3 font-bold">🏅 我的最佳战绩</p>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <div className="text-2xl font-black text-title">¥{bestCash.toLocaleString()}</div>
-                <div className="text-xs text-secondary mt-1">最高现金</div>
+                <div className="text-3xl font-black text-title">¥{bestCash.toLocaleString()}</div>
+                <div className="text-sm text-secondary mt-1">最高现金</div>
               </div>
               <div>
-                <div className="text-2xl font-black text-title">{bestDays}天</div>
-                <div className="text-xs text-secondary mt-1">最多存活</div>
+                <div className="text-3xl font-black text-title">{bestDays}天</div>
+                <div className="text-sm text-secondary mt-1">最多存活</div>
               </div>
               <div>
-                <div className="text-2xl font-black text-title">{totalPlays}</div>
-                <div className="text-xs text-secondary mt-1">挑战次数</div>
+                <div className="text-3xl font-black text-title">{totalPlays}</div>
+                <div className="text-sm text-secondary mt-1">挑战次数</div>
               </div>
             </div>
           </div>
@@ -149,12 +149,12 @@ export default function HomePage() {
         {/* 新用户：游戏规则（老用户隐藏）*/}
         {hydrated && isNewUser && (
           <div className="bg-card rounded-2xl p-5 shadow-sm">
-            <p className="text-base font-black text-title mb-3">💰 玩法一句话</p>
-            <p className="text-base text-body leading-relaxed mb-3">
+            <p className="text-lg font-black text-title mb-3">💰 玩法一句话</p>
+            <p className="text-lg text-body leading-relaxed mb-3">
               1万本金，5天经营，每天4个决策。选对了暴赚，选错了倒闭。
             </p>
             <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-              <p className="text-sm font-black text-red-600 text-center">
+              <p className="text-base font-black text-red-600 text-center">
                 ⚠️ 47%的玩家在第3天就倒闭了
               </p>
             </div>
@@ -163,9 +163,9 @@ export default function HomePage() {
 
         {/* 开局状态 — 突出现金，其他一行带过 */}
         <div className="bg-card rounded-2xl p-5 shadow-sm text-center">
-          <p className="text-sm text-secondary mb-2">开局状态</p>
-          <div className="text-3xl font-black text-title mb-2">💰 ¥{GAME_CONFIG.initialCash.toLocaleString()}</div>
-          <div className="flex justify-center gap-2 text-xs text-secondary flex-wrap">
+          <p className="text-base text-secondary mb-2">开局状态</p>
+          <div className="text-4xl font-black text-title mb-2">💰 ¥{GAME_CONFIG.initialCash.toLocaleString()}</div>
+          <div className="flex justify-center gap-2 text-sm text-secondary flex-wrap">
             <span className="bg-neutral-100 px-2 py-1 rounded-lg">曝光 {GAME_CONFIG.initialExposure}</span>
             <span className="bg-neutral-100 px-2 py-1 rounded-lg">客单 ¥{GAME_CONFIG.initialAvgPrice}</span>
             <span className="bg-neutral-100 px-2 py-1 rounded-lg">入店 {(GAME_CONFIG.initialEnterConversion * 100).toFixed(0)}%</span>
@@ -178,11 +178,11 @@ export default function HomePage() {
       {/* Bottom CTA */}
       <div className="sticky bottom-0 px-6 pb-6 pt-3 bg-gradient-to-t from-bg via-bg to-transparent">
         {hydrated && (
-          <p className="text-center text-sm text-secondary mb-2 font-bold">
+          <p className="text-center text-base text-secondary mb-2 font-bold">
             今日剩余 {store.remainingFreePlays()} 次
           </p>
         )}
-        <button onClick={handleStart} className="btn-raised text-lg">
+        <button onClick={handleStart} className="btn-raised text-xl">
           {!hydrated
             ? "开始挑战"
             : isNewUser
@@ -194,7 +194,7 @@ export default function HomePage() {
             track("view_leaderboard");
             router.push("/leaderboard");
           }}
-          className="btn-raised-ghost text-sm mt-2"
+          className="btn-raised-ghost text-base mt-2"
         >
           🏆 英雄榜{hydrated && boardCount > 0 ? `（${boardCount}人在榜${topName ? " · 榜首 " + topName : ""}）` : ""}
         </button>
@@ -202,7 +202,7 @@ export default function HomePage() {
 
       {/* Toast */}
       {inviteToast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] bg-black/85 text-white text-sm px-4 py-2.5 rounded-full shadow-lg">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] bg-black/85 text-white text-base px-4 py-2.5 rounded-full shadow-lg">
           {inviteToast}
         </div>
       )}
@@ -217,12 +217,12 @@ export default function HomePage() {
           <div className="bg-card rounded-2xl p-6 max-w-sm w-full animate-slide-up">
             <div className="text-center mb-4">
               <div className="text-4xl mb-2">🏆</div>
-              <h3 className="text-xl font-black text-title mb-2">
+              <h3 className="text-2xl font-black text-title mb-2">
                 {hydrated && store.bestFinalCash > 0
                   ? `最高纪录：¥${store.bestFinalCash - GAME_CONFIG.initialCash > 0 ? "+" : ""}${store.bestFinalCash - GAME_CONFIG.initialCash}`
                   : "今日免费次数已用完"}
               </h3>
-              <p className="text-base text-secondary leading-relaxed">
+              <p className="text-lg text-secondary leading-relaxed">
                 发给朋友来挑战，看谁经营得更好！<br/>
                 每个朋友参与，你还能额外获得1次机会
               </p>
@@ -236,11 +236,11 @@ export default function HomePage() {
                   setShowShareGate(false);
                   setShowShareTip(true);
                 }}
-                className="btn-raised text-base"
+                className="btn-raised text-lg"
               >
                 分享解锁 +1 次机会
               </button>
-              <button onClick={() => setShowShareGate(false)} className="text-sm text-secondary/50 text-center w-full py-2">
+              <button onClick={() => setShowShareGate(false)} className="text-base text-secondary/50 text-center w-full py-2">
                 关闭
               </button>
             </div>
@@ -255,10 +255,10 @@ export default function HomePage() {
           <div className="text-right mt-0">
             <div className="text-6xl animate-bounce">👆</div>
             <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
-              <p className="text-lg font-black text-green-600 mb-1">✅ 已获得 +1 次机会！</p>
-              <p className="text-base font-bold text-title mb-1">顺便分享给朋友</p>
-              <p className="text-sm text-secondary">点右上角「...」发给朋友，每人参与你再 +1 次</p>
-              <p className="text-sm text-brand-dark font-bold mt-2">点任意处关闭，返回开始游戏</p>
+              <p className="text-xl font-black text-green-600 mb-1">✅ 已获得 +1 次机会！</p>
+              <p className="text-lg font-bold text-title mb-1">顺便分享给朋友</p>
+              <p className="text-base text-secondary">点右上角「...」发给朋友，每人参与你再 +1 次</p>
+              <p className="text-base text-brand-dark font-bold mt-2">点任意处关闭，返回开始游戏</p>
             </div>
           </div>
         </div>

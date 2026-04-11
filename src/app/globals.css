@@ -392,6 +392,7 @@ html, body {
   width: 100%;
   padding: 16px 20px;
   font-weight: 900;
+  font-size: max(1em, 16px);
   color: #111111;
   background: linear-gradient(180deg, #FFE352 0%, #FFD100 45%, #F0C300 100%);
   border: 2px solid #B89000;
@@ -425,6 +426,7 @@ html, body {
   display: block;
   width: 100%;
   padding: 16px 18px;
+  font-size: max(1em, 16px);
   text-align: left;
   background: linear-gradient(180deg, #FFFFFF 0%, #F8F8F8 100%);
   border: 1.5px solid #D8D8D8;
@@ -454,6 +456,7 @@ html, body {
   width: 100%;
   padding: 12px 18px;
   font-weight: 700;
+  font-size: max(1em, 16px);
   color: #333333;
   background: linear-gradient(180deg, #FFFFFF 0%, #F4F4F4 100%);
   border: 1.5px solid #D8D8D8;

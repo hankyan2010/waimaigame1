@@ -48,13 +48,13 @@ export default function RewardPage() {
       <div className="bg-brand pt-6 pb-10 px-6 rounded-b-[2rem]">
         <div className="text-center">
           <div className="inline-flex items-center bg-black/10 px-3 py-1 rounded-full mb-2">
-            <span className="text-xs font-medium text-title">
+            <span className="text-sm font-medium text-title">
               {isBankrupt ? "别急，高手也是从踩坑开始的" : "恭喜通关！领取你的经营武器库"}
             </span>
           </div>
           <div className="text-3xl mb-1">{ending.emoji}</div>
-          <h1 className="text-xl font-black text-title">{ending.title}</h1>
-          <p className="text-xs text-title/70 mt-0.5">
+          <h1 className="text-2xl font-black text-title">{ending.title}</h1>
+          <p className="text-sm text-title/70 mt-0.5">
             {isBankrupt
               ? `你亏了¥${Math.abs(profit)}——但下面这套资料能帮你在真实经营中赚回来`
               : `5天赚了¥${profit}——想在真实经营中复制这个成绩吗？`}
@@ -67,13 +67,13 @@ export default function RewardPage() {
 
         {/* 核心价值主张 */}
         <div className="bg-card rounded-2xl p-4 shadow-sm">
-          <p className="text-base font-black text-title text-center mb-1">
+          <p className="text-lg font-black text-title text-center mb-1">
             🔥 外卖实战资料包
           </p>
-          <p className="text-lg font-black text-red-600 text-center mb-1">
+          <p className="text-xl font-black text-red-600 text-center mb-1">
             全部免费领取
           </p>
-          <p className="text-xs text-secondary text-center mb-3">
+          <p className="text-sm text-secondary text-center mb-3">
             300+外卖老板验证有效 · 拿到就能用 · 用了就能涨
           </p>
 
@@ -117,15 +117,15 @@ export default function RewardPage() {
               },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-2.5">
-                <span className="text-xl flex-shrink-0 mt-0.5">{item.icon}</span>
+                <span className="text-2xl flex-shrink-0 mt-0.5">{item.icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-xs font-black text-title">{item.title}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 font-bold rounded">
+                    <span className="text-sm font-black text-title">{item.title}</span>
+                    <span className="text-xs px-1.5 py-0.5 bg-red-50 text-red-600 font-bold rounded">
                       {item.effect}
                     </span>
                   </div>
-                  <p className="text-[11px] text-secondary leading-snug">{item.detail}</p>
+                  <p className="text-xs text-secondary leading-snug">{item.detail}</p>
                 </div>
               </div>
             ))}
@@ -144,14 +144,14 @@ export default function RewardPage() {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-black text-title mb-1">
+              <p className="text-base font-black text-title mb-1">
                 👈 扫码领取全套资料
               </p>
-              <p className="text-xs text-secondary leading-relaxed mb-2">
+              <p className="text-sm text-secondary leading-relaxed mb-2">
                 加微信后回复「<span className="font-bold text-title">资料包</span>」，30秒内自动发送。
               </p>
               <div className="bg-brand/10 rounded-lg p-2">
-                <p className="text-[11px] text-title leading-snug">
+                <p className="text-xs text-title leading-snug">
                   <span className="font-bold">额外福利：</span>加微信还能免费获得1次一对一经营诊断，由资深外卖运营专家帮你看店铺数据。
                 </p>
               </div>
@@ -162,11 +162,11 @@ export default function RewardPage() {
         {/* Diagnosis for bankrupt */}
         {isBankrupt && (
           <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <p className="text-sm font-bold text-title mb-2">💡 你这局踩的坑</p>
-            <p className="text-xs text-body leading-relaxed mb-2">
+            <p className="text-base font-bold text-title mb-2">💡 你这局踩的坑</p>
+            <p className="text-sm text-body leading-relaxed mb-2">
               作为 <span className="font-bold">{tag.label}</span>：
             </p>
-            <ul className="space-y-1 text-xs text-secondary">
+            <ul className="space-y-1 text-sm text-secondary">
               {store.playerTag === "price_killer" && (
                 <>
                   <li>• 过度降价牺牲毛利——利润全补贴给顾客了</li>
@@ -190,7 +190,7 @@ export default function RewardPage() {
                 </>
               )}
             </ul>
-            <p className="text-[11px] text-secondary mt-2 italic">
+            <p className="text-xs text-secondary mt-2 italic">
               上面的资料包里有对应的解决方案，领了就知道怎么改。
             </p>
           </div>
@@ -201,7 +201,7 @@ export default function RewardPage() {
       <div className="sticky bottom-0 px-4 pb-5 pt-3 bg-gradient-to-t from-bg via-bg to-transparent space-y-2">
         <button
           onClick={handleReplay}
-          className="btn-raised-ghost text-base"
+          className="btn-raised-ghost text-lg"
         >
           再来一局
         </button>

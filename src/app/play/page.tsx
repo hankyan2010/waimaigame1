@@ -99,7 +99,7 @@ export default function PlayPage() {
   if (!hydrated) {
     return (
       <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
-        <div className="text-secondary text-base">加载中...</div>
+        <div className="text-secondary text-lg">加载中...</div>
       </div>
     );
   }
@@ -127,7 +127,7 @@ export default function PlayPage() {
         <div className={`pt-8 pb-12 px-6 rounded-b-[2rem] ${
           summary.profit >= 0 ? "bg-brand" : "bg-gradient-to-b from-red-500 to-red-600"
         }`}>
-          <p className={`text-center text-sm ${summary.profit >= 0 ? "text-title/70" : "text-white/70"}`}>
+          <p className={`text-center text-base ${summary.profit >= 0 ? "text-title/70" : "text-white/70"}`}>
             第{summary.day}天 结算
           </p>
           <div className={`text-center text-[52px] font-black leading-tight animate-number-pop ${
@@ -135,7 +135,7 @@ export default function PlayPage() {
           }`}>
             {summary.profit >= 0 ? "+" : ""}¥{summary.profit.toLocaleString()}
           </div>
-          <p className={`text-center text-sm mt-1 ${summary.profit >= 0 ? "text-title/60" : "text-white/60"}`}>
+          <p className={`text-center text-base mt-1 ${summary.profit >= 0 ? "text-title/60" : "text-white/60"}`}>
             今日净利润 · 余额 ¥{summary.cashAfter.toLocaleString()}
           </p>
         </div>
@@ -144,8 +144,8 @@ export default function PlayPage() {
           {/* 一句话点评 */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <span className="text-2xl">💡</span>
-              <p className="text-base text-body leading-relaxed font-medium">{summary.comment}</p>
+              <span className="text-3xl">💡</span>
+              <p className="text-lg text-body leading-relaxed font-medium">{summary.comment}</p>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export default function PlayPage() {
           {/* 展开详情 */}
           <button
             onClick={() => setShowDetail(!showDetail)}
-            className="bg-white rounded-xl px-4 py-3 shadow-sm text-sm text-secondary font-bold text-center w-full"
+            className="bg-white rounded-xl px-4 py-3 shadow-sm text-base text-secondary font-bold text-center w-full"
           >
             {showDetail ? "收起详情 ↑" : "📊 查看账本详情 ↓"}
           </button>
@@ -198,7 +198,7 @@ export default function PlayPage() {
             <>
               {/* 账本 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <p className="text-sm font-bold text-title mb-3">📒 今日账本</p>
+                <p className="text-base font-bold text-title mb-3">📒 今日账本</p>
                 <div className="space-y-2">
                   <Row label="期初现金" value={`¥${summary.cashBefore.toLocaleString()}`} />
                   <Row label="订单收入" value={`+¥${summary.incomeRevenue.toLocaleString()}`} positive />
@@ -216,12 +216,12 @@ export default function PlayPage() {
 
               {/* 营业额公式 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <p className="text-sm font-bold text-title mb-2">📊 营业额怎么来的</p>
+                <p className="text-base font-bold text-title mb-2">📊 营业额怎么来的</p>
                 <div className="bg-neutral-50 rounded-xl p-3">
-                  <p className="text-center text-sm font-black text-title">
+                  <p className="text-center text-base font-black text-title">
                     {summary.exposureEnd} × {(summary.enterConversionEnd * 100).toFixed(0)}% × {(summary.effectiveOrderConv * 100).toFixed(0)}% × ¥{summary.avgPriceEnd}
                   </p>
-                  <p className="text-center text-xs text-secondary mt-1">
+                  <p className="text-center text-sm text-secondary mt-1">
                     ≈ {summary.estimatedOrders}单 × ¥{summary.avgPriceEnd} = <span className="font-black text-title">¥{summary.incomeRevenue}</span>
                   </p>
                 </div>
@@ -231,10 +231,10 @@ export default function PlayPage() {
               {summary.eventTitle && (
                 <div className="bg-white rounded-2xl p-4 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{summary.eventEmoji}</span>
+                    <span className="text-4xl">{summary.eventEmoji}</span>
                     <div>
-                      <p className="text-base font-black text-title">{summary.eventTitle}</p>
-                      <p className="text-sm text-secondary">{summary.eventDesc}</p>
+                      <p className="text-lg font-black text-title">{summary.eventTitle}</p>
+                      <p className="text-base text-secondary">{summary.eventDesc}</p>
                     </div>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ export default function PlayPage() {
               track("next_day", { day: s.day });
               store.nextDay();
             }}
-            className="btn-raised text-lg"
+            className="btn-raised text-xl"
           >
             {isBankrupt
               ? "💀 查看结局"
@@ -304,14 +304,14 @@ export default function PlayPage() {
           </div>
 
           <div className="text-6xl mb-4 animate-bounce-in">{story?.emoji || "📋"}</div>
-          <h2 className="text-3xl font-black text-white mb-1 drop-shadow-sm">
+          <h2 className="text-4xl font-black text-white mb-1 drop-shadow-sm">
             {story?.title || `第 ${s.day} 天`}
           </h2>
-          <p className="text-sm text-white/60 mb-4">{story?.mood}</p>
+          <p className="text-base text-white/60 mb-4">{story?.mood}</p>
 
           {story && (
             <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 mb-4 text-left border border-white/20">
-              <p className="text-base text-white leading-relaxed">{story.intro}</p>
+              <p className="text-lg text-white leading-relaxed">{story.intro}</p>
             </div>
           )}
 
@@ -319,19 +319,19 @@ export default function PlayPage() {
           {store.dayEvent ? (
             <div className="bg-white rounded-2xl p-4 mb-4 animate-slide-up">
               <div className="flex items-center gap-2 justify-center mb-1">
-                <span className="text-2xl">{store.dayEvent.emoji}</span>
-                <span className="text-base font-black text-title">{store.dayEvent.title}</span>
+                <span className="text-3xl">{store.dayEvent.emoji}</span>
+                <span className="text-lg font-black text-title">{store.dayEvent.title}</span>
               </div>
-              <p className="text-sm text-secondary">{store.dayEvent.desc}</p>
+              <p className="text-base text-secondary">{store.dayEvent.desc}</p>
             </div>
           ) : s.day > 1 ? (
-            <p className="text-sm text-white/50 mb-4">今天没有突发事件</p>
+            <p className="text-base text-white/50 mb-4">今天没有突发事件</p>
           ) : null}
 
           {/* 当前状态：只突出现金 */}
           <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/20">
-            <p className="text-3xl font-black text-white mb-1">💰 ¥{s.cash.toLocaleString()}</p>
-            <div className="flex justify-center gap-3 text-xs text-white/70">
+            <p className="text-4xl font-black text-white mb-1">💰 ¥{s.cash.toLocaleString()}</p>
+            <div className="flex justify-center gap-3 text-sm text-white/70">
               <span>曝光 {s.exposure}</span>
               <span>·</span>
               <span>入店 {(s.enterConversion * 100).toFixed(0)}%</span>
@@ -345,7 +345,7 @@ export default function PlayPage() {
               setShowIntro(false);
               useGameStore.setState({ phase: "playing" });
             }}
-            className="btn-raised text-lg"
+            className="btn-raised text-xl"
           >
             开始今天的经营
           </button>
@@ -360,7 +360,7 @@ export default function PlayPage() {
   if (!question) {
     return (
       <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
-        <div className="text-secondary text-base">加载中...</div>
+        <div className="text-secondary text-lg">加载中...</div>
       </div>
     );
   }
@@ -373,10 +373,10 @@ export default function PlayPage() {
       <div className="bg-brand px-4 pt-4 pb-4 rounded-b-[1.5rem]">
         {/* 第一行：天数 + 题号 */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-black text-title">
+          <span className="text-base font-black text-title">
             第{s.day}天
           </span>
-          <span className="text-sm text-title/70 font-bold">
+          <span className="text-base text-title/70 font-bold">
             {store.dayQuestionIndex + 1} / {store.dayQuestions.length}
           </span>
         </div>
@@ -384,7 +384,7 @@ export default function PlayPage() {
         {/* 第二行：现金（大）+ 迷你指标条 */}
         <div className="flex items-center gap-3 mb-2">
           <div className="flex-shrink-0">
-            <span className={`text-2xl font-black text-title transition-colors ${
+            <span className={`text-3xl font-black text-title transition-colors ${
               displayCash <= 3000 ? "!text-red-700" : ""
             }`}>
               💰¥{displayCash.toLocaleString()}
@@ -410,8 +410,8 @@ export default function PlayPage() {
       {/* ===== 题目区 ===== */}
       <div className="flex-1 px-4 pt-4 space-y-3">
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h2 className="text-xl font-black text-title mb-2">{question.title}</h2>
-          <p className="text-base text-secondary leading-relaxed">{question.desc}</p>
+          <h2 className="text-2xl font-black text-title mb-2">{question.title}</h2>
+          <p className="text-lg text-secondary leading-relaxed">{question.desc}</p>
         </div>
 
         {/* === 选完后的反馈区 === */}
@@ -425,7 +425,7 @@ export default function PlayPage() {
             }`}>
               {/* verdict 角标 */}
               {pending.verdict && (
-                <div className={`inline-block text-xs font-black px-2.5 py-1 rounded-lg mb-2 ${
+                <div className={`inline-block text-sm font-black px-2.5 py-1 rounded-lg mb-2 ${
                   pending.verdict.startsWith("推荐")
                     ? "bg-green-100 text-green-700"
                     : "bg-orange-100 text-orange-700"
@@ -434,20 +434,20 @@ export default function PlayPage() {
                 </div>
               )}
 
-              <p className="text-base font-black text-title mb-3">{pending.optionText}</p>
+              <p className="text-lg font-black text-title mb-3">{pending.optionText}</p>
 
               {/* 效果标签 */}
               <div className="flex flex-wrap gap-2">
                 {effectChips(pending.effect).map((chip, ci) => (
                   <span
                     key={ci}
-                    className={`text-sm px-3 py-1.5 rounded-xl font-black ${chip.cls}`}
+                    className={`text-base px-3 py-1.5 rounded-xl font-black ${chip.cls}`}
                   >
                     {chip.text}
                   </span>
                 ))}
                 {effectChips(pending.effect).length === 0 && (
-                  <span className="text-sm text-secondary">无明显变化</span>
+                  <span className="text-base text-secondary">无明显变化</span>
                 )}
               </div>
             </div>
@@ -458,17 +458,17 @@ export default function PlayPage() {
               className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-brand/40 rounded-2xl p-4 shadow-sm w-full text-left"
             >
               <div className="flex items-center gap-2">
-                <span className="text-xl flex-shrink-0">💡</span>
-                <span className="text-sm font-black text-brand-dark flex-1">
+                <span className="text-2xl flex-shrink-0">💡</span>
+                <span className="text-base font-black text-brand-dark flex-1">
                   {showKnowledge ? "收起知识点" : "为什么？点击查看知识点"}
                 </span>
-                <span className="text-sm text-brand-dark">{showKnowledge ? "↑" : "↓"}</span>
+                <span className="text-base text-brand-dark">{showKnowledge ? "↑" : "↓"}</span>
               </div>
               {showKnowledge && (
                 <div className="mt-3 pt-3 border-t border-brand/20">
-                  <p className="text-base text-body leading-relaxed">{pending.knowledge}</p>
+                  <p className="text-lg text-body leading-relaxed">{pending.knowledge}</p>
                   {pending.realCase && (
-                    <p className="text-sm text-blue-700 leading-relaxed mt-3 bg-blue-50 rounded-xl p-3">
+                    <p className="text-base text-blue-700 leading-relaxed mt-3 bg-blue-50 rounded-xl p-3">
                       📋 {pending.realCase}
                     </p>
                   )}
@@ -482,7 +482,7 @@ export default function PlayPage() {
                 setShowKnowledge(false);
                 store.nextQuestion();
               }}
-              className="btn-raised text-lg mt-2"
+              className="btn-raised text-xl mt-2"
             >
               {store.dayQuestionIndex + 1 >= store.dayQuestions.length ? "📊 进入今日结算" : "继续下一题 →"}
             </button>
@@ -513,7 +513,7 @@ export default function PlayPage() {
                 }}
                 className="btn-raised-card"
               >
-                <p className="text-base font-bold text-title leading-snug">{opt.text}</p>
+                <p className="text-lg font-bold text-title leading-snug">{opt.text}</p>
               </button>
             ))}
           </div>
@@ -595,14 +595,14 @@ function MiniBar({
   const displayVal = isPercent ? `${(value * 100).toFixed(0)}%` : String(value);
   return (
     <div>
-      <div className="text-[10px] text-title/60 text-center mb-0.5">{label}</div>
+      <div className="text-[11px] text-title/60 text-center mb-0.5">{label}</div>
       <div className="bg-black/10 rounded-full h-1.5 overflow-hidden">
         <div
           className={`h-1.5 rounded-full transition-all duration-500 ${invert ? (ratio > 0.5 ? "bg-red-500" : "bg-emerald-500") : color}`}
           style={{ width: `${ratio * 100}%` }}
         />
       </div>
-      <div className="text-[10px] text-title font-bold text-center mt-0.5">{displayVal}</div>
+      <div className="text-xs text-title font-bold text-center mt-0.5">{displayVal}</div>
     </div>
   );
 }
@@ -656,9 +656,9 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className={`${bold ? "text-sm font-bold" : "text-sm"} text-secondary`}>{label}</span>
+      <span className={`${bold ? "text-base font-bold" : "text-base"} text-secondary`}>{label}</span>
       <span
-        className={`${bold ? "text-lg font-black" : "text-base font-bold"} ${
+        className={`${bold ? "text-xl font-black" : "text-lg font-bold"} ${
           positive ? "text-green-600" : negative ? "text-red-500" : "text-title"
         }`}
       >
