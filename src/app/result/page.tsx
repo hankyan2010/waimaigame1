@@ -91,7 +91,7 @@ export default function ResultPage() {
       const days = store.state.day;
       if (canEnterLeaderboard(profitNow, days)) {
         setPendingRank(predictRank(profitNow, days));
-        setShowNameModal(true);
+        // 不立刻弹输入框，等动画播完再弹（在animation sequence里控制）
       }
       setupWxShare();
     }
@@ -159,6 +159,16 @@ export default function ResultPage() {
 
     // Step 5: Bottom buttons (at step4 + 500ms)
     setTimeout(() => setAnimStep(5), 900 + confettiDuration + 1500);
+
+    // Step 6: 动画全部播完后1.5秒，再弹输入名字的弹窗
+    setTimeout(() => {
+      const profitNow = store.state.cash - GAME_CONFIG.initialCash;
+      const days = store.state.day;
+      if (canEnterLeaderboard(profitNow, days)) {
+        setPendingRank(predictRank(profitNow, days));
+        setShowNameModal(true);
+      }
+    }, 900 + confettiDuration + 3000);
   }, [hydrated, store.endingType]);
 
   const handleSubmitName = async () => {
@@ -392,7 +402,7 @@ export default function ResultPage() {
                   <span className="text-base font-black w-7 text-center text-white">--</span>
                   <span className="text-lg">{tag.emoji}</span>
                   <span className="flex-1 text-base font-bold truncate text-white">
-                    {store.displayName || "\u6211"}
+                    {store.displayName || "👈 你"}
                   </span>
                   <span className="text-base font-black text-white">
                     {profit >= 0 ? "+" : ""}&yen;{profit.toLocaleString()}
