@@ -25,25 +25,26 @@ export default function ResultPage() {
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
   const [showLedger, setShowLedger] = useState(false);
   const [posterImage, setPosterImage] = useState<string | null>(null);
-  const [generatingPoster, setGeneratingPoster] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
-  const generatePosterImage = useCallback(async () => {
-    if (!posterRef.current || generatingPoster) return;
-    setGeneratingPoster(true);
-    try {
-      const { default: html2canvas } = await import("html2canvas-pro");
-      const canvas = await html2canvas(posterRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null,
-      });
-      setPosterImage(canvas.toDataURL("image/png"));
-    } catch (e) {
-      console.error("poster gen failed", e);
-    }
-    setGeneratingPoster(false);
-  }, [generatingPoster]);
+  // 海报HTML渲染完后自动转成图片，用户直接看到的就是img
+  useEffect(() => {
+    if (!posterRef.current || posterImage) return;
+    const timer = setTimeout(async () => {
+      try {
+        const { default: html2canvas } = await import("html2canvas-pro");
+        const canvas = await html2canvas(posterRef.current!, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+        });
+        setPosterImage(canvas.toDataURL("image/png"));
+      } catch (e) {
+        console.error("poster gen failed", e);
+      }
+    }, 300); // 等渲染完
+    return () => clearTimeout(timer);
+  });
 
   useEffect(() => {
     setHydrated(true);
@@ -158,10 +159,14 @@ export default function ResultPage() {
       {/* Content */}
       <div className="flex-1 px-4 pt-8 space-y-4 relative z-10">
 
-        {/* ===== 海报图片（生成后显示，可长按保存）===== */}
-        {posterImage ? (
+        {/* ===== 海报区域 ===== */}
+        <p className="text-center text-base text-secondary">
+          👇 长按海报保存，发给朋友
+        </p>
+
+        {/* 如果图片已生成，显示可长按保存的img */}
+        {posterImage && (
           <div className="text-center">
-            <p className="text-base text-secondary mb-2">👇 长按图片保存，发给朋友</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={posterImage}
@@ -169,73 +174,57 @@ export default function ResultPage() {
               className="w-full rounded-2xl shadow-lg"
               style={{ maxWidth: 400 }}
             />
-            <button
-              onClick={() => setPosterImage(null)}
-              className="text-sm text-secondary mt-3 underline"
-            >
-              返回
-            </button>
           </div>
-        ) : (
-          <>
-            {/* ===== HTML海报（用于截图生成）===== */}
-            <div
-              ref={posterRef}
-              className="rounded-3xl p-6 text-center"
-              style={{
-                background: posterBg,
-                border: posterBorder,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-              }}
-            >
-              <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
-                🏪 外卖老板生存挑战
-              </p>
-
-              <div className="text-7xl mb-2">{tag.emoji}</div>
-              <h3 className="text-4xl font-black mb-3" style={{ color: "#222" }}>{tag.label}</h3>
-
-              <p className="text-lg leading-relaxed mb-4 px-1" style={{ color: "#444" }}>
-                {tag.desc}
-              </p>
-
-              <div className="border-t border-black/10 mx-4 mb-4" />
-
-              <p className="text-sm mb-1" style={{ color: "#999" }}>
-                {daysSurvived}天经营利润
-              </p>
-              <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
-                {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
-              </div>
-              <p className="text-sm mb-5" style={{ color: "#aaa" }}>
-                打败了{beatPercent}%的外卖老板
-              </p>
-
-              <div className="border-t border-black/10 mx-4 mb-4" />
-
-              {/* 游戏链接二维码（不是领资料的） */}
-              <div className="flex flex-col items-center gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/game-qr.png`}
-                  alt="扫码挑战"
-                  className="w-24 h-24 rounded-xl"
-                />
-                <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
-                <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
-              </div>
-            </div>
-
-            {/* 生成海报按钮 */}
-            <button
-              onClick={generatePosterImage}
-              disabled={generatingPoster}
-              className="btn-raised text-lg"
-            >
-              {generatingPoster ? "⏳ 生成中..." : "📸 生成海报图片（可保存）"}
-            </button>
-          </>
         )}
+
+        {/* HTML海报源（图片生成后隐藏到屏幕外） */}
+        <div style={posterImage ? { position: "absolute", left: "-9999px", top: 0 } : {}}>
+          <div
+            ref={posterRef}
+            className="rounded-3xl p-6 text-center"
+            style={{
+              background: posterBg,
+              border: posterBorder,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+            }}
+          >
+            <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
+              🏪 外卖老板生存挑战
+            </p>
+
+            <div className="text-7xl mb-2">{tag.emoji}</div>
+            <h3 className="text-4xl font-black mb-3" style={{ color: "#222" }}>{tag.label}</h3>
+
+            <p className="text-lg leading-relaxed mb-4 px-1" style={{ color: "#444" }}>
+              {tag.desc}
+            </p>
+
+            <div className="border-t border-black/10 mx-4 mb-4" />
+
+            <p className="text-sm mb-1" style={{ color: "#999" }}>
+              {daysSurvived}天经营利润
+            </p>
+            <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
+              {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
+            </div>
+            <p className="text-sm mb-5" style={{ color: "#aaa" }}>
+              打败了{beatPercent}%的外卖老板
+            </p>
+
+            <div className="border-t border-black/10 mx-4 mb-4" />
+
+            <div className="flex flex-col items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/game-qr.png`}
+                alt="扫码挑战"
+                className="w-24 h-24 rounded-xl"
+              />
+              <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
+              <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
+            </div>
+          </div>
+        </div>
 
         {/* Result-specific CTA */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
