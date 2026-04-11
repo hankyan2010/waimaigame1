@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
@@ -24,8 +24,46 @@ export default function ResultPage() {
   const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
   const [showLedger, setShowLedger] = useState(false);
+  const [posterImage, setPosterImage] = useState<string | null>(null);
+  const [generatingPoster, setGeneratingPoster] = useState(false);
+  const posterRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setHydrated(true); }, []);
+  const generatePosterImage = useCallback(async () => {
+    if (!posterRef.current || generatingPoster) return;
+    setGeneratingPoster(true);
+    try {
+      const { default: html2canvas } = await import("html2canvas-pro");
+      const canvas = await html2canvas(posterRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+      });
+      setPosterImage(canvas.toDataURL("image/png"));
+    } catch (e) {
+      console.error("poster gen failed", e);
+    }
+    setGeneratingPoster(false);
+  }, [generatingPoster]);
+
+  useEffect(() => {
+    setHydrated(true);
+    // 测试模式：?test=thrive 或 ?test=bankrupt 或 ?test=survive
+    const params = new URLSearchParams(window.location.search);
+    const testMode = params.get("test");
+    if (testMode && ["thrive", "bankrupt", "survive"].includes(testMode)) {
+      const { determinePlayerTag, generateDiagnosisReport } = require("@/lib/config");
+      const fakeCash = testMode === "thrive" ? 35000 : testMode === "bankrupt" ? -500 : 11500;
+      const fakeDay = testMode === "bankrupt" ? 3 : 5;
+      useGameStore.setState({
+        phase: "result",
+        state: { ...store.state, cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 },
+        endingType: testMode as "thrive" | "bankrupt" | "survive",
+        playerTag: determinePlayerTag(testMode, { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, 5, 2000),
+        diagnosisReport: generateDiagnosisReport(testMode, { cash: fakeCash, day: fakeDay, exposure: 2500, enterConversion: 0.14, orderConversion: 0.22, avgPrice: 30, badReviewRate: 0.04 }, [], 2000, 5),
+        dailySummaries: [],
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (hydrated && !store.endingType) {
@@ -120,63 +158,84 @@ export default function ResultPage() {
       {/* Content */}
       <div className="flex-1 px-4 pt-8 space-y-4 relative z-10">
 
-        {/* Screenshot hint */}
-        <p className="text-center text-base text-secondary">
-          👇 长按截图，晒一下你的经营人格
-        </p>
-
-        {/* ===== Shareable Poster Card ===== */}
-        <div
-          className="rounded-3xl p-6 text-center"
-          style={{
-            background: posterBg,
-            border: posterBorder,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-          }}
-        >
-          {/* 标题 */}
-          <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
-            🏪 外卖老板生存挑战
-          </p>
-
-          {/* 人格 — 最大最醒目 */}
-          <div className="text-7xl mb-2">{tag.emoji}</div>
-          <h3 className="text-4xl font-black mb-3" style={{ color: "#222" }}>{tag.label}</h3>
-
-          {/* 人格说明 */}
-          <p className="text-lg leading-relaxed mb-4 px-1" style={{ color: "#444" }}>
-            {tag.desc}
-          </p>
-
-          {/* 分隔线 */}
-          <div className="border-t border-black/10 mx-4 mb-4" />
-
-          {/* 利润数字 */}
-          <p className="text-sm mb-1" style={{ color: "#999" }}>
-            {daysSurvived}天经营利润
-          </p>
-          <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
-            {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
-          </div>
-          <p className="text-sm mb-5" style={{ color: "#aaa" }}>
-            打败了{beatPercent}%的外卖老板
-          </p>
-
-          {/* 分隔线 */}
-          <div className="border-t border-black/10 mx-4 mb-4" />
-
-          {/* 二维码 + 邀请 */}
-          <div className="flex flex-col items-center gap-2">
+        {/* ===== 海报图片（生成后显示，可长按保存）===== */}
+        {posterImage ? (
+          <div className="text-center">
+            <p className="text-base text-secondary mb-2">👇 长按图片保存，发给朋友</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={qrSrc}
-              alt="扫码挑战"
-              className="w-24 h-24 rounded-xl"
+              src={posterImage}
+              alt="我的经营人格海报"
+              className="w-full rounded-2xl shadow-lg"
+              style={{ maxWidth: 400 }}
             />
-            <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
-            <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
+            <button
+              onClick={() => setPosterImage(null)}
+              className="text-sm text-secondary mt-3 underline"
+            >
+              返回
+            </button>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* ===== HTML海报（用于截图生成）===== */}
+            <div
+              ref={posterRef}
+              className="rounded-3xl p-6 text-center"
+              style={{
+                background: posterBg,
+                border: posterBorder,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+              }}
+            >
+              <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
+                🏪 外卖老板生存挑战
+              </p>
+
+              <div className="text-7xl mb-2">{tag.emoji}</div>
+              <h3 className="text-4xl font-black mb-3" style={{ color: "#222" }}>{tag.label}</h3>
+
+              <p className="text-lg leading-relaxed mb-4 px-1" style={{ color: "#444" }}>
+                {tag.desc}
+              </p>
+
+              <div className="border-t border-black/10 mx-4 mb-4" />
+
+              <p className="text-sm mb-1" style={{ color: "#999" }}>
+                {daysSurvived}天经营利润
+              </p>
+              <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
+                {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
+              </div>
+              <p className="text-sm mb-5" style={{ color: "#aaa" }}>
+                打败了{beatPercent}%的外卖老板
+              </p>
+
+              <div className="border-t border-black/10 mx-4 mb-4" />
+
+              {/* 游戏链接二维码（不是领资料的） */}
+              <div className="flex flex-col items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/game-qr.png`}
+                  alt="扫码挑战"
+                  className="w-24 h-24 rounded-xl"
+                />
+                <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
+                <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
+              </div>
+            </div>
+
+            {/* 生成海报按钮 */}
+            <button
+              onClick={generatePosterImage}
+              disabled={generatingPoster}
+              className="btn-raised text-lg"
+            >
+              {generatingPoster ? "⏳ 生成中..." : "📸 生成海报图片（可保存）"}
+            </button>
+          </>
+        )}
 
         {/* Result-specific CTA */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
