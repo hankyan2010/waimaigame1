@@ -34,6 +34,7 @@ export type GamePhase =
   | "day-intro"     // 每日背景展示
   | "playing"       // 答题中
   | "day-settle"    // 每日结算
+  | "weekend-gate"  // 第5天结束后：分享解锁周末加赛
   | "result"        // 最终结局
   | "reward";       // 引流页
 
@@ -91,6 +92,9 @@ interface GameStore {
   todaysRevenue: () => number;
   dayProgress: () => number;
 
+  // 周末加赛
+  weekendUnlocked: boolean;
+
   // Actions
   startNewGame: () => void;
   startDay: () => void;
@@ -98,6 +102,7 @@ interface GameStore {
   nextQuestion: () => void;
   applyDailySettlement: () => void;
   nextDay: () => void;
+  unlockWeekend: () => void;
   markSharedForExtraPlay: () => void;
   setDisplayName: (name: string) => void;
   goToReward: () => void;
@@ -154,6 +159,7 @@ export const useGameStore = create<GameStore>()(
       endingType: null,
       playerTag: null,
       diagnosisReport: null,
+      weekendUnlocked: false,
 
       totalPlays: 0,
       bestFinalCash: 0,
@@ -234,6 +240,7 @@ export const useGameStore = create<GameStore>()(
           endingType: null,
           playerTag: null,
           diagnosisReport: null,
+          weekendUnlocked: false,
           totalPlays: s.totalPlays + 1,
           lastPlayDate: today,
           playsToday,
@@ -398,8 +405,15 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // 通关
-        if (s.state.day >= GAME_CONFIG.maxDay) {
+        // 第5天结束 → 未解锁周末则弹 weekend-gate（只在从day-settle过来时触发）
+        if (s.state.day === 5 && !s.weekendUnlocked && s.phase !== "weekend-gate") {
+          set({ phase: "weekend-gate" });
+          return;
+        }
+
+        // 通关（第5天未解锁周末直接结算，或第7天周末结束）
+        const maxDay = s.weekendUnlocked ? 7 : 5;
+        if (s.state.day >= maxDay) {
           const totalAdSpend = s.choices
             .filter((c) => (c.effect.exposure ?? 0) >= 30)
             .reduce((sum, c) => sum + Math.abs(c.effect.cash ?? 0), 0);
@@ -426,6 +440,15 @@ export const useGameStore = create<GameStore>()(
 
         // 进入下一天
         set({
+          state: { ...s.state, day: s.state.day + 1 },
+        });
+        get().startDay();
+      },
+
+      unlockWeekend: () => {
+        const s = get();
+        set({
+          weekendUnlocked: true,
           state: { ...s.state, day: s.state.day + 1 },
         });
         get().startDay();

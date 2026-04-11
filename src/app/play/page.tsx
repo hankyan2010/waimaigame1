@@ -265,6 +265,73 @@ export default function PlayPage() {
   }
 
   // ============================================================
+  // 周末加赛解锁门
+  // ============================================================
+  if (store.phase === "weekend-gate") {
+    const profit = s.cash - GAME_CONFIG.initialCash;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-rose-500 flex flex-col items-center justify-center px-6 relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute -top-20 -right-20 w-60 h-60 bg-white rounded-full" />
+          <div className="absolute bottom-20 -left-16 w-40 h-40 bg-white rounded-full" />
+        </div>
+
+        <div className="relative z-10 text-center max-w-sm w-full">
+          <div className="text-6xl mb-4 animate-bounce-in">🏆</div>
+          <h2 className="text-3xl font-black text-white mb-2">5天经营结束！</h2>
+          <div className="text-4xl font-black text-white mb-1">
+            💰 {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
+          </div>
+          <p className="text-lg text-white/70 mb-6">余额 ¥{s.cash.toLocaleString()}</p>
+
+          {/* 周末解锁卡片 */}
+          <div className="bg-white rounded-3xl p-6 mb-4 shadow-lg">
+            <p className="text-2xl font-black text-title mb-2">🔥 周末加赛</p>
+            <p className="text-lg text-body leading-relaxed mb-4">
+              分享给朋友，解锁<span className="font-black text-red-500">周六+周日</span>两天加赛！
+              <br />周末客流量翻倍，冲击更高利润+打榜！
+            </p>
+
+            <button
+              onClick={() => {
+                store.unlockWeekend();
+                track("weekend_unlock");
+              }}
+              className="btn-raised text-xl mb-3"
+            >
+              📢 分享解锁周末加赛
+            </button>
+
+            {/* 分享引导——大且明显 */}
+            <div className="bg-black/5 rounded-2xl p-4 mb-3">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-4xl animate-bounce">👆</span>
+                <span className="text-lg font-black text-title">点右上角「...」转发</span>
+              </div>
+              <p className="text-base text-secondary">转发给朋友或朋友圈，一起来PK！</p>
+            </div>
+
+            <button
+              onClick={() => {
+                // 不解锁，直接出结果
+                const totalAdSpend = store.choices
+                  .filter((c: { effect: { exposure?: number } }) => (c.effect.exposure ?? 0) >= 30)
+                  .reduce((sum: number, c: { effect: { cash?: number } }) => sum + Math.abs(c.effect.cash ?? 0), 0);
+                const avgPriceChange = s.avgPrice - GAME_CONFIG.initialAvgPrice;
+                store.nextDay(); // 这会触发通关逻辑
+              }}
+              className="text-base text-secondary/50 text-center w-full py-2"
+            >
+              算了，直接看结果
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================
   // 每日开场 intro — 全屏沉浸
   // ============================================================
   if (store.phase === "day-intro" && showIntro) {
@@ -275,6 +342,8 @@ export default function PlayPage() {
       "from-red-400 to-pink-500",         // day 3
       "from-emerald-400 to-teal-500",     // day 4
       "from-purple-500 to-rose-500",      // day 5
+      "from-orange-500 to-red-500",       // day 6 周末
+      "from-yellow-400 to-amber-500",     // day 7 周末
     ];
     const bgClass = bgColors[(s.day - 1) % bgColors.length];
 
