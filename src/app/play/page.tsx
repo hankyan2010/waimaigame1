@@ -29,6 +29,7 @@ export default function PlayPage() {
   const [coinKey, setCoinKey] = useState(0);
   const [showCoin, setShowCoin] = useState(false);
   const [wrongShake, setWrongShake] = useState(false);
+  const [weekendShareOverlay, setWeekendShareOverlay] = useState(false);
   const [animatedCash, setAnimatedCash] = useState<number | null>(null);
   const prevCashRef = useRef<number>(0);
 
@@ -269,9 +270,9 @@ export default function PlayPage() {
   // ============================================================
   if (store.phase === "weekend-gate") {
     const profit = s.cash - GAME_CONFIG.initialCash;
+    // weekendShareStep: 0=初始, 1=已点分享按钮显示蒙版
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-500 to-rose-500 flex flex-col items-center justify-center px-6 relative overflow-hidden">
-        {/* 背景装饰 */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -top-20 -right-20 w-60 h-60 bg-white rounded-full" />
           <div className="absolute bottom-20 -left-16 w-40 h-40 bg-white rounded-full" />
@@ -285,7 +286,6 @@ export default function PlayPage() {
           </div>
           <p className="text-lg text-white/70 mb-6">余额 ¥{s.cash.toLocaleString()}</p>
 
-          {/* 周末解锁卡片 */}
           <div className="bg-white rounded-3xl p-6 mb-4 shadow-lg">
             <p className="text-2xl font-black text-title mb-2">🔥 周末加赛</p>
             <p className="text-lg text-body leading-relaxed mb-4">
@@ -294,39 +294,55 @@ export default function PlayPage() {
             </p>
 
             <button
-              onClick={() => {
-                store.unlockWeekend();
-                track("weekend_unlock");
-              }}
+              onClick={() => setWeekendShareOverlay(true)}
               className="btn-raised text-xl mb-3"
             >
               📢 分享解锁周末加赛
             </button>
 
-            {/* 分享引导——大且明显 */}
-            <div className="bg-black/5 rounded-2xl p-4 mb-3">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-4xl animate-bounce">👆</span>
-                <span className="text-lg font-black text-title">点右上角「...」转发</span>
-              </div>
-              <p className="text-base text-secondary">转发给朋友或朋友圈，一起来PK！</p>
-            </div>
-
             <button
-              onClick={() => {
-                // 不解锁，直接出结果
-                const totalAdSpend = store.choices
-                  .filter((c: { effect: { exposure?: number } }) => (c.effect.exposure ?? 0) >= 30)
-                  .reduce((sum: number, c: { effect: { cash?: number } }) => sum + Math.abs(c.effect.cash ?? 0), 0);
-                const avgPriceChange = s.avgPrice - GAME_CONFIG.initialAvgPrice;
-                store.nextDay(); // 这会触发通关逻辑
-              }}
+              onClick={() => store.nextDay()}
               className="text-base text-secondary/50 text-center w-full py-2"
             >
               算了，直接看结果
             </button>
           </div>
         </div>
+
+        {/* ===== 分享引导蒙版 ——必须点空白关闭后才能继续 ===== */}
+        {weekendShareOverlay && (
+          <div
+            className="fixed inset-0 bg-black/85 z-[100] flex flex-col"
+            onClick={() => {
+              setWeekendShareOverlay(false);
+              // 关闭蒙版 → 解锁周末 → 进入第6天
+              store.unlockWeekend();
+              track("weekend_unlock");
+            }}
+          >
+            {/* 上方：大箭头指向右上角 */}
+            <div className="flex justify-end p-6 pt-3">
+              <div className="text-right">
+                <div className="text-7xl animate-bounce">👆</div>
+              </div>
+            </div>
+
+            {/* 中间：引导文案 */}
+            <div className="flex-1 flex items-center justify-center px-8">
+              <div className="bg-white rounded-3xl p-8 max-w-[320px] text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                <p className="text-2xl font-black text-title mb-3">📢 先转发，再开始加赛</p>
+                <div className="bg-brand/10 rounded-2xl p-4 mb-4">
+                  <p className="text-xl font-black text-title mb-1">👆 点右上角「...」</p>
+                  <p className="text-lg text-body">选择「转发给朋友」<br/>或「分享到朋友圈」</p>
+                </div>
+                <p className="text-base text-secondary mb-4">转发后，点击空白处开始周末加赛</p>
+                <div className="border-t border-border pt-3">
+                  <p className="text-sm text-secondary/60">👇 点击空白处关闭并开始第6天</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

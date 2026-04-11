@@ -122,7 +122,7 @@ export default function ResultPage() {
 
         {/* Screenshot hint */}
         <p className="text-center text-base text-secondary">
-          👇 长按截图，发给朋友看看你的经营人格
+          👇 长按截图，晒一下你的经营人格
         </p>
 
         {/* ===== Shareable Poster Card ===== */}
@@ -134,37 +134,47 @@ export default function ResultPage() {
             boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
           }}
         >
-          {/* Profit number */}
-          <p className="text-sm text-gray-500 mb-1">五天经营利润</p>
-          <div className="text-[52px] font-black leading-none mb-2" style={{ color: isBankrupt ? "#555" : "#222" }}>
-            {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
-          </div>
-          <p className="text-sm text-gray-400 mb-4">
-            存活{daysSurvived}天 · 打败了{beatPercent}%的老板
+          {/* 标题 */}
+          <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
+            🏪 外卖老板生存挑战
           </p>
 
-          {/* Personality emoji + label */}
-          <div className="text-6xl mb-2">{tag.emoji}</div>
-          <h3 className="text-3xl font-black mb-2" style={{ color: "#222" }}>{tag.label}</h3>
+          {/* 人格 — 最大最醒目 */}
+          <div className="text-7xl mb-2">{tag.emoji}</div>
+          <h3 className="text-4xl font-black mb-3" style={{ color: "#222" }}>{tag.label}</h3>
 
-          {/* Roast description */}
-          <p className="text-base leading-relaxed mb-5 px-2" style={{ color: "#555" }}>
+          {/* 人格说明 */}
+          <p className="text-lg leading-relaxed mb-4 px-1" style={{ color: "#444" }}>
             {tag.desc}
           </p>
 
-          {/* Divider */}
-          <div className="border-t border-black/10 mx-4 mb-5" />
+          {/* 分隔线 */}
+          <div className="border-t border-black/10 mx-4 mb-4" />
 
-          {/* QR + invite text */}
+          {/* 利润数字 */}
+          <p className="text-sm mb-1" style={{ color: "#999" }}>
+            {daysSurvived}天经营利润
+          </p>
+          <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
+            {profit >= 0 ? "+" : ""}¥{profit.toLocaleString()}
+          </div>
+          <p className="text-sm mb-5" style={{ color: "#aaa" }}>
+            打败了{beatPercent}%的外卖老板
+          </p>
+
+          {/* 分隔线 */}
+          <div className="border-t border-black/10 mx-4 mb-4" />
+
+          {/* 二维码 + 邀请 */}
           <div className="flex flex-col items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrSrc}
               alt="扫码挑战"
-              className="w-20 h-20 rounded-lg"
+              className="w-24 h-24 rounded-xl"
             />
-            <p className="text-sm font-bold" style={{ color: "#444" }}>扫码挑战，看你是什么人格</p>
-            <p className="text-xs" style={{ color: "#999" }}>外卖老板5天生存挑战 waimaiketang.com/oldgame</p>
+            <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
+            <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
           </div>
         </div>
 
