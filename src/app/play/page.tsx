@@ -188,60 +188,30 @@ export default function PlayPage() {
             </div>
           </div>
 
-          {/* 展开详情 */}
-          <button
-            onClick={() => setShowDetail(!showDetail)}
-            className="bg-white rounded-xl px-4 py-3 shadow-sm text-base text-secondary font-bold text-center w-full"
-          >
-            {showDetail ? "收起详情 ↑" : "📊 查看账本详情 ↓"}
-          </button>
+          {/* 账本 — 紧凑展示不折叠 */}
+          <div className="bg-white rounded-2xl p-3 shadow-sm">
+            <div className="flex items-center justify-between text-sm mb-1">
+              <span className="text-secondary">收入 <span className="font-black text-green-600">+¥{summary.incomeRevenue}</span></span>
+              <span className="text-secondary">成本 <span className="font-black text-red-500">-¥{summary.fixedCost}</span></span>
+              <span className="text-secondary">决策 <span className={`font-black ${summary.choiceImpact >= 0 ? "text-green-600" : "text-red-500"}`}>{summary.choiceImpact >= 0 ? "+" : ""}¥{summary.choiceImpact}</span></span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-secondary">期末余额</span>
+              <span className="text-lg font-black text-title">¥{summary.cashAfter.toLocaleString()}</span>
+            </div>
+          </div>
 
-          {showDetail && (
-            <>
-              {/* 账本 */}
-              <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <p className="text-base font-bold text-title mb-3">📒 今日账本</p>
-                <div className="space-y-2">
-                  <Row label="期初现金" value={`¥${summary.cashBefore.toLocaleString()}`} />
-                  <Row label="订单收入" value={`+¥${summary.incomeRevenue.toLocaleString()}`} positive />
-                  <Row label={`固定成本`} value={`-¥${summary.fixedCost}`} negative />
-                  <Row
-                    label="经营决策"
-                    value={`${summary.choiceImpact >= 0 ? "+" : ""}¥${summary.choiceImpact.toLocaleString()}`}
-                    positive={summary.choiceImpact >= 0}
-                    negative={summary.choiceImpact < 0}
-                  />
-                  <div className="border-t border-border pt-2 mt-2" />
-                  <Row label="期末现金" value={`¥${summary.cashAfter.toLocaleString()}`} bold />
+          {/* 突发事件 */}
+          {summary.eventTitle && (
+            <div className="bg-white rounded-2xl p-3 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{summary.eventEmoji}</span>
+                <div>
+                  <p className="text-base font-black text-title">{summary.eventTitle}</p>
+                  <p className="text-sm text-secondary">{summary.eventDesc}</p>
                 </div>
               </div>
-
-              {/* 营业额公式 */}
-              <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <p className="text-base font-bold text-title mb-2">📊 营业额怎么来的</p>
-                <div className="bg-neutral-50 rounded-xl p-3">
-                  <p className="text-center text-base font-black text-title">
-                    {summary.exposureEnd} × {(summary.enterConversionEnd * 100).toFixed(0)}% × {(summary.effectiveOrderConv * 100).toFixed(0)}% × ¥{summary.avgPriceEnd}
-                  </p>
-                  <p className="text-center text-sm text-secondary mt-1">
-                    ≈ {summary.estimatedOrders}单 × ¥{summary.avgPriceEnd} = <span className="font-black text-title">¥{summary.incomeRevenue}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* 突发事件 */}
-              {summary.eventTitle && (
-                <div className="bg-white rounded-2xl p-4 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="text-4xl">{summary.eventEmoji}</span>
-                    <div>
-                      <p className="text-lg font-black text-title">{summary.eventTitle}</p>
-                      <p className="text-base text-secondary">{summary.eventDesc}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
+            </div>
           )}
         </div>
 
@@ -538,29 +508,20 @@ export default function PlayPage() {
               </div>
             </div>
 
-            {/* 知识点 — 默认折叠，只显示一行摘要 */}
-            <button
-              onClick={() => setShowKnowledge(!showKnowledge)}
-              className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-brand/40 rounded-2xl p-4 shadow-sm w-full text-left"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl flex-shrink-0">💡</span>
-                <span className="text-base font-black text-brand-dark flex-1">
-                  {showKnowledge ? "收起知识点" : "为什么？点击查看知识点"}
-                </span>
-                <span className="text-base text-brand-dark">{showKnowledge ? "↑" : "↓"}</span>
-              </div>
-              {showKnowledge && (
-                <div className="mt-3 pt-3 border-t border-brand/20">
-                  <p className="text-lg text-body leading-relaxed">{pending.knowledge}</p>
+            {/* 知识点 — 直接展示不折叠 */}
+            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-brand/40 rounded-2xl p-4 shadow-sm">
+              <div className="flex items-start gap-2">
+                <span className="text-xl flex-shrink-0">💡</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-body leading-snug">{pending.knowledge}</p>
                   {pending.realCase && (
-                    <p className="text-base text-blue-700 leading-relaxed mt-3 bg-blue-50 rounded-xl p-3">
+                    <p className="text-sm text-blue-700 leading-snug mt-2 bg-blue-50 rounded-lg p-2">
                       📋 {pending.realCase}
                     </p>
                   )}
                 </div>
-              )}
-            </button>
+              </div>
+            </div>
 
             <button
               onClick={() => {
