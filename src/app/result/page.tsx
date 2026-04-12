@@ -752,11 +752,10 @@ export default function ResultPage() {
         </div>
       )}
 
-      {/* ===== 海报蒙版 — 全屏黑底只显示海报 ===== */}
+      {/* ===== 海报蒙版 — 全屏黑底显示海报+底部按钮 ===== */}
       {showPosterOverlay && (
-        <div className="fixed inset-0 bg-black/90 z-[80] flex flex-col items-center justify-center px-6"
-             onClick={() => setShowPosterOverlay(false)}>
-          <p className="text-white text-lg font-black mb-4 animate-bounce">
+        <div className="fixed inset-0 bg-black/90 z-[80] flex flex-col items-center justify-center px-4">
+          <p className="text-white text-lg font-black mb-3 animate-bounce">
             👇 长按海报保存，分享朋友圈
           </p>
 
@@ -766,14 +765,41 @@ export default function ResultPage() {
               src={posterImage}
               alt="我的经营人格海报"
               className="w-full rounded-2xl shadow-2xl"
-              style={{ maxWidth: 380 }}
-              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: 360 }}
             />
           ) : (
             <div className="text-white text-base">海报生成中...</div>
           )}
 
-          <p className="text-white/50 text-sm mt-4">点击空白处关闭</p>
+          {/* 蒙版内直接放按钮，不用关闭蒙版才能操作 */}
+          <div className="w-full max-w-[360px] mt-4 space-y-2">
+            <button
+              onClick={() => {
+                setShowPosterOverlay(false);
+                handlePlayAgain();
+              }}
+              className="btn-raised text-lg w-full"
+            >
+              🔥 再来一局
+            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setShowPosterOverlay(false);
+                  router.push("/leaderboard");
+                }}
+                className="btn-raised-ghost text-sm"
+              >
+                🏆 排行榜
+              </button>
+              <button
+                onClick={() => setShowPosterOverlay(false)}
+                className="btn-raised-ghost text-sm"
+              >
+                关闭海报
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
