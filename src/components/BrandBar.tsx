@@ -3,7 +3,7 @@
 export function BrandBar() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5" style={{
+    <div className="flex items-center justify-center gap-2.5 px-4 py-2.5" style={{
       background: "linear-gradient(135deg, #FFD100 0%, #FFB800 100%)",
       borderRadius: "14px",
     }}>
