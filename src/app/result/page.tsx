@@ -30,6 +30,7 @@ export default function ResultPage() {
   const [showLedger, setShowLedger] = useState(false);
   const [posterImage, setPosterImage] = useState<string | null>(null);
   const [showPosterOverlay, setShowPosterOverlay] = useState(false);
+  const [showResourcePage, setShowResourcePage] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   // Animation sequencing
@@ -752,7 +753,7 @@ export default function ResultPage() {
         </div>
       )}
 
-      {/* ===== 海报蒙版 — 全屏黑底显示海报+底部按钮 ===== */}
+      {/* ===== 海报蒙版 ===== */}
       {showPosterOverlay && (
         <div className="fixed inset-0 bg-black/90 z-[80] flex flex-col items-center justify-center px-4">
           <p className="text-white text-lg font-black mb-3 animate-bounce">
@@ -771,32 +772,140 @@ export default function ResultPage() {
             <div className="text-white text-base">海报生成中...</div>
           )}
 
-          {/* 蒙版内直接放按钮，不用关闭蒙版才能操作 */}
-          <div className="w-full max-w-[360px] mt-4 space-y-2">
+          <div className="w-full max-w-[360px] mt-4">
             <button
               onClick={() => {
                 setShowPosterOverlay(false);
-                handlePlayAgain();
+                setShowResourcePage(true);
+                track("poster_to_resource");
               }}
               className="btn-raised text-lg w-full"
             >
-              🔥 再来一局
+              继续 →
             </button>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => {
-                  setShowPosterOverlay(false);
-                  router.push("/leaderboard");
-                }}
-                className="btn-raised-ghost text-sm"
-              >
-                🏆 排行榜
+          </div>
+        </div>
+      )}
+
+      {/* ===== 领资料全屏页 — 海报关闭后展示 ===== */}
+      {showResourcePage && (
+        <div className="fixed inset-0 z-[70] bg-white overflow-y-auto">
+          <div className="max-w-[430px] mx-auto px-4 py-6">
+            {/* 顶部标题 */}
+            <div className="text-center mb-6">
+              <p className="text-3xl font-black text-title mb-2">🎁 你的专属资料包</p>
+              <p className="text-lg text-secondary">扫码免费领取，30秒发你</p>
+            </div>
+
+            {/* 答错题回顾 */}
+            {(() => {
+              const wrongs: { title: string; yourChoice: string }[] = [];
+              for (const choice of store.choices) {
+                const q = QUESTION_BANK.find(qq => qq.id === choice.questionId);
+                if (!q) continue;
+                const bestOpt = q.options.find(o => o.verdict?.startsWith("推荐"));
+                const chosenOpt = q.options[choice.optionIndex];
+                if (bestOpt && chosenOpt && chosenOpt.text !== bestOpt.text) {
+                  wrongs.push({ title: q.title, yourChoice: chosenOpt.text });
+                }
+              }
+              return wrongs.length > 0 ? (
+                <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-4">
+                  <p className="text-lg font-black text-red-600 mb-2">
+                    ❌ 你踩了 {wrongs.length} 个坑
+                  </p>
+                  <div className="space-y-1 mb-2">
+                    {wrongs.slice(0, 3).map((w, i) => (
+                      <p key={i} className="text-sm text-red-500">
+                        • {w.title}：你选了「{w.yourChoice}」
+                      </p>
+                    ))}
+                    {wrongs.length > 3 && (
+                      <p className="text-sm text-secondary">还有 {wrongs.length - 3} 个坑...</p>
+                    )}
+                  </div>
+                  <p className="text-base font-black text-title">
+                    🔒 正确答案在资料包里，扫码解锁 ↓
+                  </p>
+                </div>
+              ) : null;
+            })()}
+
+            {/* 资料包内容清单 */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-5 mb-4">
+              <p className="text-xl font-black text-title mb-4">📦 资料包包含：</p>
+              <div className="space-y-3">
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">📚</span>
+                  <div>
+                    <p className="text-base font-black text-title">全部100题正确答案+知识点</p>
+                    <p className="text-sm text-secondary">每道题的最优选择和背后逻辑</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">💰</span>
+                  <div>
+                    <p className="text-base font-black text-title">菜单定价公式表</p>
+                    <p className="text-sm text-secondary">主食引流+福利品赚利润的定价模型</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">⭐</span>
+                  <div>
+                    <p className="text-base font-black text-title">差评处理话术30条</p>
+                    <p className="text-sm text-secondary">拿来就能用，覆盖90%的差评场景</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">📈</span>
+                  <div>
+                    <p className="text-base font-black text-title">推广ROI计算器</p>
+                    <p className="text-sm text-secondary">一表算清点金/满减到底划不划算</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">🚀</span>
+                  <div>
+                    <p className="text-base font-black text-title">新店7天冷启动SOP</p>
+                    <p className="text-sm text-secondary">从0到100单的完整操作手册</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-2xl">🎯</span>
+                  <div>
+                    <p className="text-base font-black text-title">1次资深专家一对一诊断</p>
+                    <p className="text-sm text-secondary">针对你的店铺数据，给出具体改进方案</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 大QR码 */}
+            <div className="bg-white rounded-2xl p-6 text-center border-2 border-brand shadow-lg mb-4">
+              <p className="text-2xl font-black text-title mb-1">👇 扫码免费领取</p>
+              <p className="text-base text-secondary mb-4">加微信回复「资料包」，30秒发你</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={qrSrc}
+                alt="扫码领取"
+                className="w-40 h-40 mx-auto rounded-xl mb-3"
+              />
+              <p className="text-lg font-black text-red-500">全部免费 · 已有 3,000+ 老板领取</p>
+            </div>
+
+            {/* 底部按钮 */}
+            <div className="space-y-2 pb-4">
+              <button onClick={handlePlayAgain} className="btn-raised text-lg w-full">
+                🔥 再来一局
               </button>
               <button
-                onClick={() => setShowPosterOverlay(false)}
-                className="btn-raised-ghost text-sm"
+                onClick={() => {
+                  setShowResourcePage(false);
+                  router.push("/leaderboard");
+                }}
+                className="btn-raised-ghost text-base w-full"
               >
-                关闭海报
+                🏆 查看排行榜
               </button>
             </div>
           </div>
