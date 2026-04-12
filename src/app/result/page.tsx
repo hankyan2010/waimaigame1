@@ -232,17 +232,17 @@ export default function ResultPage() {
 
   // Result-specific CTA
   const ctaConfig = isBankrupt
-    ? { emoji: "\u{1F480}", text: "\u4F60\u8E29\u4E86\u4E0D\u5C11\u5751\uFF0C\u626B\u7801\u9886\u907F\u5751\u6307\u5357" }
+    ? { emoji: "💀", text: "你踩了不少坑，扫码领避坑指南" }
     : store.endingType === "thrive"
-    ? { emoji: "\u{1F680}", text: "\u7ECF\u8425\u9AD8\u624B\uFF01\u626B\u7801\u9886\u9AD8\u624B\u4E13\u5C5E\u8D44\u6599" }
-    : { emoji: "\u{1F610}", text: "\u8FD8\u6709\u63D0\u5347\u7A7A\u95F4\uFF0C\u626B\u7801\u9886\u7ECF\u8425\u79D8\u7C4D" };
+    ? { emoji: "🚀", text: "经营高手！扫码领高手专属资料" }
+    : { emoji: "😐", text: "还有提升空间，扫码领经营秘籍" };
 
   // Banner config per ending
   const bannerConfig = store.endingType === "thrive"
-    ? { text: "\u{1F389} \u606D\u559C\u7206\u8D5A\uFF01", bgClass: "result-banner-thrive" }
+    ? { text: "🎉 恭喜爆赚！", bgClass: "result-banner-thrive" }
     : store.endingType === "bankrupt"
-    ? { text: "\u{1F480} \u5012\u95ED\u4E86...", bgClass: "result-banner-bankrupt" }
-    : { text: "\u{1F610} \u52C9\u5F3A\u5B58\u6D3B", bgClass: "result-banner-survive" };
+    ? { text: "💀 倒闭了...", bgClass: "result-banner-bankrupt" }
+    : { text: "😐 勉强存活", bgClass: "result-banner-survive" };
 
   // Figure out player's rank in leaderboard data for highlighting
   const currentProfit = profit;
@@ -330,7 +330,7 @@ export default function ResultPage() {
             </div>
             {/* Profit count-up */}
             <div className="mt-3">
-              <p className="text-sm text-secondary">{daysSurvived}\u5929\u7ECF\u8425\u5229\u6DA6</p>
+              <p className="text-sm text-secondary">{daysSurvived}天经营利润</p>
               <div
                 className="text-[48px] font-black leading-none mt-1"
                 style={{ color: isBankrupt ? "#666" : displayProfit >= 0 ? "#16a34a" : "#dc2626" }}
@@ -338,7 +338,7 @@ export default function ResultPage() {
                 {displayProfit >= 0 ? "+" : ""}&yen;{displayProfit.toLocaleString()}
               </div>
               <p className="text-sm text-secondary mt-1">
-                \u6253\u8D25\u4E86{beatPercent}%\u7684\u5916\u5356\u8001\u677F
+                打败了{beatPercent}%的外卖老板
               </p>
             </div>
           </div>
@@ -347,10 +347,10 @@ export default function ResultPage() {
         {/* ===== Step 3: Leaderboard Comparison ===== */}
         {animStep >= 3 && (
           <div className="bg-white rounded-2xl p-4 shadow-sm result-stagger-slide-up">
-            <h3 className="text-lg font-black text-title mb-3">{"\u{1F4CA}"} \u6392\u884C\u699C</h3>
+            <h3 className="text-lg font-black text-title mb-3">{"📊"} 排行榜</h3>
             <div className="space-y-1.5">
               {leaderboardData.length === 0 && (
-                <p className="text-sm text-secondary text-center py-3">\u52A0\u8F7D\u4E2D...</p>
+                <p className="text-sm text-secondary text-center py-3">加载中...</p>
               )}
               {leaderboardData.map((entry, idx) => {
                 // Determine the global rank
@@ -358,7 +358,7 @@ export default function ResultPage() {
                 const isCurrentPlayer = entry.profit <= currentProfit &&
                   (idx === 0 || leaderboardData[idx - 1].profit > currentProfit);
                 const globalRank = idx + 1;
-                const tagEmoji = TAG_INFO[entry.tag]?.emoji ?? "\u{1F3EA}";
+                const tagEmoji = TAG_INFO[entry.tag]?.emoji ?? "🏪";
                 const isVisible = idx < visibleRows;
 
                 return (
@@ -416,7 +416,7 @@ export default function ResultPage() {
         {animStep >= 4 && (
           <div className="result-stagger-slide-up">
             <p className="text-center text-base text-secondary mb-2">
-              {"\u{1F447}"} \u957F\u6309\u6D77\u62A5\u4FDD\u5B58\uFF0C\u53D1\u7ED9\u670B\u53CB
+              {"👇"} 长按海报保存，发给朋友
             </p>
 
             {/* If poster image generated, show saveable img */}
@@ -425,7 +425,7 @@ export default function ResultPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={posterImage}
-                  alt="\u6211\u7684\u7ECF\u8425\u4EBA\u683C\u6D77\u62A5"
+                  alt="我的经营人格海报"
                   className="w-full rounded-2xl shadow-lg"
                   style={{ maxWidth: 400 }}
                 />
@@ -444,7 +444,7 @@ export default function ResultPage() {
                 }}
               >
                 <p className="text-base font-bold mb-4" style={{ color: "#888" }}>
-                  {"\u{1F3EA}"} \u5916\u5356\u8001\u677F\u751F\u5B58\u6311\u6218
+                  {"🏪"} 外卖老板生存挑战
                 </p>
 
                 <div className="text-7xl mb-2">{tag.emoji}</div>
@@ -457,13 +457,13 @@ export default function ResultPage() {
                 <div className="border-t border-black/10 mx-4 mb-4" />
 
                 <p className="text-sm mb-1" style={{ color: "#999" }}>
-                  {daysSurvived}\u5929\u7ECF\u8425\u5229\u6DA6
+                  {daysSurvived}天经营利润
                 </p>
                 <div className="text-[48px] font-black leading-none mb-1" style={{ color: isBankrupt ? "#666" : profit >= 0 ? "#16a34a" : "#dc2626" }}>
                   {profit >= 0 ? "+" : ""}&yen;{profit.toLocaleString()}
                 </div>
                 <p className="text-sm mb-5" style={{ color: "#aaa" }}>
-                  \u6253\u8D25\u4E86{beatPercent}%\u7684\u5916\u5356\u8001\u677F
+                  打败了{beatPercent}%的外卖老板
                 </p>
 
                 <div className="border-t border-black/10 mx-4 mb-4" />
@@ -472,10 +472,10 @@ export default function ResultPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame"}/game-qr.png`}
-                    alt="\u626B\u7801\u6311\u6218"
+                    alt="扫码挑战"
                     className="w-24 h-24 rounded-xl"
                   />
-                  <p className="text-base font-black" style={{ color: "#333" }}>\u626B\u7801\u6D4B\u6D4B\u4F60\u662F\u4EC0\u4E48\u7ECF\u8425\u4EBA\u683C</p>
+                  <p className="text-base font-black" style={{ color: "#333" }}>扫码测测你是什么经营人格</p>
                   <p className="text-xs" style={{ color: "#999" }}>waimaiketang.com/oldgame</p>
                 </div>
               </div>
@@ -491,7 +491,7 @@ export default function ResultPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={qrSrc}
-                  alt="\u626B\u7801\u9886\u53D6"
+                  alt="扫码领取"
                   className="w-16 h-16 rounded-lg"
                 />
               </div>
@@ -499,7 +499,7 @@ export default function ResultPage() {
                 <p className="text-base font-black text-title">
                   {ctaConfig.emoji} {ctaConfig.text}
                 </p>
-                <p className="text-sm text-secondary mt-0.5">\u52A0\u5FAE\u4FE1\u56DE\u590D\u300C\u8D44\u6599\u5305\u300D\u514D\u8D39\u9886</p>
+                <p className="text-sm text-secondary mt-0.5">加微信回复「资料包」免费领</p>
               </div>
             </div>
           </div>
@@ -513,8 +513,8 @@ export default function ResultPage() {
               className="bg-white rounded-2xl p-4 shadow-sm w-full text-left result-stagger-slide-up"
             >
               <div className="flex items-center justify-between">
-                <span className="text-lg font-black text-title">{"\u{1F4CA}"} \u4F60\u7684\u7ECF\u8425\u8BCA\u65AD</span>
-                <span className="text-base text-secondary">{showDiagnosis ? "\u6536\u8D77 \u2191" : "\u5C55\u5F00 \u2193"}</span>
+                <span className="text-lg font-black text-title">{"📊"} 你的经营诊断</span>
+                <span className="text-base text-secondary">{showDiagnosis ? "收起 ↑" : "展开 ↓"}</span>
               </div>
               {!showDiagnosis && (
                 <div className="flex gap-2 mt-3">
@@ -547,7 +547,7 @@ export default function ResultPage() {
                         <span className="text-base font-black text-title">{dim.name}</span>
                         <span className={`text-base font-black ${
                           dim.score >= 70 ? "text-green-600" : dim.score >= 45 ? "text-orange-500" : "text-red-500"
-                        }`}>{dim.score}\u5206</span>
+                        }`}>{dim.score}分</span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-2.5">
                         <div
@@ -565,7 +565,7 @@ export default function ResultPage() {
                 ))}
                 <div className="pt-3 border-t border-border">
                   <div className="flex items-start gap-2">
-                    <span className="text-2xl flex-shrink-0">{"\u{1F4A1}"}</span>
+                    <span className="text-2xl flex-shrink-0">{"💡"}</span>
                     <p className="text-lg font-bold text-body leading-relaxed">{store.diagnosisReport.summary}</p>
                   </div>
                 </div>
@@ -582,8 +582,8 @@ export default function ResultPage() {
               className="bg-white rounded-2xl p-4 shadow-sm w-full text-left result-stagger-slide-up"
             >
               <div className="flex items-center justify-between">
-                <span className="text-lg font-black text-title">{"\u{1F4D2}"} 5\u5929\u7ECF\u8425\u8D26\u672C</span>
-                <span className="text-base text-secondary">{showLedger ? "\u6536\u8D77 \u2191" : "\u5C55\u5F00 \u2193"}</span>
+                <span className="text-lg font-black text-title">{"📒"} 5天经营账本</span>
+                <span className="text-base text-secondary">{showLedger ? "收起 ↑" : "展开 ↓"}</span>
               </div>
             </button>
 
@@ -592,19 +592,19 @@ export default function ResultPage() {
                 {store.dailySummaries.map((d) => (
                   <div key={d.day} className="border-b border-border last:border-0 pb-3 last:pb-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-base font-black text-title">\u7B2C{d.day}\u5929</span>
+                      <span className="text-base font-black text-title">第{d.day}天</span>
                       <span className={`text-xl font-black ${d.profit >= 0 ? "text-green-600" : "text-red-500"}`}>
                         {d.profit >= 0 ? "+" : ""}&yen;{d.profit.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex gap-2 text-sm text-secondary">
-                      <span>\u8425\u4E1A &yen;{d.incomeRevenue}</span>
+                      <span>营业 &yen;{d.incomeRevenue}</span>
                       <span>&middot;</span>
-                      <span>\u6210\u672C &yen;{d.fixedCost}</span>
+                      <span>成本 &yen;{d.fixedCost}</span>
                       <span>&middot;</span>
-                      <span>\u51B3\u7B56 {d.choiceImpact >= 0 ? "+" : ""}&yen;{d.choiceImpact}</span>
+                      <span>决策 {d.choiceImpact >= 0 ? "+" : ""}&yen;{d.choiceImpact}</span>
                     </div>
-                    <p className="text-base text-body leading-snug mt-1">{"\u{1F4A1}"} {d.comment}</p>
+                    <p className="text-base text-body leading-snug mt-1">{"💡"} {d.comment}</p>
                   </div>
                 ))}
               </div>
@@ -619,15 +619,15 @@ export default function ResultPage() {
           <div className="space-y-2">
             {submittedRank !== null && (
               <div className="text-center text-base text-title font-black">
-                {"\u{1F389}"} \u5DF2\u4E0A\u699C \u7B2C {submittedRank} \u540D
+                {"🎉"} 已上榜 第 {submittedRank} 名
               </div>
             )}
             <div className="grid grid-cols-2 gap-2">
               <button onClick={handlePlayAgain} className="btn-raised-ghost text-base">
-                {"\u{1F525}"} \u518D\u6765\u4E00\u5C40
+                {"🔥"} 再来一局
               </button>
               <button onClick={() => router.push("/leaderboard")} className="btn-raised-ghost text-base">
-                {"\u{1F3C6}"} \u67E5\u770B\u5B8C\u6574\u6392\u884C\u699C
+                {"🏆"} 查看完整排行榜
               </button>
             </div>
           </div>
@@ -639,19 +639,19 @@ export default function ResultPage() {
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-slide-up">
             <div className="text-center mb-4">
-              <div className="text-5xl mb-2">{"\u{1F3C6}"}</div>
+              <div className="text-5xl mb-2">{"🏆"}</div>
               <h3 className="text-2xl font-black text-title mb-2">
-                \u606D\u559C\u8FDB\u5165\u82F1\u96C4\u699C \u7B2C {pendingRank} \u540D
+                恭喜进入英雄榜 第 {pendingRank} 名
               </h3>
               <p className="text-lg text-secondary">
-                \u7559\u4E0B\u4F60\u7684\u5E97\u94FA\u540D\uFF0C\u8BA9\u5176\u4ED6\u73A9\u5BB6\u770B\u89C1\u4F60
+                留下你的店铺名，让其他玩家看见你
               </p>
             </div>
             <input
               type="text"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
-              placeholder="\u5E97\u94FA\u540D / \u6635\u79F0\uFF082~20\u5B57\uFF09"
+              placeholder="店铺名 / 昵称（2~20字）"
               maxLength={20}
               className="w-full px-4 py-3 rounded-xl border-2 border-border bg-white text-lg text-title mb-3 focus:border-brand outline-none"
             />
@@ -661,10 +661,10 @@ export default function ResultPage() {
                 disabled={nameInput.trim().length < 2}
                 className="btn-raised text-lg disabled:opacity-40"
               >
-                \u4E0A\u699C\u7559\u540D
+                上榜留名
               </button>
               <button onClick={() => setShowNameModal(false)} className="btn-raised-ghost text-base">
-                \u7B97\u4E86\u4E0D\u7559
+                算了不留
               </button>
             </div>
           </div>
@@ -676,10 +676,10 @@ export default function ResultPage() {
         <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
              onClick={() => setShowShareTip(false)}>
           <div className="text-right mt-0">
-            <div className="text-6xl animate-bounce">{"\u{1F446}"}</div>
+            <div className="text-6xl animate-bounce">{"👆"}</div>
             <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
-              <p className="text-lg font-bold text-title mb-1">\u70B9\u51FB\u53F3\u4E0A\u89D2\u300C...\u300D</p>
-              <p className="text-base text-secondary">\u53D1\u7ED9\u670B\u53CB\u6765\u6311\u6218</p>
+              <p className="text-lg font-bold text-title mb-1">点击右上角「...」</p>
+              <p className="text-base text-secondary">发给朋友来挑战</p>
             </div>
           </div>
         </div>
