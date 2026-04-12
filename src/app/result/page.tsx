@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG, determinePlayerTag, generateDiagnosisReport } from "@/lib/config";
+import { QUESTION_BANK } from "@/lib/questions";
 import { track } from "@/lib/track";
 import {
   canEnterLeaderboard,
@@ -412,6 +413,95 @@ export default function ResultPage() {
           </div>
         )}
 
+        {/* ===== Step 3.5: 答错题复盘 + 扫码解锁 ===== */}
+        {animStep >= 4 && (() => {
+          // 找出答错的题（选了非"推荐"选项的）
+          const wrongChoices: { title: string; yourChoice: string; bestChoice: string }[] = [];
+          for (const choice of store.choices) {
+            const q = QUESTION_BANK.find(qq => qq.id === choice.questionId);
+            if (!q) continue;
+            const bestOption = q.options.find(o => o.verdict?.startsWith("推荐"));
+            const chosenOption = q.options[choice.optionIndex];
+            if (bestOption && chosenOption && chosenOption.text !== bestOption.text) {
+              wrongChoices.push({
+                title: q.title,
+                yourChoice: chosenOption.text,
+                bestChoice: bestOption.text,
+              });
+            }
+          }
+          const totalQuestions = store.choices.length;
+          const correctCount = totalQuestions - wrongChoices.length;
+          const showWrongs = wrongChoices.slice(0, 3); // 只展示前3个
+
+          return wrongChoices.length > 0 ? (
+            <div className="rounded-2xl p-5 shadow-sm result-stagger-slide-up"
+              style={{ background: "linear-gradient(135deg, #FFF5F5 0%, #FED7D7 100%)", border: "2px solid #FEB2B2" }}>
+              <p className="text-xl font-black text-red-600 mb-3">
+                ❌ 你踩了 {wrongChoices.length} 个坑（共{totalQuestions}题）
+              </p>
+
+              <div className="space-y-3 mb-4">
+                {showWrongs.map((w, i) => (
+                  <div key={i} className="bg-white/80 rounded-xl p-3">
+                    <p className="text-base font-black text-title mb-1">{w.title}</p>
+                    <p className="text-sm text-red-500">你选了：{w.yourChoice}</p>
+                    <p className="text-sm text-secondary">正确答案：<span className="font-black">🔒 扫码解锁</span></p>
+                  </div>
+                ))}
+                {wrongChoices.length > 3 && (
+                  <p className="text-sm text-secondary text-center">
+                    还有 {wrongChoices.length - 3} 个坑未显示...
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 text-center">
+                <div className="flex justify-center mb-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={qrSrc}
+                    alt="扫码解锁"
+                    className="w-28 h-28 rounded-xl"
+                  />
+                </div>
+                <p className="text-lg font-black text-title mb-1">
+                  📚 扫码解锁全部正确答案
+                </p>
+                <p className="text-base text-secondary mb-1">
+                  100题知识点 + 经营避坑指南
+                </p>
+                <p className="text-sm text-red-500 font-bold">
+                  已有 3,000+ 外卖老板领取
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl p-5 shadow-sm result-stagger-slide-up"
+              style={{ background: "linear-gradient(135deg, #F0FFF4 0%, #C6F6D5 100%)", border: "2px solid #9AE6B4" }}>
+              <p className="text-xl font-black text-green-600 mb-3">
+                🎯 全对！你答对了全部 {totalQuestions} 题
+              </p>
+              <div className="bg-white rounded-2xl p-4 text-center">
+                <div className="flex justify-center mb-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={qrSrc}
+                    alt="扫码领取"
+                    className="w-28 h-28 rounded-xl"
+                  />
+                </div>
+                <p className="text-lg font-black text-title mb-1">
+                  🏆 扫码领高手专属资料包
+                </p>
+                <p className="text-base text-secondary">
+                  100题完整知识库 + 高级经营策略
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ===== Step 4: Poster Card ===== */}
         {animStep >= 4 && (
           <div className="result-stagger-slide-up">
@@ -483,27 +573,7 @@ export default function ResultPage() {
           </div>
         )}
 
-        {/* Result-specific CTA */}
-        {animStep >= 4 && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm result-stagger-slide-up">
-            <div className="flex gap-3 items-center">
-              <div className="shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={qrSrc}
-                  alt="扫码领取"
-                  className="w-16 h-16 rounded-lg"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-base font-black text-title">
-                  {ctaConfig.emoji} {ctaConfig.text}
-                </p>
-                <p className="text-sm text-secondary mt-0.5">加微信回复「资料包」免费领</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* (旧CTA已合并到答错题卡片中) */}
 
         {/* ===== Diagnosis (folded) ===== */}
         {animStep >= 4 && store.diagnosisReport && (
