@@ -116,7 +116,8 @@ export default function PlayPage() {
     const summary = store.dailySummaries[store.dailySummaries.length - 1];
     if (!summary) return null;
     const isBankrupt = summary.cashAfter <= 0;
-    const isLastDay = s.day >= GAME_CONFIG.maxDay;
+    const actualMaxDay = store.weekendUnlocked ? 7 : GAME_CONFIG.maxDay;
+    const isLastDay = s.day >= actualMaxDay;
     // 和前一天对比
     const prevSummary = store.dailySummaries.length >= 2
       ? store.dailySummaries[store.dailySummaries.length - 2]
@@ -257,7 +258,7 @@ export default function PlayPage() {
             {isBankrupt
               ? "💀 查看结局"
               : isLastDay
-              ? "🏆 查看5天战绩"
+              ? `🏆 查看${actualMaxDay}天战绩`
               : `进入第${s.day + 1}天 💰¥${summary.cashAfter.toLocaleString()}`}
           </button>
         </div>
@@ -374,7 +375,7 @@ export default function PlayPage() {
         <div className="relative z-10 text-center max-w-sm w-full">
           {/* 天数进度 */}
           <div className="flex justify-center gap-1.5 mb-6">
-            {Array.from({ length: GAME_CONFIG.maxDay }, (_, i) => (
+            {Array.from({ length: store.weekendUnlocked ? 7 : GAME_CONFIG.maxDay }, (_, i) => (
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
@@ -450,7 +451,7 @@ export default function PlayPage() {
     );
   }
 
-  const progress = ((s.day - 1) * GAME_CONFIG.questionsPerDay + store.dayQuestionIndex) / (GAME_CONFIG.maxDay * GAME_CONFIG.questionsPerDay) * 100;
+  const progress = ((s.day - 1) * GAME_CONFIG.questionsPerDay + store.dayQuestionIndex) / ((store.weekendUnlocked ? 7 : GAME_CONFIG.maxDay) * GAME_CONFIG.questionsPerDay) * 100;
 
   return (
     <div className={`min-h-screen bg-neutral-100 flex flex-col pb-6 ${wrongShake ? "animate-shake" : ""}`}>
