@@ -188,16 +188,38 @@ export default function PlayPage() {
             </div>
           </div>
 
-          {/* 账本 — 紧凑展示不折叠 */}
-          <div className="bg-white rounded-2xl p-3 shadow-sm">
-            <div className="flex items-center justify-between text-sm mb-1">
-              <span className="text-secondary">收入 <span className="font-black text-green-600">+¥{summary.incomeRevenue}</span></span>
-              <span className="text-secondary">成本 <span className="font-black text-red-500">-¥{summary.fixedCost}</span></span>
-              <span className="text-secondary">决策 <span className={`font-black ${summary.choiceImpact >= 0 ? "text-green-600" : "text-red-500"}`}>{summary.choiceImpact >= 0 ? "+" : ""}¥{summary.choiceImpact}</span></span>
+          {/* 账本 — 紧凑但完整 */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            {/* 营业额公式 */}
+            <div className="bg-neutral-50 rounded-xl p-2 mb-3">
+              <p className="text-xs text-secondary text-center mb-0.5">今日营业额</p>
+              <p className="text-sm font-black text-title text-center">
+                {summary.exposureEnd}曝光 × {(summary.enterConversionEnd * 100).toFixed(0)}%入店 × {(summary.effectiveOrderConv * 100).toFixed(0)}%下单 × ¥{summary.avgPriceEnd}
+              </p>
+              <p className="text-sm text-center text-secondary">
+                = {summary.estimatedOrders}单 × ¥{summary.avgPriceEnd} = <span className="font-black text-green-600">¥{summary.incomeRevenue}</span>
+              </p>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-secondary">期末余额</span>
-              <span className="text-lg font-black text-title">¥{summary.cashAfter.toLocaleString()}</span>
+            {/* 收支明细 */}
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-secondary">订单收入</span>
+                <span className="font-black text-green-600">+¥{summary.incomeRevenue}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">固定成本（租金+员工）</span>
+                <span className="font-black text-red-500">-¥{summary.fixedCost}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">经营决策</span>
+                <span className={`font-black ${summary.choiceImpact >= 0 ? "text-green-600" : "text-red-500"}`}>
+                  {summary.choiceImpact >= 0 ? "+" : ""}¥{summary.choiceImpact}
+                </span>
+              </div>
+              <div className="border-t border-border pt-1 mt-1 flex justify-between">
+                <span className="font-bold text-title">期末余额</span>
+                <span className="text-lg font-black text-title">¥{summary.cashAfter.toLocaleString()}</span>
+              </div>
             </div>
           </div>
 

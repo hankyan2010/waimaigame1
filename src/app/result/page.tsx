@@ -28,6 +28,7 @@ export default function ResultPage() {
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
   const [showLedger, setShowLedger] = useState(false);
   const [posterImage, setPosterImage] = useState<string | null>(null);
+  const [showPosterOverlay, setShowPosterOverlay] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   // Animation sequencing
@@ -160,13 +161,16 @@ export default function ResultPage() {
     // Step 5: Bottom buttons (at step4 + 500ms)
     setTimeout(() => setAnimStep(5), 900 + confettiDuration + 1500);
 
-    // Step 6: 动画全部播完后1.5秒，再弹输入名字的弹窗
+    // Step 6: 动画全部播完后1.5秒，弹输入名字弹窗或直接弹海报
     setTimeout(() => {
       const profitNow = store.state.cash - GAME_CONFIG.initialCash;
       const days = store.state.day;
       if (canEnterLeaderboard(profitNow, days)) {
         setPendingRank(predictRank(profitNow, days));
         setShowNameModal(true);
+      } else {
+        // 不能上榜，直接弹海报蒙版
+        setShowPosterOverlay(true);
       }
     }, 900 + confettiDuration + 3000);
   }, [hydrated, store.endingType]);
@@ -188,6 +192,8 @@ export default function ResultPage() {
     setSubmittedRank(result.rank ?? predictRank(profitNow, store.state.day));
     setShowNameModal(false);
     track("leaderboard_submit", { rank: result.rank ?? pendingRank });
+    // 提交后弹海报蒙版
+    setTimeout(() => setShowPosterOverlay(true), 500);
   };
 
   if (!hydrated || !store.endingType || !store.playerTag) return null;
@@ -733,7 +739,10 @@ export default function ResultPage() {
               >
                 上榜留名
               </button>
-              <button onClick={() => setShowNameModal(false)} className="btn-raised-ghost text-base">
+              <button onClick={() => {
+                setShowNameModal(false);
+                setTimeout(() => setShowPosterOverlay(true), 500);
+              }} className="btn-raised-ghost text-base">
                 算了不留
               </button>
             </div>
@@ -741,17 +750,28 @@ export default function ResultPage() {
         </div>
       )}
 
-      {/* Share tip overlay */}
-      {showShareTip && (
-        <div className="fixed inset-0 bg-black/80 z-[60] flex items-start justify-end p-4 pt-2"
-             onClick={() => setShowShareTip(false)}>
-          <div className="text-right mt-0">
-            <div className="text-6xl animate-bounce">{"👆"}</div>
-            <div className="bg-white rounded-2xl p-5 mt-2 max-w-[260px]">
-              <p className="text-lg font-bold text-title mb-1">点击右上角「...」</p>
-              <p className="text-base text-secondary">发给朋友来挑战</p>
-            </div>
-          </div>
+      {/* ===== 海报蒙版 — 全屏黑底只显示海报 ===== */}
+      {showPosterOverlay && (
+        <div className="fixed inset-0 bg-black/90 z-[80] flex flex-col items-center justify-center px-6"
+             onClick={() => setShowPosterOverlay(false)}>
+          <p className="text-white text-lg font-black mb-4 animate-bounce">
+            👇 长按海报保存，分享朋友圈
+          </p>
+
+          {posterImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={posterImage}
+              alt="我的经营人格海报"
+              className="w-full rounded-2xl shadow-2xl"
+              style={{ maxWidth: 380 }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <div className="text-white text-base">海报生成中...</div>
+          )}
+
+          <p className="text-white/50 text-sm mt-4">点击空白处关闭</p>
         </div>
       )}
     </div>
