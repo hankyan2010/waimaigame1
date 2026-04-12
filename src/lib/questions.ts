@@ -103,7 +103,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q006",
-    day: 2,
+    day: 1,
     title: "新店要做新客定向",
     desc: "你的店开业不久，需要决定推广人群。",
     realCase: "闫寒观点：线下发传单现在反而比线上流量便宜。刚需餐饮的客户就在1-3公里内。",
@@ -121,7 +121,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q007",
-    day: 2,
+    day: 1,
     title: "数据下滑要不要老客定向",
     desc: "稳定经营一个月，最近数据开始下滑。",
     options: [
@@ -138,7 +138,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q008",
-    day: 2,
+    day: 1,
     title: "菜单大改之后",
     desc: "你刚刚把菜单上的爆款全换了。",
     options: [
@@ -155,7 +155,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q009",
-    day: 2,
+    day: 1,
     title: "霸王餐停了流量就跌",
     desc: "上个月霸王餐拉起来的流量，停了之后又掉回原点。",
     options: [
@@ -172,7 +172,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q010",
-    day: 2,
+    day: 1,
     title: "搜索流量高列表流量低",
     desc: "后台发现搜索流量很高，但列表流量异常低。",
     realCase: "闫寒观点：店铺权重越高，推广越便宜。广东湛江粤菜酒楼，220推广出12000实收。",
@@ -190,7 +190,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q011",
-    day: 3,
+    day: 1,
     title: "新客下单率不合格",
     desc: "新客来了不少，但下单率很低，远低于行业。",
     options: [
@@ -207,7 +207,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q012",
-    day: 3,
+    day: 1,
     title: "线下传单要不要发",
     desc: "线上推广越来越贵，有人提议线下发传单。",
     realCase: "闫寒观点：求好评比删差评更重要。恶意差评其实是少数，大部分差评是真实体验不好。",
@@ -225,7 +225,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q013",
-    day: 3,
+    day: 1,
     title: "平台喜欢什么商家",
     desc: "客户经理告诉你：表现好的店会拿到更多倾斜。",
     options: [
@@ -242,7 +242,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q014",
-    day: 3,
+    day: 1,
     title: "商圈选址人流vs客流",
     desc: "正在评估一个商铺位置，门口人流很大。",
     realCase: "闫寒的超预期法：一个月的赠品集中一周送完，制造视觉冲击→拍照→分享→优质评论。",
@@ -260,7 +260,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q015",
-    day: 3,
+    day: 1,
     title: "选址主动线vs次动线",
     desc: "商圈里主动线满了，次动线还有便宜的铺。",
     realCase: "闫寒观点：不接单率必须为0。平台缺的是流量不是商家，浪费平台流量会被报复。",
@@ -279,7 +279,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 二、评价与口碑 (q016-q030) ==========
   {
     id: "q016",
-    day: 4,
+    day: 1,
     title: "求好评 vs 删差评",
     desc: "差评多了，店里争论：到底应该求好评还是想办法删差评？",
     options: [
@@ -293,7 +293,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q017",
-    day: 4,
+    day: 1,
     title: "评价得券设计",
     desc: "想用一次券换一次好评，怎么设计？",
     options: [
@@ -307,7 +307,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q018",
-    day: 4,
+    day: 1,
     title: "超预期法集中送",
     desc: "想让用户记住你，准备送点小东西。",
     options: [
@@ -321,7 +321,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q019",
-    day: 4,
+    day: 1,
     title: "视觉冲击送一桌",
     desc: "想做一次能让用户拍照分享的体验。",
     options: [
@@ -335,7 +335,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q020",
-    day: 4,
+    day: 1,
     title: "邻里柠檬茶送小鸭子",
     desc: "对面新开邻里柠檬茶，给每杯送只小黄鸭。",
     options: [
@@ -349,7 +349,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q021",
-    day: 5,
+    day: 2,
     title: "复购的三个要素",
     desc: "想抓复购，先抓什么？",
     options: [
@@ -363,7 +363,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q022",
-    day: 5,
+    day: 2,
     title: "客诉率突然上升",
     desc: "客诉量这周比上周翻倍，原因不明。",
     options: [
@@ -377,7 +377,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q023",
-    day: 5,
+    day: 2,
     title: "差评回复怎么写",
     desc: "刚收到一条差评，店长不知道怎么回。",
     options: [
@@ -391,7 +391,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q024",
-    day: 5,
+    day: 2,
     title: "优质评论引导",
     desc: "想让顾客留更有价值的好评，怎么引导？",
     options: [
@@ -405,7 +405,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q025",
-    day: 5,
+    day: 2,
     title: "准时宝要不要开",
     desc: "平台让你开准时宝，超时赔付。",
     options: [
@@ -419,7 +419,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q026",
-    day: 5,
+    day: 2,
     title: "产品稳定性",
     desc: "顾客反馈：你家味道每次都不一样。",
     options: [
@@ -433,7 +433,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q027",
-    day: 5,
+    day: 2,
     title: "单次补偿 vs 持续体验",
     desc: "用户投诉，到底是补偿一次了事还是改流程？",
     options: [
@@ -447,7 +447,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q028",
-    day: 5,
+    day: 2,
     title: "评价是经营工具",
     desc: "新员工把评价当客服任务在处理。",
     options: [
@@ -461,7 +461,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q029",
-    day: 5,
+    day: 2,
     title: "长期评分先抓什么",
     desc: "想让评分稳定在4.8以上。",
     options: [
@@ -475,7 +475,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q030",
-    day: 5,
+    day: 2,
     title: "主动设计邀评",
     desc: "想设计一个固定的邀评动作。",
     options: [
@@ -490,6 +490,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 三、后厨与履约 (q031-q042) ==========
   {
     id: "q031",
+    day: 2,
     title: "高峰期出餐慢",
     desc: "中午高峰出餐时间从15分钟拖到25分钟。",
     options: [
@@ -503,6 +504,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q032",
+    day: 2,
     title: "外卖菜单瘦身",
     desc: "菜单上有30个菜，一半很少有人点。",
     options: [
@@ -516,6 +518,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q033",
+    day: 2,
     title: "包装漏汤",
     desc: "本周漏汤投诉占了差评的一半。",
     options: [
@@ -529,6 +532,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q034",
+    day: 2,
     title: "出餐时间预报",
     desc: "想让用户对等餐时间有预期。",
     options: [
@@ -542,6 +546,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q035",
+    day: 2,
     title: "高峰餐前预制",
     desc: "高峰前一小时是冲刺备餐还是接散客？",
     options: [
@@ -555,6 +560,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q036",
+    day: 2,
     title: "出餐温度问题",
     desc: "用户反馈到手凉了。",
     options: [
@@ -568,6 +574,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q037",
+    day: 2,
     title: "骑手配送评分低",
     desc: "你家被骑手打了低分，导致接单慢。",
     options: [
@@ -581,6 +588,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q038",
+    day: 2,
     title: "食材库存波动",
     desc: "最近食材采购成本飙升20%。",
     options: [
@@ -594,6 +602,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q039",
+    day: 2,
     title: "招牌菜品质波动",
     desc: "招牌菜最近时好时坏。",
     options: [
@@ -607,6 +616,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q040",
+    day: 2,
     title: "退单率上升",
     desc: "本周退单率从1%涨到5%。",
     options: [
@@ -620,6 +630,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q041",
+    day: 3,
     title: "后厨人手不足",
     desc: "新店刚开业，后厨只有2个人。",
     options: [
@@ -633,6 +644,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q042",
+    day: 3,
     title: "夜班订单要不要接",
     desc: "夜里22点以后还有零星订单。",
     options: [
@@ -647,6 +659,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 四、客单结构与定价 (q043-q054) ==========
   {
     id: "q043",
+    day: 3,
     title: "提客单价的安全方式",
     desc: "想把客单价从25提到30。",
     options: [
@@ -660,6 +673,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q044",
+    day: 3,
     title: "套餐比例失衡",
     desc: "套餐毛利低，单点毛利高，但用户都点套餐。",
     options: [
@@ -673,6 +687,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q045",
+    day: 3,
     title: "定价心理锚",
     desc: "新菜单要写定价。",
     options: [
@@ -686,6 +701,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q046",
+    day: 3,
     title: "满减阶梯设计",
     desc: "想做满减活动。",
     options: [
@@ -699,6 +715,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q047",
+    day: 3,
     title: "餐+饮料的组合",
     desc: "想推餐+饮料组合。",
     options: [
@@ -712,6 +729,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q048",
+    day: 3,
     title: "招牌菜赋名权",
     desc: "想给招牌菜起个特别的名字。",
     options: [
@@ -725,6 +743,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q049",
+    day: 3,
     title: "外卖菜单首屏",
     desc: "用户进店前4个菜决定他下不下单。",
     options: [
@@ -738,6 +757,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q050",
+    day: 3,
     title: "高价菜要不要保留",
     desc: "菜单上有一道68元的招牌，月销才10单。",
     options: [
@@ -751,6 +771,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q051",
+    day: 3,
     title: "包装费定价",
     desc: "包装费是收1元、2元还是免？",
     options: [
@@ -764,6 +785,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q052",
+    day: 3,
     title: "新品试水定价",
     desc: "新品上架，定18还是24？",
     options: [
@@ -777,6 +799,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q053",
+    day: 3,
     title: "客单价跌了2元",
     desc: "本周客单价不知不觉跌了2块。",
     options: [
@@ -790,6 +813,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q054",
+    day: 3,
     title: "高客单菜上首位",
     desc: "本想用爆款拉曝光，但毛利低。",
     options: [
@@ -804,6 +828,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 五、留存与复购 (q055-q066) ==========
   {
     id: "q055",
+    day: 3,
     title: "首单转复购",
     desc: "新客下单一次后大半都不再来。",
     options: [
@@ -817,6 +842,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q056",
+    day: 3,
     title: "会员日设计",
     desc: "想做一个固定的会员日。",
     options: [
@@ -830,6 +856,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q057",
+    day: 3,
     title: "老客流失预警",
     desc: "30天没回购的用户越来越多。",
     options: [
@@ -843,6 +870,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q058",
+    day: 3,
     title: "积分体系怎么做",
     desc: "想做积分体系。",
     options: [
@@ -856,6 +884,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q059",
+    day: 3,
     title: "私域社群",
     desc: "想把外卖用户拉到私域。",
     options: [
@@ -869,6 +898,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q060",
+    day: 3,
     title: "复购券核销率低",
     desc: "送了一堆券，没几个人用。",
     options: [
@@ -882,6 +912,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q061",
+    day: 4,
     title: "回访电话",
     desc: "想给前10%的老客打回访电话。",
     options: [
@@ -895,6 +926,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q062",
+    day: 4,
     title: "节日营销",
     desc: "中秋节快到了。",
     options: [
@@ -908,6 +940,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q063",
+    day: 4,
     title: "用户画像分层",
     desc: "想对老客分层运营。",
     options: [
@@ -921,6 +954,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q064",
+    day: 4,
     title: "续命大额券",
     desc: "想给沉睡用户大力召回。",
     options: [
@@ -934,6 +968,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q065",
+    day: 4,
     title: "社群活跃度",
     desc: "私域群越来越冷。",
     options: [
@@ -947,6 +982,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q066",
+    day: 4,
     title: "邀请新客返利",
     desc: "想做老带新。",
     options: [
@@ -961,6 +997,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 六、选址与商圈 (q067-q074) ==========
   {
     id: "q067",
+    day: 4,
     title: "选址辐射半径",
     desc: "外卖店辐射半径选3公里还是5公里？",
     options: [
@@ -974,6 +1011,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q068",
+    day: 4,
     title: "选址房租谈判",
     desc: "看中一个铺位，房东开价是预算的1.5倍。",
     options: [
@@ -987,6 +1025,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q069",
+    day: 4,
     title: "竞品商圈密度",
     desc: "想进的商圈已有3家同品类店。",
     options: [
@@ -1000,6 +1039,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q070",
+    day: 4,
     title: "选址冷启动",
     desc: "店开了一周订单还是个位数。",
     options: [
@@ -1013,6 +1053,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q071",
+    day: 4,
     title: "配送范围调整",
     desc: "5公里外的订单差评高。",
     options: [
@@ -1026,6 +1067,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q072",
+    day: 4,
     title: "夜宵商圈",
     desc: "你在写字楼商圈，夜宵单几乎为0。",
     options: [
@@ -1039,6 +1081,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q073",
+    day: 4,
     title: "选址流量评估",
     desc: "门口看着人多，要怎么验证真实订单潜力？",
     options: [
@@ -1052,6 +1095,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q074",
+    day: 4,
     title: "扩张第二家",
     desc: "第一家稳定了，要不要开第二家？",
     options: [
@@ -1066,6 +1110,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 七、营销活动 (q075-q087) ==========
   {
     id: "q075",
+    day: 4,
     title: "霸王餐怎么发",
     desc: "想用霸王餐启动新店。",
     options: [
@@ -1079,6 +1124,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q076",
+    day: 4,
     title: "代金券和满减选哪个",
     desc: "促销预算只够做一种活动。",
     options: [
@@ -1092,6 +1138,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q077",
+    day: 4,
     title: "超值套餐数量",
     desc: "想做几个超值套餐？",
     options: [
@@ -1105,6 +1152,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q078",
+    day: 4,
     title: "拼团活动",
     desc: "想做拼团。",
     options: [
@@ -1118,6 +1166,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q079",
+    day: 4,
     title: "节假日预订",
     desc: "情人节快到了。",
     options: [
@@ -1131,6 +1180,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q080",
+    day: 4,
     title: "短视频投流",
     desc: "想用抖音/小红书投流。",
     options: [
@@ -1144,6 +1194,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q081",
+    day: 5,
     title: "直播带货",
     desc: "有人提议做直播卖券。",
     options: [
@@ -1157,6 +1208,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q082",
+    day: 5,
     title: "群发优惠券预算",
     desc: "300元预算群发券。",
     options: [
@@ -1170,6 +1222,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q083",
+    day: 5,
     title: "活动复盘频率",
     desc: "做了一波活动，要不要复盘？",
     options: [
@@ -1183,6 +1236,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q084",
+    day: 5,
     title: "联名活动",
     desc: "隔壁咖啡店想和你联名出套餐。",
     options: [
@@ -1196,6 +1250,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q085",
+    day: 5,
     title: "免单抽奖",
     desc: "想做'每日免一单'抽奖。",
     options: [
@@ -1209,6 +1264,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q086",
+    day: 5,
     title: "会员专属价",
     desc: "想给会员专属低价。",
     options: [
@@ -1222,6 +1278,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q087",
+    day: 5,
     title: "活动期外卖vs堂食",
     desc: "活动期间堂食和外卖都要做吗？",
     options: [
@@ -1236,6 +1293,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   // ========== 八、战略与现金流 (q088-q100) ==========
   {
     id: "q088",
+    day: 5,
     title: "现金流告急",
     desc: "现金只剩2000了，房租还要交。",
     options: [
@@ -1249,6 +1307,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q089",
+    day: 5,
     title: "成本结构分析",
     desc: "毛利只有20%，问题在哪？",
     options: [
@@ -1262,6 +1321,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q090",
+    day: 5,
     title: "扩张节奏",
     desc: "第一家月利润6000，要不要立刻开第二家？",
     options: [
@@ -1275,6 +1335,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q091",
+    day: 5,
     title: "团队招聘",
     desc: "想招一个店长。",
     options: [
@@ -1288,6 +1349,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q092",
+    day: 5,
     title: "数据看板",
     desc: "经营全靠脑子记，没看板。",
     options: [
@@ -1301,6 +1363,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q093",
+    day: 5,
     title: "竞品监控",
     desc: "隔壁家最近偷偷换菜单。",
     options: [
@@ -1314,6 +1377,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q094",
+    day: 5,
     title: "品牌认知建设",
     desc: "店开半年了，但没什么品牌感。",
     options: [
@@ -1327,6 +1391,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q095",
+    day: 5,
     title: "公关危机",
     desc: "一条夸张差评被传到本地论坛。",
     options: [
@@ -1340,6 +1405,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q096",
+    day: 5,
     title: "学习与提升",
     desc: "老板是一直闷头干还是花时间学习？",
     options: [
@@ -1353,6 +1419,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q097",
+    day: 5,
     title: "停业止损",
     desc: "持续3个月亏损。",
     options: [
@@ -1366,6 +1433,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q098",
+    day: 5,
     title: "供应链优化",
     desc: "想压低食材成本5%。",
     options: [
@@ -1379,6 +1447,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q099",
+    day: 5,
     title: "用户访谈",
     desc: "想了解为什么老客流失。",
     options: [
@@ -1392,6 +1461,7 @@ export const QUESTION_BANK: SimQuestion[] = [
   },
   {
     id: "q100",
+    day: 5,
     title: "长期主义",
     desc: "短期赚快钱还是慢慢做品牌？",
     options: [
