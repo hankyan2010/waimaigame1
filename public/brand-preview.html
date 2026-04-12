@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌标识预览</title>
+<style>
+  body {
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    gap: 40px;
+  }
+  h2 { color: #333; margin-bottom: 10px; }
+  .preview-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* === 方案A：美团黄配色，蒜头emoji + 文字 === */
+  .brand-a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #FFD100 0%, #FFB800 100%);
+    border-radius: 14px;
+  }
+  .brand-a .icon {
+    font-size: 28px;
+  }
+  .brand-a .text {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-a .name {
+    font-size: 16px;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: 1px;
+  }
+  .brand-a .slogan {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  /* === 方案B：白底简约，小logo在左 === */
+  .brand-b {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: white;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+  }
+  .brand-b .icon {
+    width: 32px;
+    height: 32px;
+    background: #FFD100;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .brand-b .text .name {
+    font-size: 14px;
+    font-weight: 900;
+    color: #222;
+  }
+  .brand-b .text .slogan {
+    font-size: 10px;
+    color: #999;
+  }
+
+  /* === 方案C：底部横条，全宽 === */
+  .brand-c {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #eee;
+    margin-top: 12px;
+  }
+  .brand-c .icon {
+    font-size: 20px;
+  }
+  .brand-c .name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #999;
+  }
+  .brand-c .slogan {
+    font-size: 11px;
+    color: #bbb;
+    margin-left: 4px;
+  }
+
+  /* === 方案D：圆形头像风格 === */
+  .brand-d {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .brand-d .avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFD100 0%, #FF8C00 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 2px 8px rgba(255,140,0,0.3);
+  }
+  .brand-d .text .name {
+    font-size: 15px;
+    font-weight: 900;
+    color: #222;
+  }
+  .brand-d .text .slogan {
+    font-size: 11px;
+    color: #888;
+    margin-top: 1px;
+  }
+
+  /* 在页面上下文中的效果 */
+  .page-mock {
+    background: #FFD100;
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .page-mock h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: #111;
+    margin: 10px 0 5px;
+  }
+  .page-mock p {
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<h2>方案A：黄色横条（醒目型）</h2>
+<div class="preview-card">
+  <div class="brand-a">
+    <span class="icon">🧄</span>
+    <div class="text">
+      <span class="name">蒜头外卖运营课堂</span>
+      <span class="slogan">学外卖 做外卖 找正规军</span>
+    </div>
+  </div>
+</div>
+
+<h2>方案B：白底简约（卡片型）</h2>
+<div class="preview-card">
+  <div class="brand-b">
+    <div class="icon">🧄</div>
+    <div class="text">
+      <div class="name">蒜头外卖运营课堂</div>
+      <div class="slogan">学外卖 做外卖 找正规军</div>
+    </div>
+  </div>
+</div>
+
+<h2>方案C：底部署名条（低调型）</h2>
+<div class="preview-card">
+  <div style="text-align:center;padding:20px;color:#333;">（页面内容区域）</div>
+  <div class="brand-c">
+    <span class="icon">🧄</span>
+    <span class="name">蒜头外卖运营课堂</span>
+    <span class="slogan">· 学外卖 做外卖 找正规军</span>
+  </div>
+</div>
+
+<h2>方案D：圆形头像风格（品牌感）</h2>
+<div class="preview-card">
+  <div class="brand-d">
+    <div class="avatar">🧄</div>
+    <div class="text">
+      <div class="name">蒜头外卖运营课堂</div>
+      <div class="slogan">学外卖 做外卖 找正规军</div>
+    </div>
+  </div>
+</div>
+
+<h2>放在游戏首页的效果</h2>
+<div class="page-mock">
+  <div class="brand-a" style="margin-bottom:15px;">
+    <span class="icon">🧄</span>
+    <div class="text">
+      <span class="name">蒜头外卖运营课堂</span>
+      <span class="slogan">学外卖 做外卖 找正规军</span>
+    </div>
+  </div>
+  <div style="text-align:center">
+    <span style="font-size:12px;background:rgba(0,0,0,0.1);padding:4px 12px;border-radius:20px;color:#333;">经营模拟游戏</span>
+  </div>
+  <h1>外卖老板<br>5天生存挑战</h1>
+  <p>1万本金起步，5天经营<br>看看你能赚多少 or 亏多少</p>
+</div>
+
+</body>
+</html>

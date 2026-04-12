@@ -8,6 +8,7 @@ import { GAME_CONFIG, DAY_STORIES } from "@/lib/config";
 import type { OptionEffect } from "@/lib/types";
 import { CoinRain } from "@/components/CoinRain";
 import { playCoinSound } from "@/lib/sound";
+import { BrandBar } from "@/components/BrandBar";
 
 interface PendingAnswer {
   optionIndex: number;
@@ -125,6 +126,8 @@ export default function PlayPage() {
 
     return (
       <div className="min-h-screen bg-neutral-100 flex flex-col">
+        {/* 品牌栏 */}
+        <div className="px-4 pt-4"><BrandBar /></div>
         {/* 大数字头部 */}
         <div className={`pt-8 pb-12 px-6 rounded-b-[2rem] ${
           summary.profit >= 0 ? "bg-brand" : "bg-gradient-to-b from-red-500 to-red-600"
@@ -365,6 +368,7 @@ export default function PlayPage() {
         </div>
 
         <div className="relative z-10 text-center max-w-sm w-full">
+          <div className="mb-4"><BrandBar /></div>
           {/* 天数进度 */}
           <div className="flex justify-center gap-1.5 mb-6">
             {Array.from({ length: store.weekendUnlocked ? 7 : GAME_CONFIG.maxDay }, (_, i) => (

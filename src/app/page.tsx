@@ -8,6 +8,7 @@ import { GAME_CONFIG } from "@/lib/config";
 import { fetchLeaderboard } from "@/lib/leaderboard";
 import { setupWxShare, setSharePlayerId } from "@/lib/wx-share";
 import { CoinRain } from "@/components/CoinRain";
+import { BrandBar } from "@/components/BrandBar";
 import { playCoinSound } from "@/lib/sound";
 
 export default function HomePage() {
@@ -104,6 +105,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 text-center">
+          <div className="mb-3"><BrandBar /></div>
           <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1.5 rounded-full mb-3">
             <span className="text-base font-bold text-title">经营模拟游戏</span>
           </div>

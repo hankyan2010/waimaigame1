@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import { track } from "@/lib/track";
+import { BrandBar } from "@/components/BrandBar";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/oldgame";
 
@@ -47,6 +48,7 @@ export default function RewardPage() {
       {/* Top */}
       <div className="bg-brand pt-6 pb-10 px-6 rounded-b-[2rem]">
         <div className="text-center">
+          <div className="mb-3"><BrandBar /></div>
           <div className="inline-flex items-center bg-black/10 px-3 py-1 rounded-full mb-2">
             <span className="text-sm font-medium text-title">
               {isBankrupt ? "别急，高手也是从踩坑开始的" : "恭喜通关！领取你的经营武器库"}

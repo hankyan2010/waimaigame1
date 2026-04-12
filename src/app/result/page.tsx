@@ -14,6 +14,7 @@ import {
 } from "@/lib/leaderboard";
 import { setupWxShare } from "@/lib/wx-share";
 import type { LeaderboardEntry } from "@/lib/types";
+import { BrandBar } from "@/components/BrandBar";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -328,6 +329,7 @@ export default function ResultPage() {
 
       {/* Content */}
       <div className="flex-1 px-4 pt-6 space-y-4 relative z-10">
+        <div className="mb-2"><BrandBar /></div>
 
         {/* ===== Step 1: Pop-up Banner ===== */}
         {animStep >= 1 && (

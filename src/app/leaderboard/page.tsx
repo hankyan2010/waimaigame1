@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { fetchLeaderboard } from "@/lib/leaderboard";
 import { ENDING_INFO, TAG_INFO, GAME_CONFIG } from "@/lib/config";
 import type { LeaderboardEntry } from "@/lib/types";
+import { BrandBar } from "@/components/BrandBar";
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function LeaderboardPage() {
           ← 返回
         </button>
         <div className="text-center">
+          <div className="mb-3"><BrandBar /></div>
           <div className="text-3xl mb-1">🏆</div>
           <h1 className="text-2xl font-black text-title">外卖老板英雄榜</h1>
           <p className="text-sm text-title/70 mt-1">
