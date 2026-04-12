@@ -31,6 +31,7 @@ export default function ResultPage() {
   const [posterImage, setPosterImage] = useState<string | null>(null);
   const [showPosterOverlay, setShowPosterOverlay] = useState(false);
   const [showResourcePage, setShowResourcePage] = useState(false);
+  const [wrongChoices, setWrongChoices] = useState<{ title: string; yourChoice: string }[]>([]);
   const posterRef = useRef<HTMLDivElement>(null);
 
   // Animation sequencing
@@ -106,6 +107,19 @@ export default function ResultPage() {
     animStarted.current = true;
 
     const profitTarget = store.state.cash - GAME_CONFIG.initialCash;
+
+    // 提前算好答错的题
+    const wrongs: { title: string; yourChoice: string }[] = [];
+    for (const choice of store.choices) {
+      const q = QUESTION_BANK.find(qq => qq.id === choice.questionId);
+      if (!q) continue;
+      const bestOpt = q.options.find(o => o.verdict?.startsWith("推荐"));
+      const chosenOpt = q.options[choice.optionIndex];
+      if (bestOpt && chosenOpt && chosenOpt.text !== bestOpt.text) {
+        wrongs.push({ title: q.title, yourChoice: chosenOpt.text });
+      }
+    }
+    setWrongChoices(wrongs);
 
     // Step 1: Banner pop-in (300ms)
     setTimeout(() => setAnimStep(1), 100);
@@ -424,24 +438,8 @@ export default function ResultPage() {
 
         {/* ===== Step 3.5: 答错题复盘 + 扫码解锁 ===== */}
         {animStep >= 4 && (() => {
-          // 找出答错的题（选了非"推荐"选项的）
-          const wrongChoices: { title: string; yourChoice: string; bestChoice: string }[] = [];
-          for (const choice of store.choices) {
-            const q = QUESTION_BANK.find(qq => qq.id === choice.questionId);
-            if (!q) continue;
-            const bestOption = q.options.find(o => o.verdict?.startsWith("推荐"));
-            const chosenOption = q.options[choice.optionIndex];
-            if (bestOption && chosenOption && chosenOption.text !== bestOption.text) {
-              wrongChoices.push({
-                title: q.title,
-                yourChoice: chosenOption.text,
-                bestChoice: bestOption.text,
-              });
-            }
-          }
           const totalQuestions = store.choices.length;
-          const correctCount = totalQuestions - wrongChoices.length;
-          const showWrongs = wrongChoices.slice(0, 3); // 只展示前3个
+          const showWrongs = wrongChoices.slice(0, 3);
 
           return wrongChoices.length > 0 ? (
             <div className="rounded-2xl p-5 shadow-sm result-stagger-slide-up"
@@ -798,38 +796,26 @@ export default function ResultPage() {
             </div>
 
             {/* 答错题回顾 */}
-            {(() => {
-              const wrongs: { title: string; yourChoice: string }[] = [];
-              for (const choice of store.choices) {
-                const q = QUESTION_BANK.find(qq => qq.id === choice.questionId);
-                if (!q) continue;
-                const bestOpt = q.options.find(o => o.verdict?.startsWith("推荐"));
-                const chosenOpt = q.options[choice.optionIndex];
-                if (bestOpt && chosenOpt && chosenOpt.text !== bestOpt.text) {
-                  wrongs.push({ title: q.title, yourChoice: chosenOpt.text });
-                }
-              }
-              return wrongs.length > 0 ? (
-                <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-4">
-                  <p className="text-lg font-black text-red-600 mb-2">
-                    ❌ 你踩了 {wrongs.length} 个坑
-                  </p>
-                  <div className="space-y-1 mb-2">
-                    {wrongs.slice(0, 3).map((w, i) => (
-                      <p key={i} className="text-sm text-red-500">
-                        • {w.title}：你选了「{w.yourChoice}」
-                      </p>
-                    ))}
-                    {wrongs.length > 3 && (
-                      <p className="text-sm text-secondary">还有 {wrongs.length - 3} 个坑...</p>
-                    )}
-                  </div>
-                  <p className="text-base font-black text-title">
-                    🔒 正确答案在资料包里，扫码解锁 ↓
-                  </p>
+            {wrongChoices.length > 0 && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-4">
+                <p className="text-lg font-black text-red-600 mb-2">
+                  ❌ 你踩了 {wrongChoices.length} 个坑
+                </p>
+                <div className="space-y-1 mb-2">
+                  {wrongChoices.slice(0, 3).map((w, i) => (
+                    <p key={i} className="text-sm text-red-500">
+                      • {w.title}：你选了「{w.yourChoice}」
+                    </p>
+                  ))}
+                  {wrongChoices.length > 3 && (
+                    <p className="text-sm text-secondary">还有 {wrongChoices.length - 3} 个坑...</p>
+                  )}
                 </div>
-              ) : null;
-            })()}
+                <p className="text-base font-black text-title">
+                  🔒 正确答案在资料包里，扫码解锁 ↓
+                </p>
+              </div>
+            )}
 
             {/* 资料包内容清单 */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-5 mb-4">
