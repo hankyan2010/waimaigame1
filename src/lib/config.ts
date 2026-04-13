@@ -172,19 +172,40 @@ export const RANDOM_EVENTS: RandomEvent[] = [
   { id: "e16", title: "老客带新客", desc: "忠实顾客在业主群推荐了你", effect: { exposure: 600, orderConversion: 0.02 }, emoji: "👥" },
 ];
 
-export function pickQuestionsForDay(day: number, excludeIds: string[]): SimQuestion[] {
+export function pickQuestionsForDay(day: number, excludeIds: string[], seenIds: string[] = []): SimQuestion[] {
   const count = GAME_CONFIG.questionsPerDay;
-  // 优先抽当天的题
+  // 当天的题，排除本局已答的
   const dayQuestions = QUESTION_BANK.filter(
     (q) => q.day === day && !excludeIds.includes(q.id)
   );
-  if (dayQuestions.length >= count) {
-    return [...dayQuestions].sort(() => Math.random() - 0.5).slice(0, count);
+  // 分成"没见过的"和"见过的"，优先抽没见过的
+  const unseen = dayQuestions.filter((q) => !seenIds.includes(q.id));
+  const seen = dayQuestions.filter((q) => seenIds.includes(q.id));
+
+  let picked: SimQuestion[];
+  if (unseen.length >= count) {
+    // 没见过的题够抽，全从没见过的里抽
+    picked = [...unseen].sort(() => Math.random() - 0.5).slice(0, count);
+  } else {
+    // 没见过的不够，先全选没见过的，再从见过的里补
+    const remaining = count - unseen.length;
+    picked = [
+      ...unseen,
+      ...[...seen].sort(() => Math.random() - 0.5).slice(0, remaining),
+    ];
   }
-  // 当天题不够，从全池补（排除已答的）
-  const available = QUESTION_BANK.filter((q) => !excludeIds.includes(q.id) && q.day !== day);
-  const pool = [...dayQuestions, ...available];
-  return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+
+  // 兜底：如果当天题总量不够，从全池补
+  if (picked.length < count) {
+    const pickedIds = new Set(picked.map((q) => q.id));
+    const fallback = QUESTION_BANK.filter(
+      (q) => !excludeIds.includes(q.id) && !pickedIds.has(q.id) && q.day !== day
+    );
+    const extra = [...fallback].sort(() => Math.random() - 0.5).slice(0, count - picked.length);
+    picked = [...picked, ...extra];
+  }
+
+  return picked.sort(() => Math.random() - 0.5);
 }
 
 // === 结局规则 ===

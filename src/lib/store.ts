@@ -81,6 +81,9 @@ interface GameStore {
   // 玩家身份（用于裂变追踪）
   playerId: string;
 
+  // 历史看过的题目ID（跨局持久化，用于去重）
+  seenQuestionIds: string[];
+
   // 展示名（排行榜兼容）
   displayName: string;
   hasSubmittedDisplayName: boolean;
@@ -175,6 +178,7 @@ export const useGameStore = create<GameStore>()(
       inviteCap: 5,
       inviteCreditsConsumed: 0,
 
+      seenQuestionIds: [],
       playerId: "",
 
       displayName: "",
@@ -254,7 +258,7 @@ export const useGameStore = create<GameStore>()(
       startDay: () => {
         const s = get();
         const excludeIds = s.choices.map((c) => c.questionId);
-        const qs = pickQuestionsForDay(s.state.day, excludeIds);
+        const qs = pickQuestionsForDay(s.state.day, excludeIds, s.seenQuestionIds);
         // 打乱每道题的选项顺序，避免正确答案永远是第一个
         const shuffledQs = qs.map((q) => ({
           ...q,
@@ -307,6 +311,8 @@ export const useGameStore = create<GameStore>()(
           choices: [...s.choices, record],
           dayChoiceImpact: s.dayChoiceImpact + (option.effect.cash ?? 0),
           dayChoiceLog: [...s.dayChoiceLog, logItem],
+          // 记录看过的题，跨局去重（最多保留200条避免localStorage爆）
+          seenQuestionIds: [...new Set([...s.seenQuestionIds, q.id])].slice(-200),
         });
       },
 
@@ -566,6 +572,7 @@ export const useGameStore = create<GameStore>()(
         inviteCredits: state.inviteCredits,
         inviteScannerCount: state.inviteScannerCount,
         inviteCreditsConsumed: state.inviteCreditsConsumed,
+        seenQuestionIds: state.seenQuestionIds,
         playerId: state.playerId,
         displayName: state.displayName,
         hasSubmittedDisplayName: state.hasSubmittedDisplayName,
