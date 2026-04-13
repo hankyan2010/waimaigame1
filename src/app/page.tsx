@@ -106,43 +106,74 @@ export default function HomePage() {
 
         <div className="relative z-10 text-center">
           <div className="mb-3"><BrandBar /></div>
+          <div className="inline-flex items-center gap-1.5 bg-black/10 px-3 py-1.5 rounded-full mb-3">
+            <span className="text-base font-bold text-title">经营模拟游戏</span>
+          </div>
 
           <h1 className="text-4xl font-black text-title leading-tight mb-2">
             外卖老板
             <br />
-            <span className="text-4xl">生存挑战</span>
+            <span className="text-4xl">5天生存挑战</span>
           </h1>
 
-          <p className="text-lg text-title/70 leading-snug">
-            ¥10000本金，每天4个决策，选错就倒闭
-          </p>
-          <p className="text-base text-red-600 font-black mt-1">
-            ⚠️ 47%的玩家在第3天就倒闭了
+          <p className="text-lg text-title/70 leading-snug max-w-[280px] mx-auto">
+            1万本金起步，5天经营
+            <br />
+            看看你能赚多少 or 亏多少
           </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-4 -mt-6 space-y-3 relative z-10">
+      <div className="flex-1 px-4 -mt-6 space-y-4 relative z-10">
         {/* 老用户：最佳战绩 */}
         {hydrated && !isNewUser && (
-          <div className="bg-card rounded-2xl p-4 shadow-sm">
-            <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="bg-card rounded-2xl p-5 shadow-sm">
+            <p className="text-base text-secondary mb-3 font-bold">🏅 我的最佳战绩</p>
+            <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <div className="text-2xl font-black text-title">¥{bestCash.toLocaleString()}</div>
-                <div className="text-xs text-secondary">最高现金</div>
+                <div className="text-3xl font-black text-title">¥{bestCash.toLocaleString()}</div>
+                <div className="text-sm text-secondary mt-1">最高现金</div>
               </div>
               <div>
-                <div className="text-2xl font-black text-title">{bestDays}天</div>
-                <div className="text-xs text-secondary">存活</div>
+                <div className="text-3xl font-black text-title">{bestDays}天</div>
+                <div className="text-sm text-secondary mt-1">最多存活</div>
               </div>
               <div>
-                <div className="text-2xl font-black text-title">{totalPlays}次</div>
-                <div className="text-xs text-secondary">已挑战</div>
+                <div className="text-3xl font-black text-title">{totalPlays}</div>
+                <div className="text-sm text-secondary mt-1">挑战次数</div>
               </div>
             </div>
           </div>
         )}
+
+        {/* 新用户：游戏规则（老用户隐藏）*/}
+        {hydrated && isNewUser && (
+          <div className="bg-card rounded-2xl p-5 shadow-sm">
+            <p className="text-lg font-black text-title mb-3">💰 玩法一句话</p>
+            <p className="text-lg text-body leading-relaxed mb-3">
+              1万本金，5天经营，每天4个决策。选对了暴赚，选错了倒闭。
+            </p>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+              <p className="text-base font-black text-red-600 text-center">
+                ⚠️ 47%的玩家在第3天就倒闭了
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 开局状态 — 突出现金，其他一行带过 */}
+        <div className="bg-card rounded-2xl p-5 shadow-sm text-center">
+          <p className="text-base text-secondary mb-2">开局状态</p>
+          <div className="text-4xl font-black text-title mb-2">💰 ¥{GAME_CONFIG.initialCash.toLocaleString()}</div>
+          <div className="flex justify-center gap-2 text-sm text-secondary flex-wrap">
+            <span className="bg-neutral-100 px-2 py-1 rounded-lg">曝光 {GAME_CONFIG.initialExposure}</span>
+            <span className="bg-neutral-100 px-2 py-1 rounded-lg">客单 ¥{GAME_CONFIG.initialAvgPrice}</span>
+            <span className="bg-neutral-100 px-2 py-1 rounded-lg">入店 {(GAME_CONFIG.initialEnterConversion * 100).toFixed(0)}%</span>
+            <span className="bg-neutral-100 px-2 py-1 rounded-lg">下单 {(GAME_CONFIG.initialOrderConversion * 100).toFixed(0)}%</span>
+            <span className="bg-neutral-100 px-2 py-1 rounded-lg">日成本 ¥{GAME_CONFIG.dailyRent + GAME_CONFIG.dailyStaff}</span>
+          </div>
+        </div>
       </div>
 
       {/* Bottom CTA */}
@@ -177,6 +208,7 @@ export default function HomePage() {
         </div>
       )}
 
+      <p className="text-center text-xs text-secondary/40 pb-1">v4.4.0</p>
 
       {showCoin && <CoinRain key={coinKey} />}
 
