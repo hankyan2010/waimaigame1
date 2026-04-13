@@ -7,6 +7,8 @@ cd "$(dirname "$0")/.."
 npx next build || { echo "❌ 构建失败"; exit 1; }
 
 echo "🚀 上传到华为云..."
+# 先删旧_next避免残留chunk
+ssh root@121.36.105.43 "rm -rf /var/www/html/oldgame/_next" 2>/dev/null
 # Apache的DocumentRoot（线上实际服务）
 scp -r out/* root@121.36.105.43:/var/www/html/oldgame/ || { echo "❌ SCP失败"; exit 1; }
 # nginx备份路径
