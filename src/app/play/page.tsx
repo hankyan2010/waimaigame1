@@ -140,56 +140,12 @@ export default function PlayPage() {
           }`}>
             {summary.profit >= 0 ? "+" : ""}¥{summary.profit.toLocaleString()}
           </div>
-          <p className={`text-center text-base mt-1 ${summary.profit >= 0 ? "text-title/60" : "text-white/60"}`}>
-            今日净利润 · 余额 ¥{summary.cashAfter.toLocaleString()}
+          <p className={`text-center text-sm mt-1 ${summary.profit >= 0 ? "text-title/60" : "text-white/60"}`}>
+            💡 {summary.comment}
           </p>
         </div>
 
-        <div className="flex-1 px-4 -mt-5 space-y-4 relative z-10 pb-4">
-          {/* 一句话点评 */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">💡</span>
-              <p className="text-lg text-body leading-relaxed font-medium">{summary.comment}</p>
-            </div>
-          </div>
-
-          {/* 指标对比卡片 — 用↑↓箭头显示变化 */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="grid grid-cols-5 gap-1">
-              <DeltaStat
-                label="曝光"
-                value={summary.exposureEnd}
-                prev={prevSummary?.exposureEnd ?? GAME_CONFIG.initialExposure}
-                format={(v) => String(v)}
-              />
-              <DeltaStat
-                label="入店率"
-                value={summary.enterConversionEnd}
-                prev={prevSummary?.enterConversionEnd ?? GAME_CONFIG.initialEnterConversion}
-                format={(v) => `${(v * 100).toFixed(0)}%`}
-              />
-              <DeltaStat
-                label="下单率"
-                value={summary.orderConversionEnd}
-                prev={prevSummary?.orderConversionEnd ?? GAME_CONFIG.initialOrderConversion}
-                format={(v) => `${(v * 100).toFixed(0)}%`}
-              />
-              <DeltaStat
-                label="客单价"
-                value={summary.avgPriceEnd}
-                prev={prevSummary?.avgPriceEnd ?? GAME_CONFIG.initialAvgPrice}
-                format={(v) => `¥${v}`}
-              />
-              <DeltaStat
-                label="差评率"
-                value={summary.badReviewEnd}
-                prev={prevSummary?.badReviewEnd ?? GAME_CONFIG.initialBadReviewRate}
-                format={(v) => `${(v * 100).toFixed(0)}%`}
-                invertColor
-              />
-            </div>
-          </div>
+        <div className="flex-1 px-4 -mt-5 space-y-3 relative z-10 pb-4">
 
           {/* 账本 — 紧凑但完整 */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -389,38 +345,26 @@ export default function PlayPage() {
           <h2 className="text-4xl font-black text-white mb-1 drop-shadow-sm">
             {story?.title || `第 ${s.day} 天`}
           </h2>
-          <p className="text-base text-white/60 mb-4">{story?.mood}</p>
 
           {story && (
-            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 mb-4 text-left border border-white/20">
-              <p className="text-lg text-white leading-relaxed">{story.intro}</p>
+            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 mb-3 text-left border border-white/20">
+              <p className="text-base text-white leading-relaxed">{story.intro}</p>
             </div>
           )}
 
           {/* 突发事件 */}
-          {store.dayEvent ? (
-            <div className="bg-white rounded-2xl p-4 mb-4 animate-slide-up">
-              <div className="flex items-center gap-2 justify-center mb-1">
-                <span className="text-3xl">{store.dayEvent.emoji}</span>
-                <span className="text-lg font-black text-title">{store.dayEvent.title}</span>
+          {store.dayEvent && (
+            <div className="bg-white rounded-2xl p-3 mb-3 animate-slide-up">
+              <div className="flex items-center gap-2 justify-center">
+                <span className="text-2xl">{store.dayEvent.emoji}</span>
+                <span className="text-base font-black text-title">{store.dayEvent.title}</span>
               </div>
-              <p className="text-base text-secondary">{store.dayEvent.desc}</p>
+              <p className="text-sm text-secondary text-center">{store.dayEvent.desc}</p>
             </div>
-          ) : s.day > 1 ? (
-            <p className="text-base text-white/50 mb-4">今天没有突发事件</p>
-          ) : null}
+          )}
 
-          {/* 当前状态：只突出现金 */}
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/20">
-            <p className="text-4xl font-black text-white mb-1">💰 ¥{s.cash.toLocaleString()}</p>
-            <div className="flex justify-center gap-3 text-sm text-white/70">
-              <span>曝光 {s.exposure}</span>
-              <span>·</span>
-              <span>入店 {(s.enterConversion * 100).toFixed(0)}%</span>
-              <span>·</span>
-              <span>下单 {(s.orderConversion * 100).toFixed(0)}%</span>
-            </div>
-          </div>
+          {/* 现金 */}
+          <p className="text-3xl font-black text-white text-center mb-4">💰 ¥{s.cash.toLocaleString()}</p>
 
           <button
             onClick={() => {

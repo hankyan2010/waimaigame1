@@ -436,8 +436,8 @@ export default function ResultPage() {
           </div>
         )}
 
-        {/* ===== Step 3.5: 答错题复盘 + 扫码解锁 ===== */}
-        {animStep >= 4 && (() => {
+        {/* ===== Step 3.5: removed, moved to resource page ===== */}
+        {false && (() => {
           const totalQuestions = store.choices.length;
           const showWrongs = wrongChoices.slice(0, 3);
 
@@ -580,114 +580,6 @@ export default function ResultPage() {
           </div>
         )}
 
-        {/* (旧CTA已合并到答错题卡片中) */}
-
-        {/* ===== Diagnosis (folded) ===== */}
-        {animStep >= 4 && store.diagnosisReport && (
-          <>
-            <button
-              onClick={() => setShowDiagnosis(!showDiagnosis)}
-              className="bg-white rounded-2xl p-4 shadow-sm w-full text-left result-stagger-slide-up"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-black text-title">{"📊"} 你的经营诊断</span>
-                <span className="text-base text-secondary">{showDiagnosis ? "收起 ↑" : "展开 ↓"}</span>
-              </div>
-              {!showDiagnosis && (
-                <div className="flex gap-2 mt-3">
-                  {store.diagnosisReport.dimensions.map((dim) => (
-                    <div key={dim.id} className="flex-1">
-                      <div className="w-full bg-gray-100 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${
-                            dim.score >= 70 ? "bg-green-500" : dim.score >= 45 ? "bg-orange-400" : "bg-red-400"
-                          }`}
-                          style={{ width: `${dim.score}%` }}
-                        />
-                      </div>
-                      <p className="text-[11px] text-secondary text-center mt-1">{dim.name}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </button>
-
-            {showDiagnosis && (
-              <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-                {store.diagnosisReport.dimensions.map((dim) => (
-                  <div key={dim.id}>
-                    <button
-                      onClick={() => setExpandedDim(expandedDim === dim.id ? null : dim.id)}
-                      className="w-full text-left"
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-base font-black text-title">{dim.name}</span>
-                        <span className={`text-base font-black ${
-                          dim.score >= 70 ? "text-green-600" : dim.score >= 45 ? "text-orange-500" : "text-red-500"
-                        }`}>{dim.score}分</span>
-                      </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2.5">
-                        <div
-                          className={`h-2.5 rounded-full transition-all duration-500 ${
-                            dim.score >= 70 ? "bg-green-500" : dim.score >= 45 ? "bg-orange-400" : "bg-red-400"
-                          }`}
-                          style={{ width: `${dim.score}%` }}
-                        />
-                      </div>
-                    </button>
-                    {expandedDim === dim.id && (
-                      <p className="text-base text-secondary leading-relaxed mt-2 animate-knowledge-in">{dim.comment}</p>
-                    )}
-                  </div>
-                ))}
-                <div className="pt-3 border-t border-border">
-                  <div className="flex items-start gap-2">
-                    <span className="text-2xl flex-shrink-0">{"💡"}</span>
-                    <p className="text-lg font-bold text-body leading-relaxed">{store.diagnosisReport.summary}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* 5-day ledger (folded) */}
-        {animStep >= 4 && (
-          <>
-            <button
-              onClick={() => setShowLedger(!showLedger)}
-              className="bg-white rounded-2xl p-4 shadow-sm w-full text-left result-stagger-slide-up"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-black text-title">{"📒"} 5天经营账本</span>
-                <span className="text-base text-secondary">{showLedger ? "收起 ↑" : "展开 ↓"}</span>
-              </div>
-            </button>
-
-            {showLedger && (
-              <div className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
-                {store.dailySummaries.map((d) => (
-                  <div key={d.day} className="border-b border-border last:border-0 pb-3 last:pb-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-base font-black text-title">第{d.day}天</span>
-                      <span className={`text-xl font-black ${d.profit >= 0 ? "text-green-600" : "text-red-500"}`}>
-                        {d.profit >= 0 ? "+" : ""}&yen;{d.profit.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex gap-2 text-sm text-secondary">
-                      <span>营业 &yen;{d.incomeRevenue}</span>
-                      <span>&middot;</span>
-                      <span>成本 &yen;{d.fixedCost}</span>
-                      <span>&middot;</span>
-                      <span>决策 {d.choiceImpact >= 0 ? "+" : ""}&yen;{d.choiceImpact}</span>
-                    </div>
-                    <p className="text-base text-body leading-snug mt-1">{"💡"} {d.comment}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
       </div>
 
       {/* Bottom CTA - Step 5 */}
